@@ -119,6 +119,13 @@ export const typeRefs: Record<string, TypeRef> = {
   bytes: { fullName: 'bytes', summary: 'Suite d’octets bruts, avant décodage en texte.', methods: [{ sig: '.decode("utf-8")', desc: 'octets → texte' }, { sig: 'texte.encode("utf-8")', desc: 'texte → octets' }] },
 };
 
+typeRefs.function = { fullName: 'function', summary: 'Une fonction est un **objet** : son nom est une variable qui pointe vers elle.', methods: [{ sig: 'f(args)', desc: 'appeler' }, { sig: 'f.__name__', desc: 'son nom' }, { sig: 'help(f)', desc: 'sa documentation' }, { sig: 'del f', desc: 'supprimer le nom' }] };
+typeRefs.datetime = { fullName: 'datetime.datetime', summary: 'Un instant précis : date + heure.', methods: [
+  { sig: '.strftime(format)', desc: 'datetime → chaîne' }, { sig: 'dt.datetime.strptime(s, format)', desc: 'chaîne → datetime' }, { sig: '.year / .month / .day / .hour', desc: 'composantes' },
+  { sig: '.date() / .time()', desc: 'partie date / heure' }, { sig: '+ / − timedelta', desc: 'décaler' }, { sig: 'd2 − d1', desc: 'durée (timedelta)' }, { sig: '.weekday()', desc: '0 = lundi' }] };
+typeRefs.timedelta = { fullName: 'datetime.timedelta', summary: 'Une **durée** (différence entre deux instants).', methods: [
+  { sig: '.days / .seconds', desc: 'composantes' }, { sig: '.total_seconds()', desc: 'durée totale en secondes' }, { sig: 'dt.timedelta(days=, hours=, minutes=)', desc: 'créer une durée' }] };
+
 /** Types NumPy scalaires (résultat d'une agrégation complète, d'un accès à une cellule…). */
 for (const t of ['numpy.int64', 'numpy.float64', 'numpy.bool']) {
   typeRefs[t] = {

@@ -58,7 +58,7 @@ class Heap:
 
 
 def visible(name, v):
-    return not name.startswith("__") and not isinstance(v, types.ModuleType) and name not in ("csv_reader_module",)
+    return not name.startswith("__") and not isinstance(v, types.ModuleType)
 
 
 def snapshot(frames):
@@ -117,10 +117,11 @@ def run(code):
     def tracer(frame, event, arg):
         if frame.f_code.co_filename != FILE:
             return None
+        is_class_body = not (frame.f_code.co_flags & 0x1) and frame.f_code.co_name != "<module>"  # corps de classe : pas CO_OPTIMIZED
         if event == "call" and frame.f_code.co_name != "<module>":
             caller = frame.f_back
             if caller in pending:
-                record(pending[caller], frame, f"appel de {frame.f_code.co_name}()")
+                record(pending[caller], frame, f"définition de la classe {frame.f_code.co_name}" if is_class_body else f"appel de {frame.f_code.co_name}()")
         elif event == "line":
             if frame in pending:
                 record(pending[frame], frame)
@@ -128,7 +129,8 @@ def run(code):
         elif event == "return":
             if frame in pending:
                 is_fn = frame.f_code.co_name != "<module>"
-                record(pending.pop(frame), frame, f"return de {frame.f_code.co_name}() → {short(arg)}" if is_fn else None)
+                label = None if not is_fn else (f"fin de la classe {frame.f_code.co_name}" if is_class_body else f"return de {frame.f_code.co_name}() → {short(arg)}")
+                record(pending.pop(frame), frame, label)
         return tracer
 
     error = None
@@ -147,7 +149,15 @@ def run(code):
                 if tb.tb_frame.f_code.co_filename == FILE:
                     line = tb.tb_lineno
                 tb = tb.tb_next
-            error = {"type": type(e).__name__, "message": str(e), "line": line}
+            tb_lines = ["Traceback (most recent call last):"]
+            t = e.__traceback__
+            while t:
+                if t.tb_frame.f_code.co_filename == FILE:
+                    tb_lines.append(f'  File "<sim>", line {t.tb_lineno}, in {t.tb_frame.f_code.co_name}')
+                    tb_lines.append("    " + lines[t.tb_lineno - 1].strip())
+                t = t.tb_next
+            tb_lines.append(f"{type(e).__name__}: {e}")
+            error = {"type": type(e).__name__, "message": str(e), "line": line, "traceback": tb_lines}
         finally:
             sys.settrace(None)
     if error and steps and steps[-1]["line"] == error["line"]:
@@ -176,6 +186,7 @@ def main(spec_path, dest):
             code = sc["code"]
             for p, v in zip(sc["params"], combo):
                 code = code.replace(f"«{p['id']}»", v)
+            code = code.replace("(, ", "(")  # option vide suivie d'un argument : f(, x=1) → f(x=1)
             results["|".join([sc["id"], *combo])] = {"code": code, **run(code)}
     json.dump({"python": sys.version.split()[0], "scenarios": mod.SCENARIOS, "results": results}, open(dest, "w"), ensure_ascii=False, separators=(",", ":"))
     print(f"{dest} : {len(mod.SCENARIOS)} scénarios, {len(results)} exécutions (Python {sys.version.split()[0]})")

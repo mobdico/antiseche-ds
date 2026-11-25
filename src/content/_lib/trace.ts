@@ -8,7 +8,7 @@ import data from '../_data/trace-python-core.json';
 interface TParam { id: string; label: string; default: string; options: { code: string; help: string }[] }
 interface TScenario { id: string; title: string; code: string; doc: string; params: TParam[] }
 interface TStep { label: string; code: string; line: number; vars: { name: string; ref: string }[]; heap: HeapObj[]; stdout: string; failed?: boolean }
-interface TRun { code: string; steps: TStep[]; stdout: string; error?: { type: string; message: string; line: number | null }; truncated?: boolean }
+interface TRun { code: string; steps: TStep[]; stdout: string; error?: { type: string; message: string; line: number | null; traceback?: string[] }; truncated?: boolean }
 
 const TRACE = data as unknown as { python: string; scenarios: TScenario[]; results: Record<string, TRun> };
 
@@ -38,7 +38,7 @@ function simulate(sc: TScenario, p: Record<string, string | boolean>): SimResult
     else alerts.push({ level: 'info', atStep: last, title: 'Erreur d’exécution', message: 'Les lignes précédentes **ont été exécutées** ; le programme s’arrête à la ligne fautive.' });
   }
   if (run.truncated) alerts.push({ level: 'info', title: 'Trace tronquée', message: 'Seules les 60 premières étapes sont affichées.' });
-  const output = run.error ? [...run.stdout.split('\n').filter((l, i, a) => l || i < a.length - 1), 'Traceback (most recent call last):', '  ...', `${run.error.type}: ${run.error.message}`] : run.stdout.replace(/\n$/, '').split('\n');
+  const output = run.error ? [...run.stdout.split('\n').filter((l, i, a) => l || i < a.length - 1), ...(run.error.traceback ?? ['Traceback (most recent call last):', '  ...', `${run.error.type}: ${run.error.message}`])] : run.stdout.replace(/\n$/, '').split('\n');
   return { code: run.code, steps, output, alerts, verdict: `${sc.doc} *(exécuté avec Python ${TRACE.python})*` };
 }
 
