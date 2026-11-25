@@ -104,7 +104,8 @@ export function SimulatorView({ sim }: { sim: Sim }) {
             ))}
           </div>
           <div className="step-code"><Code code={step.code} className="inline" /></div>
-          <MemoryDiagram step={step} colorOf={colorOf} />
+          {step.image && <figure className="sim-figure"><img src={step.image.src} alt={step.image.alt} loading="lazy" /></figure>}
+          {(step.vars.length > 0 || !step.image) && <MemoryDiagram step={step} colorOf={colorOf} />}
           {step.note && <p className="step-note">{inline(step.note)}</p>}
           <Inspector step={step} />
         </div>

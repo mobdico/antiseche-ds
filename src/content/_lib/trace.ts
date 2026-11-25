@@ -13,7 +13,7 @@ interface TRun { code: string; steps: TStep[]; stdout: string; error?: { type: s
 const TRACE = data as unknown as { python: string; scenarios: TScenario[]; results: Record<string, TRun> };
 
 /** Libellé du bouton : le code s'il tient sur une ligne, sinon la description. */
-const show = (code: string, help: string) => (code === '' ? '*(rien)*' : code.trim().includes('\n') ? help : `\`${code.trim()}\``);
+const show = (code: string, help: string) => (code === '' ? '*(rien)*' : code.trim().includes('\n') ? help : `\`${code.trim().replace(/^,\s*/, '')}\``);
 
 function simulate(sc: TScenario, p: Record<string, string | boolean>): SimResult {
   const combo = sc.params.map((q) => String(p[q.id] ?? q.default));
