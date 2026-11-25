@@ -41,7 +41,7 @@
 html, body { margin: 0; background: var(--bg); color: var(--text); }
 body { font: 15px/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
 a { color: var(--accent); text-decoration: none; }
-code { font-family: var(--mono); font-size: .88em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+code { font-family: var(--mono); font-size: .88em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; overflow-wrap: anywhere; }
 h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; }
 h1 { font-size: 1.7rem; } h2 { font-size: 1.05rem; } h3 { font-size: .95rem; margin-top: 1em; }
 p { margin: 0 0 .7em; } ul { margin: 0; padding-left: 1.2em; } li { margin: .25em 0; }
@@ -83,7 +83,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tag.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 .tag.static { cursor: default; }
 
-.main { padding: 24px 28px 60px; max-width: 1280px; width: 100%; }
+.main { padding: 24px 28px 60px; max-width: 1280px; width: 100%; min-width: 0; }
+.fiche-top > *, .fiche > * { min-width: 0; }
 .hero { margin: 8px 0 20px; }
 .section-title { margin-top: 28px; color: var(--muted); font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
 .theme-grid, .fiche-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
@@ -144,10 +145,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .step-note { font-size: .9rem; margin: 10px 0 0; color: var(--muted); }
 
 /* ------------------------------------------------------------ schéma mémoire */
-.mem { position: relative; display: flex; gap: 48px; align-items: flex-start; flex-wrap: wrap; padding: 14px;
-  border: 1px dashed var(--border); border-radius: 10px; min-height: 120px; overflow-x: auto;
+.mem { padding: 14px; border: 1px dashed var(--border); border-radius: 10px; min-height: 120px; overflow-x: auto;
   background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 16px 16px; }
-.mem-arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+/* toujours de gauche à droite : si c'est trop large, le schéma défile horizontalement */
+.mem-inner { position: relative; display: flex; gap: 48px; align-items: flex-start; width: max-content; min-width: 100%; }
+.mem-arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
+.mem-col { position: relative; z-index: 1; }
 .mem-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .mem-col-title { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); height: 14px; }
 .mem-vars { min-width: 70px; }
@@ -200,12 +203,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .menu-btn { display: inline-block; }
   .brand-sub { display: none; }
   .topbar { padding: 8px 12px; gap: 8px; }
-  .layout { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .fiche-top { grid-template-columns: minmax(0, 1fr); }
   .sidebar { position: fixed; z-index: 15; top: 53px; left: 0; width: 280px; background: var(--surface); transform: translateX(-100%); transition: transform .2s; }
   .sidebar.open { transform: none; box-shadow: 0 0 40px rgb(0 0 0 / .25); }
   .main { padding: 16px; }
   .fiche-top { grid-template-columns: 1fr; }
-  .mem { gap: 28px; }
+  .mem-inner { gap: 28px; }
 }
 
 /* ------------------------------------------------------------ tables : sélection, groupes, positions */

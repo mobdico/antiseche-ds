@@ -63,6 +63,8 @@ export interface HeapObj {
   rowColors?: (number | null)[];
   /** table : afficher la position entière (0, 1, 2…) à côté de l'étiquette d'index */
   showPositions?: boolean;
+  /** sequence : afficher les chaînes sans guillemets (ex. octets en hexadécimal) */
+  rawItems?: boolean;
   /** table : nom de l'index (ex. après un groupby) */
   indexName?: string;
 }

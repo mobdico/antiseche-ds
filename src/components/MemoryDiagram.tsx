@@ -50,8 +50,9 @@ function Val({ x, inTable = false, dtype }: { x: Prim; inTable?: boolean; dtype?
   return <span className={cls}>{pyRepr(x)}</span>;
 }
 
-function SlotView({ s, colorOf }: { s: Slot; colorOf: Props['colorOf'] }) {
+function SlotView({ s, colorOf, raw = false }: { s: Slot; colorOf: Props['colorOf']; raw?: boolean }) {
   if ('ref' in s) return <span className="ref-dot" data-src={s.ref} style={{ ['--c' as string]: `var(--obj-${colorOf(s.ref) % PALETTE})` }} />;
+  if (raw && typeof s.v === 'string') return <span className="val-num">{s.v}</span>;
   return <Val x={s.v} />;
 }
 
@@ -74,7 +75,7 @@ function ObjView({ o, colorOf, count }: { o: HeapObj; colorOf: Props['colorOf'];
           {(o.items ?? []).map((s, i) => (
             <div key={i} className={`seq-cell ${changed.has(String(i)) ? 'changed' : ''}`}>
               <span className="seq-idx">{i}</span>
-              <span className="seq-val"><SlotView s={s} colorOf={colorOf} /></span>
+              <span className="seq-val"><SlotView s={s} colorOf={colorOf} raw={o.rawItems} /></span>
             </div>
           ))}
           {!(o.items ?? []).length && <span className="muted">vide</span>}
@@ -174,7 +175,8 @@ export function MemoryDiagram({ step, colorOf }: Props) {
   }, [step, colorOf]);
 
   return (
-    <div className="mem" ref={box}>
+    <div className="mem">
+      <div className="mem-inner" ref={box}>
       <svg className="mem-arrows" aria-hidden>
         <defs>
           <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -201,6 +203,7 @@ export function MemoryDiagram({ step, colorOf }: Props) {
           {col.map((o) => <ObjView key={o.id} o={o} colorOf={colorOf} count={counts.get(o.id) ?? 0} />)}
         </div>
       ))}
+      </div>
     </div>
   );
 }

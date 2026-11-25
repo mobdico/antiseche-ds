@@ -58,7 +58,7 @@ function fmtColumn(values: Prim[], dtype: Dtype): string[] {
     return values.map((v) => (v === null ? 'NaN' : (v as number).toFixed(dec)));
   }
   if (dtype === 'bool') return values.map((v) => (v === null ? 'NaN' : v ? 'True' : 'False'));
-  return values.map((v) => (v === null ? 'NaN' : String(v)));
+  return values.map((v) => (v === null ? 'NaN' : typeof v === 'boolean' ? (v ? 'True' : 'False') : String(v)));
 }
 
 const padL = (s: string, n: number) => s.padStart(n);
