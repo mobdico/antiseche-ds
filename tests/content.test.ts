@@ -6,11 +6,13 @@ import { describe, expect, it } from 'vitest';
 import { registry } from '../src/engine/registry';
 import type { ParamDef, ParamValues, SimResult, Simulator } from '../src/engine/types';
 
+/** Toutes les combinaisons de paramètres VISIBLES (respecte showIf). */
 function combos(params: ParamDef[]): ParamValues[] {
-  let out: ParamValues[] = [{}];
+  const visible = (p: ParamDef, c: ParamValues) => !p.showIf || Object.entries(p.showIf).every(([k, w]) => (Array.isArray(w) ? w : [w]).includes(c[k]));
+  let out: ParamValues[] = [Object.fromEntries(params.map((p) => [p.id, p.default]))];
   for (const p of params) {
     const vals: (string | boolean)[] = p.type === 'choice' ? p.options.map((o) => o.value) : [false, true];
-    out = out.flatMap((c) => vals.map((v) => ({ ...c, [p.id]: v })));
+    out = out.flatMap((c) => (visible(p, c) ? vals.map((v) => ({ ...c, [p.id]: v })) : [c]));
   }
   return out;
 }
@@ -32,7 +34,10 @@ function checkResult(r: SimResult) {
       }
     }
   }
-  for (const a of r.alerts ?? []) expect(a.atStep ?? 0).toBeLessThan(r.steps.length);
+  for (const a of r.alerts ?? []) {
+    expect(a.atStep ?? 0).toBeLessThan(r.steps.length);
+    expect(a.title, 'combinaison de labo absente').not.toBe('Combinaison absente');
+  }
 }
 
 describe('registre', () => {

@@ -23,6 +23,17 @@ src/components/                # interface : fiche, simulateur, schéma mémoire
 tests/                         # garde-fous sur tout le contenu
 ```
 
+## Labo des méthodes (résultats réels de pandas)
+Les fiches « Labo » affichent des résultats **exécutés par le vrai pandas**, pour chaque combinaison de paramètres.
+- Décrire méthodes / paramètres / valeurs : `scripts/lab/lab_pandas.py`
+- Régénérer (un environnement par version de pandas) :
+```bash
+python scripts/lab/generate.py out-p3.json   # avec pandas 3.x installé
+python scripts/lab/generate.py out-p2.json   # avec pandas 2.x installé
+python scripts/lab/merge.py out-p3.json out-p2.json   # → src/content/_data/labo-pandas.json
+```
+- Nouvelle famille : l'ajouter dans `FAMILIES`, puis créer `src/content/pandas/labo-<id>.fiche.ts` (3 lignes).
+
 Ajouter une fiche = créer un fichier `*.fiche.ts` (voir `src/engine/types.ts`), sans toucher au moteur.
 Site en ligne (privé) : https://claude.ai/artifact/Bk3DTRvFDkamoVydk1RtLn — mise à jour : `npm run build:artifact` puis republier `dist-artifact/antiseche.html`.
 

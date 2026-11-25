@@ -240,3 +240,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .insp-methods ul { list-style: none; padding: 0; margin: 6px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 3px 16px; }
 .insp-methods li { margin: 0; font-size: .82rem; }
 @media (max-width: 760px) { .insp-attrs { grid-template-columns: minmax(0, 1fr); } .insp-attrs dd { margin-bottom: 4px; } }
+
+.param { max-width: 100%; }
+.param-hint { font-size: .78rem; color: var(--muted); margin-top: 4px; max-width: 46ch; }

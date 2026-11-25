@@ -70,6 +70,10 @@ export function SimulatorView({ sim }: { sim: Sim }) {
                 <span>{inline((params[p.id] ? p.onLabel : p.offLabel) ?? (params[p.id] ? 'Oui' : 'Non'))}</span>
               </label>
             )}
+            {p.type === 'choice' && (() => {
+              const h = p.options.find((o) => o.value === params[p.id])?.help;
+              return h ? <div className="param-hint">{inline(h)}</div> : null;
+            })()}
           </div>
         ))}
       </div>
