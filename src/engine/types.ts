@@ -63,6 +63,10 @@ export interface HeapObj {
   rowColors?: (number | null)[];
   /** table : afficher la position entière (0, 1, 2…) à côté de l'étiquette d'index */
   showPositions?: boolean;
+  /** type complet affiché par l'inspecteur (ex. 'numpy.float64') — sinon déduit de pyType */
+  fullType?: string;
+  /** attributs supplémentaires (ou remplacés) affichés par l'inspecteur, ex. { name: '.base', value: 'a' } */
+  attrs?: { name: string; value: string }[];
   /** sequence : afficher les chaînes sans guillemets (ex. octets en hexadécimal) */
   rawItems?: boolean;
   /** table : nom de l'index (ex. après un groupby) */
@@ -80,6 +84,8 @@ export interface SimStep {
   vars: VarRef[];
   heap: HeapObj[];
   note?: string;
+  /** variable inspectée par défaut (sinon : « res », ou la dernière variable) */
+  inspect?: string;
 }
 
 export type AlertLevel = 'error' | 'warning' | 'info' | 'success';
@@ -125,6 +131,17 @@ export interface Simulator {
   params: ParamDef[];
   /** Fonction PURE : mêmes paramètres → même résultat. Ne doit jamais lever d'exception. */
   simulate: (p: ParamValues) => SimResult;
+}
+
+// ---------------------------------------------------------------- Référentiel des types (inspecteur)
+export interface TypeMethod {
+  sig: string; // ex. '.value_counts()'
+  desc: string; // une ligne
+}
+export interface TypeRef {
+  fullName: string; // ex. 'pandas.Series'
+  summary: string;
+  methods: TypeMethod[];
 }
 
 // ---------------------------------------------------------------- Fiche

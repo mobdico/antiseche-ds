@@ -220,3 +220,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .df tr.grouped td { background: color-mix(in srgb, var(--row) 12%, transparent); }
 .df .pos { color: var(--muted); font-style: italic; font-size: .7rem; background: var(--surface-2); }
 .df .idx-name { text-align: left; font-style: italic; color: var(--muted); font-weight: 400; }
+
+/* ------------------------------------------------------------ inspecteur */
+.inspector { margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.insp-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 12px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+.insp-head .panel-title { margin: 0; }
+.insp-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.insp-tabs button { border: 1px solid var(--border); background: var(--surface); border-radius: 6px; padding: 1px 8px; }
+.insp-tabs button code { background: none; padding: 0; }
+.insp-tabs button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.insp-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; font-size: .88rem; }
+.insp-t { color: var(--accent); font-weight: 700; }
+.insp-attrs { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 14px; }
+.insp-attrs > div { display: contents; }
+.insp-attrs dt code, .insp-attrs dd code { background: none; padding: 0; }
+.insp-attrs dt { color: var(--muted); }
+.insp-attrs dd { margin: 0; min-width: 0; }
+.insp-methods summary { cursor: pointer; color: var(--muted); font-size: .8rem; }
+.insp-methods ul { list-style: none; padding: 0; margin: 6px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 3px 16px; }
+.insp-methods li { margin: 0; font-size: .82rem; }
+@media (max-width: 760px) { .insp-attrs { grid-template-columns: minmax(0, 1fr); } .insp-attrs dd { margin-bottom: 4px; } }

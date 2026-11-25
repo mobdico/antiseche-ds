@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ParamDef, ParamValues, Simulator as Sim, SimAlert } from '../engine/types';
 import { MemoryDiagram } from './MemoryDiagram';
+import { Inspector } from './Inspector';
 import { Code } from '../lib/highlight';
 import { inline } from '../lib/markdown';
 
@@ -101,6 +102,7 @@ export function SimulatorView({ sim }: { sim: Sim }) {
           <div className="step-code"><Code code={step.code} className="inline" /></div>
           <MemoryDiagram step={step} colorOf={colorOf} />
           {step.note && <p className="step-note">{inline(step.note)}</p>}
+          <Inspector step={step} />
         </div>
       </div>
 
