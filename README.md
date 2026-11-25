@@ -24,4 +24,6 @@ tests/                         # garde-fous sur tout le contenu
 ```
 
 Ajouter une fiche = créer un fichier `*.fiche.ts` (voir `src/engine/types.ts`), sans toucher au moteur.
+Site en ligne (privé) : https://claude.ai/artifact/Bk3DTRvFDkamoVydk1RtLn — mise à jour : `npm run build:artifact` puis republier `dist-artifact/antiseche.html`.
+
 Les comportements simulés sont vérifiés avec le vrai pandas (2.2 et 3.1) ; les différences de version sont signalées.
