@@ -9,7 +9,8 @@ interface Props {
   fiche: Fiche;
   theme?: Theme;
   resolve: (id: string) => Fiche | undefined;
-  onTag: (tag: string) => void;
+  /** fiches partageant un tag (pour l'aperçu sur place) */
+  withTag: (tag: string) => Fiche[];
   isFavorite: boolean;
   onToggleFavorite: () => void;
   prev?: Fiche;
@@ -27,10 +28,12 @@ function CopyButton({ text }: { text: string }) {
 
 const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-export function FicheView({ fiche, theme, resolve, onTag, isFavorite, onToggleFavorite, prev, next }: Props) {
+export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggleFavorite, prev, next }: Props) {
   const sims = [fiche.simulator, ...(fiche.simulators ?? [])].filter(Boolean) as NonNullable<Fiche['simulator']>[];
   const [tab, setTab] = useState(0);
-  useEffect(() => setTab(0), [fiche.id]);
+  const [openTag, setOpenTag] = useState<string | null>(null);
+  useEffect(() => { setTab(0); setOpenTag(null); }, [fiche.id]);
+  const tagged = openTag ? withTag(openTag).filter((f) => f.id !== fiche.id) : [];
   const sections = [
     { id: 'essentiel', label: 'L’essentiel' },
     ...(sims.length ? [{ id: 'simulateurs', label: `Simulateurs · ${sims.length}` }] : []),
@@ -52,7 +55,21 @@ export function FicheView({ fiche, theme, resolve, onTag, isFavorite, onToggleFa
             {isFavorite ? '★' : '☆'}<span>{isFavorite ? 'Favori' : 'Favori'}</span>
           </button>
         </div>
-        <div className="tags">{fiche.tags.map((t) => <button key={t} className="tag" onClick={() => onTag(t)}>{t}</button>)}</div>
+        <div className="tags">
+          {fiche.tags.map((t) => (
+            <button key={t} className={`tag ${openTag === t ? 'on' : ''}`} aria-expanded={openTag === t}
+              onClick={() => setOpenTag((x) => (x === t ? null : t))} title={`Autres fiches avec « ${t} »`}>{t}</button>
+          ))}
+        </div>
+        {openTag && (
+          <div className="tag-pop" role="region" aria-label={`Fiches avec le tag ${openTag}`}>
+            <div className="tag-pop-head">
+              <span>{tagged.length ? `Autres fiches avec « ${openTag} »` : `Aucune autre fiche avec « ${openTag} »`}</span>
+              <button className="link" onClick={() => setOpenTag(null)}>fermer</button>
+            </div>
+            {tagged.length > 0 && <div className="tag-pop-list">{tagged.map((f) => <a key={f.id} href={`#/fiche/${f.id}`} className="chip">{f.title}</a>)}</div>}
+          </div>
+        )}
       </header>
 
       <nav className="page-nav" aria-label="Sur cette fiche">

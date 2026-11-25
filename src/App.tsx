@@ -198,7 +198,7 @@ export default function App() {
             <FicheView fiche={current} theme={themeOf(current.theme)} resolve={(id) => byId.get(id)}
               isFavorite={favorites.items.includes(current.id)} onToggleFavorite={() => favorites.toggle(current.id)}
               prev={pos > 0 ? ordered[pos - 1] : undefined} next={pos >= 0 && pos < ordered.length - 1 ? ordered[pos + 1] : undefined}
-              onTag={(t) => { setTags([t]); window.location.hash = '#/'; }} />
+              withTag={(t) => fiches.filter((f) => f.tags.includes(t))} />
           ) : <div className="empty">Fiche introuvable. <a href="#/">Retour à l’accueil</a></div>)}
 
           {route.view === 'home' && (
