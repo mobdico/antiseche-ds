@@ -81,7 +81,7 @@ export function SimulatorView({ sim }: { sim: Sim }) {
       <div className="sim-grid">
         <div className="sim-code">
           <div className="panel-title">Code</div>
-          <Code code={result.code} />
+          <Code code={result.code} activeLine={step.line} />
           {!!result.output?.length && (
             <>
               <div className="panel-title">Sortie</div>

@@ -34,6 +34,13 @@ python scripts/lab/merge.py out-p3.json out-p2.json   # → src/content/_data/la
 ```
 - Nouvelle famille : l'ajouter dans `FAMILIES`, puis créer `src/content/pandas/labo-<id>.fiche.ts` (3 lignes).
 
+## Simulateurs tracés (Python exécuté ligne par ligne)
+Les fiches Python Core utilisent un traceur qui exécute le **vrai Python** ligne par ligne et enregistre la mémoire
+(variables, objets, adresses `id()`, sorties, erreurs) après chaque ligne.
+- Scénarios (code avec emplacements `«param»` + options) : `scripts/trace/scenarios_python_core.py`
+- Régénérer : `python scripts/trace/trace.py scripts/trace/scenarios_python_core.py src/content/_data/trace-python-core.json`
+- Utiliser dans une fiche : `simulators: traceSims(["id-du-scenario"])`
+
 Ajouter une fiche = créer un fichier `*.fiche.ts` (voir `src/engine/types.ts`), sans toucher au moteur.
 Site en ligne (privé) : https://claude.ai/artifact/Bk3DTRvFDkamoVydk1RtLn — mise à jour : `npm run build:artifact` puis republier `dist-artifact/antiseche.html`.
 

@@ -84,6 +84,8 @@ export interface SimStep {
   vars: VarRef[];
   heap: HeapObj[];
   note?: string;
+  /** numéro de ligne (1 = première) du code complet à surligner pendant cette étape */
+  line?: number;
   /** variable inspectée par défaut (sinon : « res », ou la dernière variable) */
   inspect?: string;
 }

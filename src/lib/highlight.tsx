@@ -21,6 +21,13 @@ export function highlightPython(code: string): ReactNode[] {
   return out;
 }
 
-export function Code({ code, className = '' }: { code: string; className?: string }) {
-  return <pre className={`code ${className}`}><code>{highlightPython(code)}</code></pre>;
+export function Code({ code, className = '', activeLine }: { code: string; className?: string; activeLine?: number }) {
+  if (!activeLine) return <pre className={`code ${className}`}><code>{highlightPython(code)}</code></pre>;
+  return (
+    <pre className={`code ${className}`}><code>
+      {code.split('\n').map((l, i) => (
+        <span key={i} className={`code-line ${i + 1 === activeLine ? 'active' : ''}`}>{highlightPython(l)}{'\n'}</span>
+      ))}
+    </code></pre>
+  );
 }

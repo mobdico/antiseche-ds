@@ -243,3 +243,5 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 .param { max-width: 100%; }
 .param-hint { font-size: .78rem; color: var(--muted); margin-top: 4px; max-width: 46ch; }
+.code-line { display: block; margin: 0 -12px; padding: 0 12px; }
+.code-line.active { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
