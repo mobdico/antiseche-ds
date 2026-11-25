@@ -35,6 +35,8 @@ export interface TableData {
   columns: string[];
   index: (string | number)[];
   rows: Prim[][];
+  /** dtype par colonne (optionnel) : 'float64' affiche 120 comme 120.0 */
+  dtypes?: string[];
 }
 
 /** Un objet vivant dans le tas (heap) Python. */
@@ -55,6 +57,14 @@ export interface HeapObj {
   /** objet temporaire / plus référencé (affiché en pointillés) */
   ghost?: boolean;
   note?: string;
+  /** table : cellules sélectionnées "ligne:colonne", "ligne:*" (ligne entière) ou "*:colonne" */
+  selected?: string[];
+  /** table : couleur de groupe par ligne (index de palette) ou null */
+  rowColors?: (number | null)[];
+  /** table : afficher la position entière (0, 1, 2…) à côté de l'étiquette d'index */
+  showPositions?: boolean;
+  /** table : nom de l'index (ex. après un groupby) */
+  indexName?: string;
 }
 
 export interface VarRef {
@@ -98,13 +108,18 @@ export interface ParamOption {
   help?: string;
 }
 
+/** Affiche le paramètre seulement si un autre paramètre a l'une des valeurs indiquées. */
+export type ShowIf = Record<string, string | boolean | (string | boolean)[]>;
+
 export type ParamDef =
-  | { id: string; label: string; type: 'choice'; options: ParamOption[]; default: string; help?: string }
-  | { id: string; label: string; type: 'toggle'; default: boolean; onLabel?: string; offLabel?: string; help?: string };
+  | { id: string; label: string; type: 'choice'; options: ParamOption[]; default: string; help?: string; showIf?: ShowIf }
+  | { id: string; label: string; type: 'toggle'; default: boolean; onLabel?: string; offLabel?: string; help?: string; showIf?: ShowIf };
 
 export type ParamValues = Record<string, string | boolean>;
 
 export interface Simulator {
+  /** titre du simulateur (utile quand une fiche en a plusieurs) */
+  title?: string;
   params: ParamDef[];
   /** Fonction PURE : mêmes paramètres → même résultat. Ne doit jamais lever d'exception. */
   simulate: (p: ParamValues) => SimResult;
@@ -129,6 +144,8 @@ export interface Fiche {
   /** à retenir : 2–5 puces maximum */
   takeaways?: string[];
   simulator?: Simulator;
+  /** simulateurs supplémentaires, affichés après le premier */
+  simulators?: Simulator[];
   related?: string[]; // ids d'autres fiches
   source?: string; // ex. "Fiche PDF — Pandas 1, p.3"
   /** version minimale du contrat de données — réservé aux migrations futures */

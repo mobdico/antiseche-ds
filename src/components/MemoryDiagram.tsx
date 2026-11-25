@@ -39,9 +39,15 @@ function refCounts(step: SimStep): Map<string, number> {
   return m;
 }
 
-function Val({ x }: { x: Prim }) {
-  const cls = x === null ? 'val-none' : typeof x === 'string' ? 'val-str' : typeof x === 'number' && Number.isNaN(x) ? 'val-none' : 'val-num';
-  return <span className={cls}>{typeof x === 'number' && Number.isNaN(x) ? 'NaN' : pyRepr(x)}</span>;
+function Val({ x, inTable = false, dtype }: { x: Prim; inTable?: boolean; dtype?: string }) {
+  // dans un DataFrame/Series, une valeur manquante s'affiche NaN ; les chaînes sans guillemets (comme pandas)
+  if (inTable) {
+    if (x === null) return <span className="val-none">NaN</span>;
+    if (typeof x === 'string') return <span className="val-str">{x}</span>;
+    if (typeof x === 'number' && dtype === 'float64' && Number.isInteger(x)) return <span className="val-num">{x.toFixed(1)}</span>;
+  }
+  const cls = x === null ? 'val-none' : typeof x === 'string' ? 'val-str' : 'val-num';
+  return <span className={cls}>{pyRepr(x)}</span>;
 }
 
 function SlotView({ s, colorOf }: { s: Slot; colorOf: Props['colorOf'] }) {
@@ -75,22 +81,39 @@ function ObjView({ o, colorOf, count }: { o: HeapObj; colorOf: Props['colorOf'];
         </div>
       )}
 
-      {o.kind === 'table' && o.table && (
-        <table className="df">
-          <thead>
-            <tr><th />{o.table.columns.map((c) => <th key={c}>{c}</th>)}</tr>
-          </thead>
-          <tbody>
-            {o.table.rows.map((row, i) => (
-              <tr key={i}>
-                <th>{o.table!.index[i]}</th>
-                {row.map((x, j) => <td key={j} className={changed.has(`${i}:${j}`) ? 'changed' : ''}><Val x={x} /></td>)}
+      {o.kind === 'table' && o.table && (() => {
+        const t = o.table;
+        const sel = new Set(o.selected ?? []);
+        const isSel = (i: number, j: number) => sel.has(`${i}:${j}`) || sel.has(`${i}:*`) || sel.has(`*:${j}`);
+        const rowStyle = (i: number) => {
+          const c = o.rowColors?.[i];
+          return c === null || c === undefined ? undefined : { ['--row' as string]: `var(--obj-${c % PALETTE})` };
+        };
+        return (
+          <table className={`df ${sel.size ? 'has-sel' : ''}`}>
+            <thead>
+              {o.indexName && <tr><th className="idx-name">{o.indexName}</th>{o.showPositions && <th />}{t.columns.map((c) => <th key={c} />)}</tr>}
+              <tr>
+                <th />
+                {o.showPositions && <th className="pos">pos</th>}
+                {t.columns.map((c, j) => <th key={j} className={sel.has(`*:${j}`) ? 'sel-head' : ''}>{c}</th>)}
               </tr>
-            ))}
-            {!o.table.rows.length && <tr><td colSpan={o.table.columns.length + 1} className="muted">vide</td></tr>}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {t.rows.map((row, i) => (
+                <tr key={i} className={o.rowColors?.[i] != null ? 'grouped' : ''} style={rowStyle(i)}>
+                  <th className={sel.has(`${i}:*`) ? 'sel-head' : ''}>{t.index[i]}</th>
+                  {o.showPositions && <td className="pos">{i}</td>}
+                  {row.map((x, j) => (
+                    <td key={j} className={`${changed.has(`${i}:${j}`) ? 'changed' : ''} ${isSel(i, j) ? 'sel' : ''}`}><Val x={x} inTable dtype={t.dtypes?.[j]} /></td>
+                  ))}
+                </tr>
+              ))}
+              {!t.rows.length && <tr><td colSpan={t.columns.length + 1 + (o.showPositions ? 1 : 0)} className="muted">vide</td></tr>}
+            </tbody>
+          </table>
+        );
+      })()}
 
       {!!o.fields?.length && (
         <div className="fields">

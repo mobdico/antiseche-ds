@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ParamValues, Simulator as Sim, SimAlert } from '../engine/types';
+import type { ParamDef, ParamValues, Simulator as Sim, SimAlert } from '../engine/types';
 import { MemoryDiagram } from './MemoryDiagram';
 import { Code } from '../lib/highlight';
 import { inline } from '../lib/markdown';
@@ -8,6 +8,11 @@ const ICON: Record<SimAlert['level'], string> = { error: '⛔', warning: '⚠️
 
 export function defaultParams(sim: Sim): ParamValues {
   return Object.fromEntries(sim.params.map((p) => [p.id, p.default]));
+}
+
+export function isVisible(p: ParamDef, values: ParamValues): boolean {
+  if (!p.showIf) return true;
+  return Object.entries(p.showIf).every(([k, want]) => (Array.isArray(want) ? want : [want]).includes(values[k]));
 }
 
 export function SimulatorView({ sim }: { sim: Sim }) {
@@ -40,12 +45,12 @@ export function SimulatorView({ sim }: { sim: Sim }) {
   return (
     <section className="sim card">
       <div className="sim-head">
-        <h2>🧪 Simulateur</h2>
+        <h2>🧪 {sim.title ?? 'Simulateur'}</h2>
         <button className="btn-ghost" onClick={() => setParams(defaultParams(sim))}>Réinitialiser</button>
       </div>
 
       <div className="params">
-        {sim.params.map((p) => (
+        {sim.params.filter((p) => isVisible(p, params)).map((p) => (
           <div key={p.id} className="param">
             <div className="param-label">{p.label}{p.help && <span className="param-help" title={p.help}>?</span>}</div>
             {p.type === 'choice' ? (

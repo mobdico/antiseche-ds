@@ -6,5 +6,6 @@ export const themes: Theme[] = [
   { id: 'numpy', label: 'NumPy', icon: '🔢', order: 2, description: 'ndarray, vues, broadcasting, axes.' },
   { id: 'pandas', label: 'Pandas', icon: '🐼', order: 3, description: 'DataFrame, indexation, copies et vues, groupby.' },
   { id: 'nettoyage', label: 'Nettoyage de données', icon: '🧹', order: 4, description: 'Valeurs manquantes, doublons, types, outliers.' },
-  { id: 'analyse-visu', label: 'Analyse & Visualisation', icon: '📊', order: 5, description: 'Analyse exploratoire, agrégations, graphiques.' },
+  { id: 'analyse-visu', label: 'Analyse & Visualisation', icon: '📊', order: 5, description: 'Courbes, nuages de points, histogrammes, Seaborn.' },
+  { id: 'storytelling', label: 'Storytelling & Design', icon: '🎨', order: 6, description: 'Concevoir pour son audience, Gestalt, style des graphiques.' },
 ];

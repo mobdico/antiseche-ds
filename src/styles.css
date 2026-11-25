@@ -129,10 +129,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .switch input:checked + .switch-track::after { transform: translateX(16px); }
 .switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.sim-grid { display: grid; grid-template-columns: minmax(260px, 2fr) minmax(0, 5fr); gap: 16px; }
+.sim-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 16px; }
+.sim-code, .sim-mem { min-width: 0; }
 .panel-title { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 6px; }
 .sim-code .panel-title:not(:first-child) { margin-top: 12px; }
-.console { font-family: var(--mono); font-size: .82rem; background: #11151a; color: #d6dde6; border-radius: 8px; padding: 10px 12px; margin: 0; white-space: pre-wrap; }
+.console { font-family: var(--mono); font-size: .82rem; background: #11151a; color: #d6dde6; border-radius: 8px; padding: 10px 12px; margin: 0; white-space: pre; overflow-x: auto; }
 .steps { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; align-items: center; }
 .step { border: 1px solid var(--border); background: var(--surface); border-radius: 99px; padding: 3px 11px 3px 4px; font-size: .82rem; display: inline-flex; gap: 6px; align-items: center; }
 .step-n { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--surface-2); font-size: .72rem; font-weight: 700; }
@@ -206,3 +207,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .fiche-top { grid-template-columns: 1fr; }
   .mem { gap: 28px; }
 }
+
+/* ------------------------------------------------------------ tables : sélection, groupes, positions */
+.df.has-sel td:not(.sel):not(.pos) { opacity: .45; }
+.df td.sel { background: var(--accent-soft); color: var(--text); font-weight: 600; box-shadow: inset 0 0 0 1px var(--accent); }
+.df th.sel-head { color: var(--accent); font-weight: 700; }
+.df tr.grouped th { box-shadow: inset 4px 0 0 var(--row); }
+.df tr.grouped td { background: color-mix(in srgb, var(--row) 12%, transparent); }
+.df .pos { color: var(--muted); font-style: italic; font-size: .7rem; background: var(--surface-2); }
+.df .idx-name { text-align: left; font-style: italic; color: var(--muted); font-weight: 400; }

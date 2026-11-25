@@ -32,7 +32,9 @@ export function FicheView({ fiche, theme, resolve, onTag }: Props) {
         </section>
       </div>
 
-      {fiche.simulator && <SimulatorView key={fiche.id} sim={fiche.simulator} />}
+      {[fiche.simulator, ...(fiche.simulators ?? [])].filter(Boolean).map((sim, i) => (
+        <SimulatorView key={`${fiche.id}-${i}`} sim={sim!} />
+      ))}
 
       <div className="fiche-top">
         {!!fiche.pitfalls?.length && (
