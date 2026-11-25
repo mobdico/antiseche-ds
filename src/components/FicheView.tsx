@@ -4,6 +4,7 @@ import { Markdown, inline } from '../lib/markdown';
 import { Code } from '../lib/highlight';
 import { SimulatorView } from './Simulator';
 import { ThemeBadge } from './ThemeBadge';
+import { tagById } from '../content/tags';
 
 interface Props {
   fiche: Fiche;
@@ -26,6 +27,7 @@ function CopyButton({ text }: { text: string }) {
   return <button className="btn-ghost sm" onClick={copy}>{done ? 'Copié' : 'Copier'}</button>;
 }
 
+const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
 const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggleFavorite, prev, next }: Props) {
@@ -55,19 +57,23 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
             {isFavorite ? '★' : '☆'}<span>{isFavorite ? 'Favori' : 'Favori'}</span>
           </button>
         </div>
-        <div className="tags">
-          {fiche.tags.map((t) => (
-            <button key={t} className={`tag ${openTag === t ? 'on' : ''}`} aria-expanded={openTag === t}
-              onClick={() => setOpenTag((x) => (x === t ? null : t))} title={`Autres fiches avec « ${t} »`}>{t}</button>
-          ))}
-        </div>
+        {fiche.tags.length > 0 && (
+          <p className="notions">
+            <span className="notions-label">Notions</span>
+            {fiche.tags.map((t) => (
+              <button key={t} className={`notion-link ${openTag === t ? 'on' : ''}`} aria-expanded={openTag === t}
+                onClick={() => setOpenTag((x) => (x === t ? null : t))}>{tagById.get(t)?.label ?? t}</button>
+            ))}
+          </p>
+        )}
         {openTag && (
-          <div className="tag-pop" role="region" aria-label={`Fiches avec le tag ${openTag}`}>
+          <div className="tag-pop" role="region" aria-label={`Notion ${tagById.get(openTag)?.label ?? openTag}`}>
             <div className="tag-pop-head">
-              <span>{tagged.length ? `Autres fiches avec « ${openTag} »` : `Aucune autre fiche avec « ${openTag} »`}</span>
+              <span><strong>{tagById.get(openTag)?.label}</strong> — {tagById.get(openTag)?.description}</span>
               <button className="link" onClick={() => setOpenTag(null)}>fermer</button>
             </div>
             {tagged.length > 0 && <div className="tag-pop-list">{tagged.map((f) => <a key={f.id} href={`#/fiche/${f.id}`} className="chip">{f.title}</a>)}</div>}
+            <a className="tag-pop-all" href={`#/notion/${openTag}`}>Voir la notion complète →</a>
           </div>
         )}
       </header>
@@ -76,7 +82,7 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
         {sections.map((s) => <button key={s.id} onClick={() => scrollTo(s.id)}>{s.label}</button>)}
       </nav>
 
-      <section id="essentiel" className="essentiel">
+      <section id="essentiel" className={`essentiel ${fiche.takeaways?.length ? '' : 'single'}`}>
         <div className="panel syntax-panel">
           <div className="panel-head"><h2 className="label">Syntaxe</h2><CopyButton text={fiche.syntax} /></div>
           <Code code={fiche.syntax} />
@@ -95,7 +101,7 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
             <div className="sim-tabs" role="tablist" aria-label="Simulateurs">
               {sims.map((s, i) => (
                 <button key={i} role="tab" aria-selected={i === tab} className={i === tab ? 'on' : ''} onClick={() => setTab(i)}>
-                  <span className="st-n">{i + 1}</span>{(s.title ?? `Simulateur ${i + 1}`).replace(/^Simulateur — /, '').replace(/^Laboratoire — /, '')}
+                  <span className="st-n">{i + 1}</span>{cap((s.title ?? `Simulateur ${i + 1}`).replace(/^Simulateur — /, '').replace(/^Laboratoire — /, ''))}
                 </button>
               ))}
             </div>
@@ -104,7 +110,7 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
         </section>
       )}
 
-      <section id="comprendre" className="comprendre">
+      <section id="comprendre" className={`comprendre ${fiche.pitfalls?.length ? '' : 'single'}`}>
         <div className="panel">
           <h2 className="label">Comprendre</h2>
           <div className="prose"><Markdown text={fiche.concept} /></div>

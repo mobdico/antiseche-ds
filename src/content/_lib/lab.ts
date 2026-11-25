@@ -199,7 +199,7 @@ export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
     id: `labo-${fam.id}`,
     title: fam.title,
     theme: lab.theme ?? 'pandas',
-    tags: ['labo', ...fam.methods.map((m) => m.label.replace(/^np\./, '').replace(/\(.*$/, ''))],
+    tags: [], // fournis par la fiche (vocabulaire contrôlé, src/content/tags.ts)
     keywords: [...fam.methods.flatMap((m) => [m.label, m.label.replace(/\(.*$/, ''), ...m.params.map((q) => q.id)]), 'paramètres', 'laboratoire'],
     summary: fam.summary,
     concept: `Chaque combinaison de paramètres ci-dessous a été **exécutée par le vrai ${libName}** (${versionLabel}) : résultats, affichages, erreurs et avertissements sont réels.\n\n${fam.methods.map((m) => `- **\`${m.label}\`** : ${m.doc}`).join('\n')}`,

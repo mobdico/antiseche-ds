@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-scopes',
   title: 'Retourner plusieurs valeurs et les scopes',
   theme: 'python-core',
-  tags: ['fonctions', 'tuple', 'dépaquetage', 'scope', 'local', 'global'],
-  keywords: ['tuple', 'return a, b', 'dépaquetage', 'unpacking', 'too many values to unpack', "'tuple' object does not support item assignment", 'scope', 'portée', 'local', 'global', 'UnboundLocalError', 'NameError'],
+  tags: ['fonctions', 'references', 'erreurs'],
+  keywords: ['fonctions', 'tuple', 'dépaquetage', 'scope', 'local', 'global', 'tuple', 'return a, b', 'dépaquetage', 'unpacking', 'too many values to unpack', "'tuple' object does not support item assignment", 'scope', 'portée', 'local', 'global', 'UnboundLocalError', 'NameError'],
   summary: 'Renvoyer plusieurs valeurs (un **tuple**), les dépaqueter, et comprendre la **portée** locale ou globale des variables.',
   concept: `
 - Une fonction peut retourner **plusieurs valeurs** séparées par des virgules dans le \`return\`, ce qui crée automatiquement un **tuple**.

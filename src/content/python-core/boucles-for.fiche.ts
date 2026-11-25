@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-boucles-for',
   title: 'Les boucles for : itérer, accumuler, convertir',
   theme: 'python-core',
-  tags: ['boucles', 'for', 'accumulateur', 'append', 'csv'],
-  keywords: ['for', 'in', 'itération', 'indentation', 'somme', 'accumulateur', 'append', 'open', 'reader', 'csv', 'float', 'sum', 'len', 'moyenne', 'IndentationError', 'unsupported operand type'],
+  tags: ['controle', 'types'],
+  keywords: ['boucles', 'for', 'accumulateur', 'append', 'csv', 'for', 'in', 'itération', 'indentation', 'somme', 'accumulateur', 'append', 'open', 'reader', 'csv', 'float', 'sum', 'len', 'moyenne', 'IndentationError', 'unsupported operand type'],
   summary: 'Répéter un bloc pour chaque élément d’une liste, accumuler un total, construire une liste avec `append()`.',
   concept: `
 - La boucle **\`for\`** répète un bloc de code pour **chaque élément** d’une liste, indispensable pour traiter de grands jeux de données.

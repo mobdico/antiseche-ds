@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'visu-pandas-grilles',
   title: 'Visualisation avec pandas et grilles de graphiques',
   theme: 'analyse-visu',
-  tags: ['pandas plot', 'subplot', 'small multiples', 'figsize'],
-  keywords: ['serie.plot.hist', 'plot.bar', 'plot.barh', 'plot.line', 'df.plot.scatter', 'plt.subplot', 'nrows', 'ncols', 'index', 'plt.figure', 'figsize', 'small multiple', 'xlim', 'ylim'],
+  tags: ['graphiques', 'lisibilite'],
+  keywords: ['pandas plot', 'subplot', 'small multiples', 'figsize', 'serie.plot.hist', 'plot.bar', 'plot.barh', 'plot.line', 'df.plot.scatter', 'plt.subplot', 'nrows', 'ncols', 'index', 'plt.figure', 'figsize', 'small multiple', 'xlim', 'ylim'],
   summary: 'Tracer directement depuis une Series ou un DataFrame, et comparer des groupes avec une **grille de graphiques**.',
   concept: `
 - Les **méthodes de tracé de pandas** (\`Series.plot.hist()\`, \`.bar()\`, \`.barh()\`, \`.line()\`) génèrent des graphiques Matplotlib directement, sans \`plt.hist()\` ni \`plt.bar()\`.

@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-fonctions-natives',
   title: 'Fonctions natives, arguments par défaut, plusieurs return',
   theme: 'python-core',
-  tags: ['fonctions', 'arguments par défaut', 'return', 'del', 'natives'],
-  keywords: ['valeur par défaut', 'paramètre optionnel', 'del', 'écraser', 'sum', "'int' object is not callable", 'positional argument follows keyword argument', 'return multiple'],
+  tags: ['fonctions', 'erreurs'],
+  keywords: ['fonctions', 'arguments par défaut', 'return', 'del', 'natives', 'valeur par défaut', 'paramètre optionnel', 'del', 'écraser', 'sum', "'int' object is not callable", 'positional argument follows keyword argument', 'return multiple'],
   summary: 'Ne pas écraser une fonction native, rendre un paramètre optionnel avec une **valeur par défaut**, et comprendre qu’une fonction s’arrête au **premier return**.',
   concept: `
 - Une **fonction native** (\`sum()\`, \`min()\`, \`max()\`…) peut être **écrasée** si tu définis une fonction ou une variable du même nom.

@@ -123,8 +123,8 @@ export default defineFiche({
   id: 'pandas-agregation',
   title: 'Agrégation : groupby et pivot_table',
   theme: 'pandas',
-  tags: ['groupby', 'agrégation', 'pivot_table', 'split-apply-combine'],
-  keywords: ['groupby', 'GroupBy', 'get_group', 'mean', 'numeric_only', 'agg', 'aggfunc', 'np.mean', 'pivot_table', 'margins', 'All', 'tableau croisé', 'FutureWarning', 'count', 'size'],
+  tags: ['agregation', 'restructurer', 'versions'],
+  keywords: ['groupby', 'agrégation', 'pivot_table', 'split-apply-combine', 'groupby', 'GroupBy', 'get_group', 'mean', 'numeric_only', 'agg', 'aggfunc', 'np.mean', 'pivot_table', 'margins', 'All', 'tableau croisé', 'FutureWarning', 'count', 'size'],
   summary: 'Diviser un DataFrame en **groupes**, appliquer une fonction à chacun et combiner les résultats.',
   concept: `
 - **Le groupby** : diviser un DataFrame en groupes selon les valeurs d’une colonne, pour ensuite appliquer une fonction à chaque groupe (*split → apply → combine*).

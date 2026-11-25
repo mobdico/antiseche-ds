@@ -148,8 +148,8 @@ export default defineFiche({
   id: 'pandas-statistiques-filtrage',
   title: 'Statistiques et filtrage (indexation booléenne)',
   theme: 'pandas',
-  tags: ['statistiques', 'filtrage', 'indexation booléenne', 'vectorisation', 'NaN'],
-  keywords: ['describe', 'max', 'min', 'mean', 'value_counts', 'masque', 'mask', 'df[df["col"] == valeur]', 'method chaining', 'enchaînement', 'np.nan', 'float', 'loc affectation'],
+  tags: ['selection', 'agregation', 'manquantes', 'distributions'],
+  keywords: ['statistiques', 'filtrage', 'indexation booléenne', 'vectorisation', 'NaN', 'describe', 'max', 'min', 'mean', 'value_counts', 'masque', 'mask', 'df[df["col"] == valeur]', 'method chaining', 'enchaînement', 'np.nan', 'float', 'loc affectation'],
   summary: 'Statistiques descriptives en une ligne, filtrage avec un **masque booléen** et correction ciblée avec `.loc`.',
   concept: `
 - **Opérations vectorisées** : pandas hérite de NumPy la possibilité d’appliquer une opération à **tous les éléments** d’une Series en une seule fois, sans boucle \`for\`.

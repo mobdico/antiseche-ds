@@ -55,7 +55,7 @@ export function SimulatorView({ sim }: { sim: Sim }) {
   return (
     <section className="sim" tabIndex={-1} onKeyDown={onKey} aria-label={sim.title ?? 'Simulateur'}>
       <div className="sim-head">
-        <h2>{sim.title?.replace(/^Simulateur — /, '') ?? 'Simulateur'}</h2>
+        <h2>{(() => { const t = sim.title?.replace(/^Simulateur — /, '') ?? 'Simulateur'; return t.charAt(0).toUpperCase() + t.slice(1); })()}</h2>
         <button className="btn-ghost sm" onClick={() => setParams(defaultParams(sim))} disabled={isDefault}>Réinitialiser</button>
       </div>
 

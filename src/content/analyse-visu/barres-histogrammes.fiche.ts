@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'visu-barres-histogrammes',
   title: 'Diagrammes en barres, histogrammes et distributions',
   theme: 'analyse-visu',
-  tags: ['bar', 'barh', 'hist', 'bins', 'distribution'],
-  keywords: ['plt.bar', 'plt.barh', 'plt.xticks', 'ticks', 'labels', 'rotation', 'value_counts(bins=)', 'plt.hist', 'bins', 'distribution normale', 'asymétrique', 'table de fréquences groupée'],
+  tags: ['graphiques', 'distributions'],
+  keywords: ['bar', 'barh', 'hist', 'bins', 'distribution', 'plt.bar', 'plt.barh', 'plt.xticks', 'ticks', 'labels', 'rotation', 'value_counts(bins=)', 'plt.hist', 'bins', 'distribution normale', 'asymétrique', 'table de fréquences groupée'],
   summary: 'Comparer des catégories avec des **barres**, et voir la **forme d’une distribution** avec un histogramme.',
   concept: `
 - Une **table de fréquences** : le résultat de \`Series.value_counts()\`, qui indique combien de fois chaque valeur apparaît.

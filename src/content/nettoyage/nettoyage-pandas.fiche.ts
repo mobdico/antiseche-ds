@@ -138,8 +138,8 @@ export default defineFiche({
   id: 'nettoyage-pandas',
   title: 'Nettoyage de données avec pandas',
   theme: 'nettoyage',
-  tags: ['encodage', 'colonnes', 'astype', 'map', 'str', 'dropna', 'types'],
-  keywords: ['read_csv', 'encoding', 'latin1', 'utf-8', 'windows-1252', 'UnicodeDecodeError', 'mojibake', 'Ã©', 'df.columns', 'str.strip', 'str.lower', 'str.replace',
+  tags: ['texte', 'types', 'manquantes', 'dictionnaires'],
+  keywords: ['encodage', 'colonnes', 'astype', 'map', 'str', 'dropna', 'types', 'read_csv', 'encoding', 'latin1', 'utf-8', 'windows-1252', 'UnicodeDecodeError', 'mojibake', 'Ã©', 'df.columns', 'str.strip', 'str.lower', 'str.replace',
     'astype', 'could not convert string to float', 'ValueError', 'map', 'dictionnaire', 'dropna', 'KeyError'],
   summary: 'Lire un fichier brut au bon **encodage**, normaliser les **noms de colonnes**, **convertir** du texte en nombres et **remplacer** des valeurs.',
   concept: `

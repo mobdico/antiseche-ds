@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'story-gestalt',
   title: 'Guider le regard : Gestalt et attributs préattentifs',
   theme: 'storytelling',
-  tags: ['gestalt', 'proximité', 'similarité', 'enclosure', 'connexion', 'préattentif'],
-  keywords: ['proximité', 'similarité', 'enclosure', 'connexion', 'attribut préattentif', 'couleur', 'taille', 'forme', 'mise en avant'],
+  tags: ['lisibilite'],
+  keywords: ['gestalt', 'proximité', 'similarité', 'enclosure', 'connexion', 'préattentif', 'proximité', 'similarité', 'enclosure', 'connexion', 'attribut préattentif', 'couleur', 'taille', 'forme', 'mise en avant'],
   summary: 'Les principes qui font que l’œil **regroupe** des éléments, et les attributs qui attirent le regard **avant la lecture**.',
   concept: `
 - **Proximité** : les objets visuellement proches sont perçus comme un même groupe.

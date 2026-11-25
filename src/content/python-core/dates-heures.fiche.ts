@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-dates',
   title: 'Manipuler les dates et heures',
   theme: 'python-core',
-  tags: ['datetime', 'dates', 'strptime', 'strftime', 'timedelta'],
-  keywords: ['datetime', 'import datetime as dt', 'strptime', 'strftime', '%d', '%m', '%Y', '%B', '%A', '%H', '%M', 'timedelta', 'durée', 'does not match format', 'unconverted data remains', 'total_seconds'],
+  tags: ['temps', 'types'],
+  keywords: ['datetime', 'dates', 'strptime', 'strftime', 'timedelta', 'datetime', 'import datetime as dt', 'strptime', 'strftime', '%d', '%m', '%Y', '%B', '%A', '%H', '%M', 'timedelta', 'durée', 'does not match format', 'unconverted data remains', 'total_seconds'],
   summary: 'Créer des dates, convertir **chaîne ↔ date** avec `strptime` / `strftime`, et calculer des **durées** avec `timedelta`.',
   concept: `
 - Le module **\`datetime\`** fournit les classes \`datetime.datetime\` (date et heure), \`datetime.time\` (heure seule) et \`datetime.timedelta\` (durée).

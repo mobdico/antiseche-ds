@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-bases-analyse',
   title: 'Les bases de l’analyse de données en Python',
   theme: 'python-core',
-  tags: ['f-string', 'formatage', 'dictionnaires', 'items', 'slicing'],
-  keywords: ['int()', 'table de fréquence', 'not in', '[:-1]', 'f-string', 'f"{variable}"', ':,.2f', 'séparateur de milliers', 'items()', 'for cle, valeur in d.items()', 'too many values to unpack'],
+  tags: ['texte', 'dictionnaires', 'agregation'],
+  keywords: ['f-string', 'formatage', 'dictionnaires', 'items', 'slicing', 'int()', 'table de fréquence', 'not in', '[:-1]', 'f-string', 'f"{variable}"', ':,.2f', 'séparateur de milliers', 'items()', 'for cle, valeur in d.items()', 'too many values to unpack'],
   summary: 'Convertir, compter avec une table de fréquence, découper une chaîne, et **formater** des nombres avec les f-strings.',
   concept: `
 - \`int()\` transforme une chaîne en entier pour permettre des calculs.

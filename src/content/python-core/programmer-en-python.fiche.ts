@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-programmer',
   title: 'Programmer en Python : print, opérateurs, commentaires',
   theme: 'python-core',
-  tags: ['bases', 'print', 'opérateurs', 'priorités', 'SyntaxError'],
-  keywords: ['print', '*', '/', '**', '//', '%', 'exponentiation', 'puissance', 'commentaire', '#', 'SyntaxError', 'ordre des opérations', 'priorité'],
+  tags: ['debuter', 'erreurs'],
+  keywords: ['bases', 'print', 'opérateurs', 'priorités', 'SyntaxError', 'print', '*', '/', '**', '//', '%', 'exponentiation', 'puissance', 'commentaire', '#', 'SyntaxError', 'ordre des opérations', 'priorité'],
   summary: 'Afficher avec `print()`, calculer avec les opérateurs, respecter l’**ordre des opérations** et commenter son code.',
   concept: `
 - La fonction \`print()\` affiche dans la console le résultat de ce qu’on place entre ses parenthèses.

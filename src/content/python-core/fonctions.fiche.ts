@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-fonctions',
   title: 'Créer et appeler une fonction',
   theme: 'python-core',
-  tags: ['fonctions', 'def', 'return', 'paramètre', 'argument'],
-  keywords: ['def', 'return', 'None', 'paramètre', 'argument', 'len', 'sum', 'min', 'max', 'fonction intégrée', "'return' outside function"],
+  tags: ['fonctions', 'debuter'],
+  keywords: ['fonctions', 'def', 'return', 'paramètre', 'argument', 'def', 'return', 'None', 'paramètre', 'argument', 'len', 'sum', 'min', 'max', 'fonction intégrée', "'return' outside function"],
   summary: 'Définir une fonction avec `def`, lui passer des **arguments**, récupérer son résultat avec `return`.',
   concept: `
 - Une **fonction** prend une entrée, la traite, et retourne un résultat. Les fonctions intégrées comme \`len()\`, \`sum()\`, \`min()\` et \`max()\` sont prêtes à l’emploi.

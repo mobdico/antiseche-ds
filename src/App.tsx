@@ -7,13 +7,15 @@ import { ThemeBadge } from './components/ThemeBadge';
 import { Code } from './lib/highlight';
 import { inline } from './lib/markdown';
 import { useStoredList } from './lib/storage';
+import { tagDefs, tagById } from './content/tags';
 
-type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string };
+type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'notion'; id: string };
 
 function parseHash(): Route {
   const [, kind, id] = window.location.hash.split('/');
   if (kind === 'fiche' && id) return { view: 'fiche', id: decodeURIComponent(id) };
   if (kind === 'theme' && id) return { view: 'theme', id: decodeURIComponent(id) };
+  if (kind === 'notion' && id) return { view: 'notion', id: decodeURIComponent(id) };
   return { view: 'home' };
 }
 
@@ -39,7 +41,9 @@ function useColorMode() {
   return { isDark, toggle: () => setMode(isDark ? 'light' : 'dark') };
 }
 
-const isLab = (f: Fiche) => f.tags.includes('labo');
+const isLab = (f: Fiche) => f.id.startsWith('labo-');
+/** Nom court d'un labo pour la navigation : « Labo NumPy — trier, chercher : sort… » → « Trier, chercher ». */
+const labShort = (f: Fiche) => { const t = f.title.replace(/^Labo( NumPy)? — /, '').split(' : ')[0]; return t.charAt(0).toUpperCase() + t.slice(1); };
 const simCount = (f: Fiche) => (f.simulator ? 1 : 0) + (f.simulators?.length ?? 0);
 const SUGGESTIONS = ['KeyError', 'axis', 'vue ou copie', 'groupby', 'dropna', 'merge', 'sorted', 'scope', 'strptime', 'hue'];
 
@@ -62,14 +66,13 @@ function FicheCard({ f, theme, fav }: { f: Fiche; theme?: Theme; fav?: boolean }
 }
 
 export default function App() {
-  const { fiches, byId, themes, allTags, issues } = registry;
+  const { fiches, byId, themes, issues } = registry;
   const themeOf = (id: string) => themes.find((t) => t.id === id);
   const index = useMemo(() => buildIndex(fiches), [fiches]);
   const route = useRoute();
   const { isDark, toggle } = useColorMode();
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
-  const [tags, setTags] = useState<string[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [revision, setRevision] = useState(false);
   const [openThemes, setOpenThemes] = useState<string[]>([]);
@@ -85,7 +88,7 @@ export default function App() {
 
   const hits = useMemo(() => (query.trim() ? search(index, query) : []), [index, query]);
   useEffect(() => setActive(0), [query]);
-  const byTags = (list: Fiche[]) => (tags.length ? list.filter((f) => tags.every((t) => f.tags.includes(t))) : list);
+  const withTag = (t: string) => fiches.filter((f) => f.tags.includes(t));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -161,8 +164,8 @@ export default function App() {
           )}
           <div className="nav-label">Thèmes</div>
           {themes.map((t) => {
-            const list = byTags(themeFiches(t.id));
-            const open = openThemes.includes(t.id) || tags.length > 0;
+            const list = themeFiches(t.id);
+            const open = openThemes.includes(t.id);
             return (
               <div key={t.id} className="nav-theme">
                 <div className={`nav-theme-row ${currentTheme?.id === t.id ? 'on' : ''}`}>
@@ -172,19 +175,23 @@ export default function App() {
                     <span className="count">{list.length}</span><span className={`chev ${open ? 'open' : ''}`}>›</span>
                   </button>
                 </div>
-                {open && list.map((f) => (
-                  <a key={f.id} href={`#/fiche/${f.id}`} className={`nav-fiche ${current?.id === f.id ? 'on' : ''}`}>
-                    {f.title}{isLab(f) && <span className="pill pill-lab sm">Labo</span>}
-                  </a>
+                {open && list.filter((f) => !isLab(f)).map((f) => (
+                  <a key={f.id} href={`#/fiche/${f.id}`} className={`nav-fiche ${current?.id === f.id ? 'on' : ''}`}>{f.title}</a>
+                ))}
+                {open && list.some(isLab) && <div className="nav-sub">Labos</div>}
+                {open && list.filter(isLab).map((f) => (
+                  <a key={f.id} href={`#/fiche/${f.id}`} className={`nav-fiche lab ${current?.id === f.id ? 'on' : ''}`} title={f.title}>{labShort(f)}</a>
                 ))}
               </div>
             );
           })}
-          <details className="nav-tags" open={tags.length > 0}>
-            <summary className="nav-label">Filtrer par tag {tags.length > 0 && <button className="link" onClick={(e) => { e.preventDefault(); setTags([]); }}>effacer</button>}</summary>
-            <div className="tags">
-              {allTags.map((t) => <button key={t} className={`tag ${tags.includes(t) ? 'on' : ''}`} onClick={() => setTags((ts) => (ts.includes(t) ? ts.filter((x) => x !== t) : [...ts, t]))}>{t}</button>)}
-            </div>
+          <details className="nav-notions" open={route.view === 'notion'}>
+            <summary className="nav-label">Notions transversales <span className="chev">›</span></summary>
+            {tagDefs.map((t) => (
+              <a key={t.id} href={`#/notion/${t.id}`} className={`nav-notion ${route.view === 'notion' && route.id === t.id ? 'on' : ''}`}>
+                <span>{t.label}</span><span className="count">{withTag(t.id).length}</span>
+              </a>
+            ))}
           </details>
         </nav>
 
@@ -216,12 +223,6 @@ export default function App() {
                 </div>
               </section>
 
-              {tags.length > 0 && (
-                <section>
-                  <div className="section-head"><h2>Fiches avec {tags.map((t) => `« ${t} »`).join(' et ')}</h2><button className="link" onClick={() => setTags([])}>effacer le filtre</button></div>
-                  <div className="card-grid">{byTags(fiches).map((f) => <FicheCard key={f.id} f={f} theme={themeOf(f.theme)} fav={favorites.items.includes(f.id)} />)}</div>
-                </section>
-              )}
 
               {(recents.items.length > 0 || favorites.items.length > 0) && (
                 <section className="resume">
@@ -263,11 +264,41 @@ export default function App() {
               </section>
 
               <section>
+                <div className="section-head"><h2>Parcourir par notion</h2><p className="muted">Une même idée, à travers Python, NumPy et pandas.</p></div>
+                <div className="notion-grid">
+                  {tagDefs.map((t) => (
+                    <a key={t.id} href={`#/notion/${t.id}`} className="notion-card">
+                      <strong>{t.label}</strong><span className="count">{withTag(t.id).length} fiches</span>
+                    </a>
+                  ))}
+                </div>
+              </section>
+
+              <section>
                 <div className="section-head"><h2>Labos</h2><p className="muted">Change un paramètre, vois exactement ce qui change.</p></div>
                 <div className="card-grid">{fiches.filter(isLab).map((f) => <FicheCard key={f.id} f={f} theme={themeOf(f.theme)} fav={favorites.items.includes(f.id)} />)}</div>
               </section>
             </div>
           )}
+
+          {route.view === 'notion' && (() => {
+            const t = tagById.get(route.id);
+            if (!t) return <div className="empty">Notion introuvable. <a href="#/">Retour à l’accueil</a></div>;
+            const list = withTag(t.id);
+            return (
+              <div className="notion-page">
+                <p className="eyebrow"><a href="#/">Accueil</a> / Notion</p>
+                <h1>{t.label}</h1>
+                <p className="hero-sub">{t.description}</p>
+                {themes.filter((th) => list.some((f) => f.theme === th.id)).map((th) => (
+                  <section key={th.id} className="notion-group">
+                    <h2 className="ng-title"><ThemeBadge theme={th} size="sm" />{th.label}</h2>
+                    <div className="card-grid">{list.filter((f) => f.theme === th.id).map((f) => <FicheCard key={f.id} f={f} theme={th} fav={favorites.items.includes(f.id)} />)}</div>
+                  </section>
+                ))}
+              </div>
+            );
+          })()}
 
           {route.view === 'theme' && currentTheme && (
             <div className="theme-page" style={{ ['--h' as string]: String(currentTheme.hue ?? 220) }}>
@@ -284,7 +315,7 @@ export default function App() {
                 </div>
               </header>
               {!revision ? (
-                <div className="card-grid">{byTags(themeFiches(currentTheme.id)).map((f) => <FicheCard key={f.id} f={f} theme={currentTheme} fav={favorites.items.includes(f.id)} />)}</div>
+                <div className="card-grid">{themeFiches(currentTheme.id).map((f) => <FicheCard key={f.id} f={f} theme={currentTheme} fav={favorites.items.includes(f.id)} />)}</div>
               ) : (
                 <div className="revision">
                   <p className="muted">Toute la syntaxe et l’essentiel du thème sur une seule page.</p>

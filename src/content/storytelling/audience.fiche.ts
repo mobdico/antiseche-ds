@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'story-audience',
   title: 'Concevoir pour son audience : ratio d’encre-donnée',
   theme: 'storytelling',
-  tags: ['data-ink', 'interface OO', 'spines', 'annotations'],
-  keywords: ['fig, ax = plt.subplots()', 'Figure', 'Axes', 'ax.barh', 'figsize', 'spines', 'set_visible', 'tick_params', 'ax.text', 'ratio encre-donnée', 'data-ink ratio', 'familiarité'],
+  tags: ['lisibilite', 'graphiques'],
+  keywords: ['data-ink', 'interface OO', 'spines', 'annotations', 'fig, ax = plt.subplots()', 'Figure', 'Axes', 'ax.barh', 'figsize', 'spines', 'set_visible', 'tick_params', 'ax.text', 'ratio encre-donnée', 'data-ink ratio', 'familiarité'],
   summary: 'Choisir un graphique familier, utiliser l’interface objet de matplotlib et **effacer tout ce qui n’est pas de la donnée**.',
   concept: `
 - **Principe de familiarité** : privilégier un type de graphique que l’audience connaît déjà, lisible sans effort de décodage.

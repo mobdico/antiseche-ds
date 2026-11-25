@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-types',
   title: 'Les types de données : int, float, str, conversions',
   theme: 'python-core',
-  tags: ['types', 'int', 'float', 'str', 'conversion', 'chaînes'],
-  keywords: ['type', 'int()', 'float()', 'round()', 'str()', 'bool()', 'concaténation', '+', 'f-string', 'échapper', '\\', 'triple guillemets', 'TypeError', 'can only concatenate str', 'ValueError', 'invalid literal for int()'],
+  tags: ['debuter', 'types', 'texte'],
+  keywords: ['types', 'int', 'float', 'str', 'conversion', 'chaînes', 'type', 'int()', 'float()', 'round()', 'str()', 'bool()', 'concaténation', '+', 'f-string', 'échapper', '\\', 'triple guillemets', 'TypeError', 'can only concatenate str', 'ValueError', 'invalid literal for int()'],
   summary: 'Distinguer `int`, `float`, `str` et `bool`, convertir de l’un à l’autre, et construire des chaînes.',
   concept: `
 - Python distingue les **entiers** (\`int\`) des **décimaux** (\`float\`). Le type détermine comment la valeur est stockée et quelles opérations sont possibles.

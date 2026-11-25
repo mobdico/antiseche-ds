@@ -100,8 +100,8 @@ export default defineFiche({
   id: 'pandas-combiner',
   title: 'Combiner des données : concat et merge',
   theme: 'pandas',
-  tags: ['merge', 'concat', 'jointure', 'combiner'],
-  keywords: ['pd.concat', 'pd.merge', 'axis', 'ignore_index', 'on', 'how', 'inner', 'left', 'right', 'outer', 'left_index', 'right_index', 'suffixes', '_x', '_y', 'join', 'empiler', 'index dupliqué'],
+  tags: ['restructurer', 'manquantes'],
+  keywords: ['merge', 'concat', 'jointure', 'combiner', 'pd.concat', 'pd.merge', 'axis', 'ignore_index', 'on', 'how', 'inner', 'left', 'right', 'outer', 'left_index', 'right_index', 'suffixes', '_x', '_y', 'join', 'empiler', 'index dupliqué'],
   summary: '**Empiler** des tables avec `pd.concat()` ou les **joindre** sur une clé avec `pd.merge()` — et choisir le bon type de jointure.',
   concept: `
 - Le **concat vertical** (\`axis=0\`) empile les DataFrames les uns sous les autres. Par défaut, il **conserve toutes les colonnes** des deux DataFrames et remplit les valeurs manquantes avec NaN.

@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-arguments',
   title: 'Arguments, paramètres et débogage',
   theme: 'python-core',
-  tags: ['fonctions', 'arguments', 'positionnels', 'nommés', 'traceback', 'débogage'],
-  keywords: ['argument positionnel', 'argument nommé', 'keyword', 'traceback', 'TypeError', 'missing 1 required positional argument', 'unsupported operand type(s)', 'ZeroDivisionError', 'débogage'],
+  tags: ['fonctions', 'erreurs'],
+  keywords: ['fonctions', 'arguments', 'positionnels', 'nommés', 'traceback', 'débogage', 'argument positionnel', 'argument nommé', 'keyword', 'traceback', 'TypeError', 'missing 1 required positional argument', 'unsupported operand type(s)', 'ZeroDivisionError', 'débogage'],
   summary: 'Rendre une fonction réutilisable avec des paramètres, appeler par position ou par nom, combiner des fonctions et **lire un traceback**.',
   concept: `
 - Les **paramètres** rendent une fonction **réutilisable** : au lieu de coder en dur un dataset ou un indice, on les passe en paramètre.

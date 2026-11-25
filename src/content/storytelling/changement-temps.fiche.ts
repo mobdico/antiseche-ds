@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'story-changement',
   title: 'Raconter un changement dans le temps',
   theme: 'storytelling',
-  tags: ['subplots', 'axes', 'axhline', 'annotations', 'zip'],
-  keywords: ['plt.subplots(nrows=4, ncols=1)', 'axes[2]', 'for ax in axes', 'ax.text', 'axhline', 'xmin', 'xmax', 'linewidth', 'barre de progression', 'zip', 'histoire de données'],
+  tags: ['lisibilite', 'temps', 'graphiques'],
+  keywords: ['subplots', 'axes', 'axhline', 'annotations', 'zip', 'plt.subplots(nrows=4, ncols=1)', 'axes[2]', 'for ax in axes', 'ax.text', 'axhline', 'xmin', 'xmax', 'linewidth', 'barre de progression', 'zip', 'histoire de données'],
   summary: 'Construire une **histoire** avec une grille de graphiques, cibler un graphique précis et annoter le changement.',
   concept: `
 - Une **histoire de données** est une suite d’événements liés dans le temps qui montrent un **changement**, à la différence d’un graphique qui présente des faits statiques.

@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-poo',
   title: 'La programmation orientée objet',
   theme: 'python-core',
-  tags: ['POO', 'classe', 'instance', 'self', 'attribut', 'méthode'],
-  keywords: ['class', 'instance', '__init__', 'self', 'attribut', 'méthode', 'constructeur', 'CamelCase', 'takes 1 positional argument but 2 were given', "'int' object is not callable", 'missing 1 required positional argument'],
+  tags: ['fonctions', 'references'],
+  keywords: ['POO', 'classe', 'instance', 'self', 'attribut', 'méthode', 'class', 'instance', '__init__', 'self', 'attribut', 'méthode', 'constructeur', 'CamelCase', 'takes 1 positional argument but 2 were given', "'int' object is not callable", 'missing 1 required positional argument'],
   summary: 'Définir une **classe**, créer des **instances**, stocker des **attributs** avec `__init__` et agir avec des **méthodes**.',
   concept: `
 - Une **classe** est un plan qui définit les propriétés et le comportement des objets créés à partir d’elle.

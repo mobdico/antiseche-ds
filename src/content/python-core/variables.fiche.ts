@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-variables',
   title: 'Les variables : affectation, nommage, références',
   theme: 'python-core',
-  tags: ['variables', 'affectation', 'références', 'mutabilité', 'NameError'],
-  keywords: ['=', '+=', '-=', '*=', '/=', '**=', 'snake_case', 'NameError', 'name is not defined', 'nommage', 'mot réservé', 'référence', 'id', 'immuable', 'mutable'],
+  tags: ['debuter', 'references', 'erreurs'],
+  keywords: ['variables', 'affectation', 'références', 'mutabilité', 'NameError', '=', '+=', '-=', '*=', '/=', '**=', 'snake_case', 'NameError', 'name is not defined', 'nommage', 'mot réservé', 'référence', 'id', 'immuable', 'mutable'],
   summary: 'Créer et mettre à jour des variables, les nommer correctement, et comprendre qu’une variable est un **nom qui pointe vers un objet**.',
   concept: `
 - Une **variable** est un emplacement en mémoire identifié par un nom, qui stocke une valeur. Plus précisément en Python : un **nom** qui **référence** un objet (voir les flèches du simulateur).

@@ -135,8 +135,8 @@ export default defineFiche({
   id: 'nettoyage-valeurs-manquantes',
   title: 'Valeurs manquantes et doublons',
   theme: 'nettoyage',
-  tags: ['NaN', 'dropna', 'fillna', 'imputation', 'doublons', 'axis'],
-  keywords: ['isnull', 'isna', 'notnull', 'sum', 'drop', 'dropna', 'thresh', 'axis=0', 'axis=1', 'fillna', 'mean', 'median', 'imputation', 'duplicated', 'drop_duplicates', 'subset', 'None', 'NaN'],
+  tags: ['manquantes', 'axis', 'distributions'],
+  keywords: ['NaN', 'dropna', 'fillna', 'imputation', 'doublons', 'axis', 'isnull', 'isna', 'notnull', 'sum', 'drop', 'dropna', 'thresh', 'axis=0', 'axis=1', 'fillna', 'mean', 'median', 'imputation', 'duplicated', 'drop_duplicates', 'subset', 'None', 'NaN'],
   summary: 'Compter, supprimer (`dropna`, `thresh`) ou remplacer (`fillna`) les valeurs manquantes, et éliminer les doublons.',
   concept: `
 - Les valeurs manquantes sont généralement représentées par **NaN** ou **None** dans un DataFrame pandas.

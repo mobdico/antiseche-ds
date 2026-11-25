@@ -46,7 +46,7 @@ export function Inspector({ step }: { step: SimStep }) {
           </dl>
         )}
         {ref && ref.methods.length > 0 && (
-          <details className="insp-methods" open>
+          <details className="insp-methods">
             <summary>Méthodes utiles sur un <code>{ref.fullName}</code> ({ref.methods.length})</summary>
             <ul>{ref.methods.map((m) => <li key={m.sig}><code>{m.sig}</code> <span className="muted">{inline(m.desc)}</span></li>)}</ul>
           </details>

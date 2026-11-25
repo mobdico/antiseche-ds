@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'visu-courbes',
   title: 'Graphiques en courbes et séries temporelles',
   theme: 'analyse-visu',
-  tags: ['matplotlib', 'plot', 'séries temporelles', 'légende'],
-  keywords: ['import matplotlib.pyplot as plt', 'plt.plot', 'plt.show', 'plt.title', 'plt.xlabel', 'plt.ylabel', 'plt.legend', 'label', 'ticklabel_format', 'notation scientifique', '1e9', 'linéaire', 'exponentielle', 'logarithmique'],
+  tags: ['graphiques', 'temps'],
+  keywords: ['matplotlib', 'plot', 'séries temporelles', 'légende', 'import matplotlib.pyplot as plt', 'plt.plot', 'plt.show', 'plt.title', 'plt.xlabel', 'plt.ylabel', 'plt.legend', 'label', 'ticklabel_format', 'notation scientifique', '1e9', 'linéaire', 'exponentielle', 'logarithmique'],
   summary: 'Tracer l’évolution d’une valeur dans le temps avec `plt.plot()`, et habiller le graphique (titre, axes, légende).',
   concept: `
 - Un graphique se construit sur deux **axes perpendiculaires** : l’axe des **x** (horizontal) et l’axe des **y** (vertical), qui se croisent à l’origine.

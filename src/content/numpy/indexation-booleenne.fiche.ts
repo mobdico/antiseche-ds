@@ -124,8 +124,8 @@ export default defineFiche({
   id: 'numpy-indexation-booleenne',
   title: 'L’indexation booléenne avec NumPy',
   theme: 'numpy',
-  tags: ['masque', 'indexation booléenne', 'nan', 'vue', 'copie', 'genfromtxt'],
-  keywords: ['np.genfromtxt', 'delimiter', 'skip_header', 'nan', 'masque', 'mask', 'tableau[masque]', 'tableau[masque] = valeur', '>', '<', '==', '!=', 'vue', 'copie', '.copy()', '.base', 'view'],
+  tags: ['selection', 'references', 'manquantes'],
+  keywords: ['masque', 'indexation booléenne', 'nan', 'vue', 'copie', 'genfromtxt', 'np.genfromtxt', 'delimiter', 'skip_header', 'nan', 'masque', 'mask', 'tableau[masque]', 'tableau[masque] = valeur', '>', '<', '==', '!=', 'vue', 'copie', '.copy()', '.base', 'view'],
   summary: 'Charger un CSV avec `genfromtxt`, filtrer et modifier un ndarray avec un **masque booléen**, et savoir quand on obtient une **vue** ou une **copie**.',
   concept: `
 - Les valeurs **nan** (*Not a Number*) indiquent qu’une donnée ne peut pas être représentée dans le type numérique du tableau, souvent à cause d’une **ligne d’en-tête non ignorée** lors du chargement.

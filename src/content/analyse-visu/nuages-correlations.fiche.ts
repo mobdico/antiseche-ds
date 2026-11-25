@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'visu-nuages',
   title: 'Nuages de points et corrélations',
   theme: 'analyse-visu',
-  tags: ['scatter', 'corrélation', 'pearson', 'matplotlib'],
-  keywords: ['plt.scatter', 'corr', 'df.corr()', 'Pearson', 'r', 'corrélation positive', 'corrélation négative', 'causalité', 'xticks rotation'],
+  tags: ['graphiques', 'distributions'],
+  keywords: ['scatter', 'corrélation', 'pearson', 'matplotlib', 'plt.scatter', 'corr', 'df.corr()', 'Pearson', 'r', 'corrélation positive', 'corrélation négative', 'causalité', 'xticks rotation'],
   summary: 'Visualiser la relation entre deux variables avec `plt.scatter()` et la mesurer avec le **coefficient de Pearson**.',
   concept: `
 - **La corrélation** : une relation statistique entre deux colonnes, **positive** (elles augmentent ensemble) ou **négative** (l’une augmente quand l’autre diminue).

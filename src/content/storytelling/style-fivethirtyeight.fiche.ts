@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'story-style',
   title: 'Habiller un graphique : le style FiveThirtyEight',
   theme: 'storytelling',
-  tags: ['style', 'fivethirtyeight', 'couleurs', 'grille', 'barh'],
-  keywords: ['style.use', 'fivethirtyeight', 'default', 'ggplot', 'seaborn-v0_8', 'ax.grid(False)', 'barh left', 'color', 'map', 'couleur conditionnelle'],
+  tags: ['lisibilite', 'graphiques'],
+  keywords: ['style', 'fivethirtyeight', 'couleurs', 'grille', 'barh', 'style.use', 'fivethirtyeight', 'default', 'ggplot', 'seaborn-v0_8', 'ax.grid(False)', 'barh left', 'color', 'map', 'couleur conditionnelle'],
   summary: 'Changer l’apparence globale avec `style.use()`, colorer les barres selon une condition, et épurer la grille.',
   concept: `
 - Le **style** Matplotlib change l’apparence globale (couleurs, grille, police) sans modifier les données. \`style.use("nom")\` doit être appelé **avant** \`plt.plot()\` ou \`ax.barh()\`.

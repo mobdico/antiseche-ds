@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-conditions-if',
   title: 'Les conditions avec if',
   theme: 'python-core',
-  tags: ['conditions', 'if', 'booléens', 'filtrer', 'indentation'],
-  keywords: ['if', '==', '!=', 'True', 'False', 'bool', 'IndentationError', 'filtrer', 'append', 'comparaison', 'Maybe you meant'],
+  tags: ['controle', 'selection'],
+  keywords: ['conditions', 'if', 'booléens', 'filtrer', 'indentation', 'if', '==', '!=', 'True', 'False', 'bool', 'IndentationError', 'filtrer', 'append', 'comparaison', 'Maybe you meant'],
   summary: 'Exécuter un bloc seulement si une condition est vraie, et combiner `for` + `if` + `append()` pour filtrer une liste.',
   concept: `
 - L’instruction **\`if\`** exécute un bloc de code uniquement quand la condition qui la suit vaut **True**.

@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-tables-frequences',
   title: 'Les tables de fréquences',
   theme: 'python-core',
-  tags: ['dictionnaires', 'fréquences', 'comptage', 'proportion', 'pourcentage'],
-  keywords: ['in', 'get', 'compteur', '+= 1', 'fréquence', 'proportion', 'pourcentage', 'min', 'max', 'intervalle', 'KeyError', 'values', 'for clé in dico'],
+  tags: ['dictionnaires', 'agregation', 'controle'],
+  keywords: ['dictionnaires', 'fréquences', 'comptage', 'proportion', 'pourcentage', 'in', 'get', 'compteur', '+= 1', 'fréquence', 'proportion', 'pourcentage', 'min', 'max', 'intervalle', 'KeyError', 'values', 'for clé in dico'],
   summary: 'Compter les occurrences de chaque valeur avec un dictionnaire, puis calculer proportions et pourcentages.',
   concept: `
 - L’opérateur **\`in\`** vérifie si une valeur existe comme **clé** dans un dictionnaire, **pas comme valeur**.

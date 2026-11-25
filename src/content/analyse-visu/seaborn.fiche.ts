@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'visu-seaborn',
   title: 'Seaborn et les graphiques relationnels',
   theme: 'analyse-visu',
-  tags: ['seaborn', 'scatterplot', 'relplot', 'hue', 'facettes'],
-  keywords: ['import seaborn as sns', 'sns.set_theme', 'sns.scatterplot', 'hue', 'palette', 'size', 'sizes', 'style', 'sns.relplot', 'col', 'facettes', 'move_legend'],
+  tags: ['graphiques', 'lisibilite'],
+  keywords: ['seaborn', 'scatterplot', 'relplot', 'hue', 'facettes', 'import seaborn as sns', 'sns.set_theme', 'sns.scatterplot', 'hue', 'palette', 'size', 'sizes', 'style', 'sns.relplot', 'col', 'facettes', 'move_legend'],
   summary: 'Encoder plusieurs variables sur un même graphique (couleur, taille, forme) et séparer en **facettes**.',
   concept: `
 - **Seaborn** est une librairie construite **au-dessus de matplotlib** : des graphiques plus riches avec moins de code.

@@ -99,8 +99,8 @@ export default defineFiche({
   id: 'nettoyage-chaines',
   title: 'Manipuler les chaînes de caractères avec pandas',
   theme: 'nettoyage',
-  tags: ['str', 'regex', 'contains', 'extract', 'NaN', 'texte'],
-  keywords: ['.str', 'str.contains', 'na=False', 'case=False', 'str.extract', 'str.extractall', 'regex', 'expression régulière', 'motif', 'pattern', '[0-9]', '\\d',
+  tags: ['texte', 'manquantes', 'versions'],
+  keywords: ['str', 'regex', 'contains', 'extract', 'NaN', 'texte', '.str', 'str.contains', 'na=False', 'case=False', 'str.extract', 'str.extractall', 'regex', 'expression régulière', 'motif', 'pattern', '[0-9]', '\\d',
     'Cannot mask with non-boolean array containing NA / NaN values', 'AttributeError', "'float' object has no attribute", 'apply', 'merge', 'left_on', 'right_on'],
   summary: 'Les méthodes `.str` vectorisées, les expressions régulières avec `contains`, `extract`, `extractall`, et le piège des valeurs manquantes.',
   concept: `

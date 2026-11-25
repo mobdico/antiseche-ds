@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-conditions-multiples',
   title: 'Les conditions multiples : and, or, elif, else',
   theme: 'python-core',
-  tags: ['conditions', 'and', 'or', 'elif', 'else', 'erreur logique'],
-  keywords: ['and', 'or', 'not', 'parenthèses', '>', '<', '>=', '<=', 'else', 'elif', 'erreur logique', 'priorité and or'],
+  tags: ['controle', 'erreurs'],
+  keywords: ['conditions', 'and', 'or', 'elif', 'else', 'erreur logique', 'and', 'or', 'not', 'parenthèses', '>', '<', '>=', '<=', 'else', 'elif', 'erreur logique', 'priorité and or'],
   summary: 'Combiner des conditions avec `and` / `or`, contrôler la logique avec des parenthèses, enchaîner `if` / `elif` / `else`.',
   concept: `
 - **\`and\`** : True uniquement si **toutes** les conditions sont True. Dès qu’une seule est False, tout est False.

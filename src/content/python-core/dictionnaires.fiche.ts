@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'python-dictionnaires',
   title: 'Les dictionnaires : paires clé → valeur',
   theme: 'python-core',
-  tags: ['dictionnaires', 'dict', 'clés', 'hashable'],
-  keywords: ['dict', '{}', 'clé', 'valeur', 'KeyError', 'get', 'hashable', 'unhashable type', 'hash', 'True 1', 'clé dupliquée'],
+  tags: ['dictionnaires', 'erreurs'],
+  keywords: ['dictionnaires', 'dict', 'clés', 'hashable', 'dict', '{}', 'clé', 'valeur', 'KeyError', 'get', 'hashable', 'unhashable type', 'hash', 'True 1', 'clé dupliquée'],
   summary: 'Stocker des **paires clé → valeur**, lire, ajouter et modifier par clé, et savoir quelles clés sont autorisées.',
   concept: `
 - Un **dictionnaire** est une collection de paires **clé-valeur**, créée avec des accolades \`{}\` et la syntaxe \`clé: valeur\`.

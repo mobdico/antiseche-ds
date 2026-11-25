@@ -5,8 +5,8 @@ export default defineFiche({
   id: 'labo-python',
   title: 'Labo — fonctions et méthodes natives de Python',
   theme: 'python-core',
-  tags: ['labo', 'sorted', 'split', 'join', 'round', 'range', 'zip', 'méthodes'],
-  keywords: ['sorted', 'key', 'reverse', 'sort', 'split', 'maxsplit', 'join', 'replace', 'count', 'strip', 'lstrip', 'rstrip', 'round', 'ndigits', 'range', 'step', 'enumerate', 'start', 'zip', 'strict',
+  tags: ['tri', 'texte', 'dictionnaires'],
+  keywords: ['labo', 'sorted', 'split', 'join', 'round', 'range', 'zip', 'méthodes', 'sorted', 'key', 'reverse', 'sort', 'split', 'maxsplit', 'join', 'replace', 'count', 'strip', 'lstrip', 'rstrip', 'round', 'ndigits', 'range', 'step', 'enumerate', 'start', 'zip', 'strict',
     'pop', 'insert', 'append', 'extend', 'remove', 'index', 'get', 'setdefault', 'update', 'min', 'max', 'default', 'paramètres', 'laboratoire'],
   summary: 'Faire varier les paramètres des fonctions et méthodes natives les plus utiles : `key`, `reverse`, `sep`, `maxsplit`, `ndigits`, `step`, `start`, `strict`, `default`…',
   concept: `Chaque combinaison a été **exécutée par le vrai Python** : résultats, erreurs et messages sont réels.

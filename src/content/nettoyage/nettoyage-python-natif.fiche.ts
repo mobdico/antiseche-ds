@@ -117,8 +117,8 @@ export default defineFiche({
   id: 'nettoyage-python-natif',
   title: 'Nettoyage et préparation des données en Python',
   theme: 'nettoyage',
-  tags: ['python natif', 'liste de listes', 'chaînes', 'fonctions', 'ValueError'],
-  keywords: ['len', 'open', 'csv', 'with open', 'replace', 'title', 'split', 'in', 'int', 'round', 'arrondi bancaire', 'invalid literal for int() with base 10', 'ValueError', 'MoMA', 'chaîne vide', 'None'],
+  tags: ['texte', 'types', 'controle', 'references'],
+  keywords: ['python natif', 'liste de listes', 'chaînes', 'fonctions', 'ValueError', 'len', 'open', 'csv', 'with open', 'replace', 'title', 'split', 'in', 'int', 'round', 'arrondi bancaire', 'invalid literal for int() with base 10', 'ValueError', 'MoMA', 'chaîne vide', 'None'],
   summary: 'Nettoyer un dataset **sans pandas** : liste de listes, méthodes de chaînes (`replace`, `title`, `split`) et fonctions robustes aux valeurs inattendues.',
   concept: `
 - Une **liste de listes** représente un tableau de données : chaque ligne du dataset est une liste, et toutes les lignes sont regroupées dans une liste externe.

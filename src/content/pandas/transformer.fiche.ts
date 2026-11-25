@@ -119,8 +119,8 @@ export default defineFiche({
   id: 'pandas-transformer',
   title: 'Transformer des données : map, apply et melt',
   theme: 'pandas',
-  tags: ['map', 'apply', 'melt', 'tidy', 'axis', 'transformation'],
-  keywords: ['Series.map', 'Series.apply', 'DataFrame.map', 'DataFrame.apply', 'applymap', 'axis=0', 'axis=1', 'pd.melt', 'id_vars', 'value_vars', 'format long', 'format large', 'kwargs', "unexpected keyword argument"],
+  tags: ['fonctions', 'restructurer', 'axis', 'versions'],
+  keywords: ['map', 'apply', 'melt', 'tidy', 'axis', 'transformation', 'Series.map', 'Series.apply', 'DataFrame.map', 'DataFrame.apply', 'applymap', 'axis=0', 'axis=1', 'pd.melt', 'id_vars', 'value_vars', 'format long', 'format large', 'kwargs', "unexpected keyword argument"],
   summary: 'Appliquer une fonction **élément par élément** (`map`, `apply`), **le long d’un axe** (`DataFrame.apply`), ou restructurer en format tidy (`melt`).',
   concept: `
 - \`Series.map()\` et \`Series.apply()\` appliquent une fonction **élément par élément** à une colonne, mais seule \`apply()\` peut transmettre des **arguments supplémentaires** à la fonction. ⚠️ *Mise à jour pandas ≥ 3.0 : \`map()\` les accepte aussi.*
