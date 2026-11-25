@@ -1,0 +1,139 @@
+/**
+ * CONTRAT entre le moteur d'affichage et le contenu.
+ *
+ * Une fiche = un fichier `src/content/<theme>/<nom>.fiche.ts` qui exporte par défaut
+ * un objet `Fiche` (via `defineFiche`). Le moteur ne connaît rien des fiches :
+ * il les découvre automatiquement et les affiche à partir de ce schéma.
+ *
+ * Toute évolution de ce fichier doit rester RÉTRO-COMPATIBLE (champs optionnels),
+ * pour ne jamais casser les fiches existantes.
+ */
+
+// ---------------------------------------------------------------- Thèmes
+export interface Theme {
+  id: string;
+  label: string;
+  icon: string; // un emoji ou un caractère court
+  description: string;
+  order: number;
+}
+
+// ---------------------------------------------------------------- Modèle mémoire
+/** Valeur primitive Python représentée côté JS. `null` = None. */
+export type Prim = number | string | boolean | null;
+
+/** Une case mémoire : soit une valeur directe, soit une référence vers un objet du tas. */
+export type Slot = { v: Prim } | { ref: string };
+
+export interface ObjField {
+  label: string;
+  slot: Slot;
+  hint?: string; // ex. "lignes 0–1"
+}
+
+export interface TableData {
+  columns: string[];
+  index: (string | number)[];
+  rows: Prim[][];
+}
+
+/** Un objet vivant dans le tas (heap) Python. */
+export interface HeapObj {
+  id: string; // identifiant stable entre les étapes (sert aux flèches)
+  pyType: string; // 'list', 'DataFrame', 'ndarray', 'int'...
+  addr?: string; // adresse affichée (sinon dérivée de l'id)
+  /** sequence = list/tuple ; table = DataFrame/Series/ndarray 2D ; scalar = int/str ; box = objet à champs */
+  kind: 'sequence' | 'table' | 'scalar' | 'box';
+  items?: Slot[];
+  table?: TableData;
+  value?: Prim;
+  fields?: ObjField[];
+  /** cases modifiées à cette étape : index (sequence) ou "ligne:colonne" (table) */
+  changed?: (number | string)[];
+  /** badges affichés sur l'objet : 'vue', 'copie', 'temporaire'... */
+  badges?: string[];
+  /** objet temporaire / plus référencé (affiché en pointillés) */
+  ghost?: boolean;
+  note?: string;
+}
+
+export interface VarRef {
+  name: string;
+  ref: string; // id d'un HeapObj
+}
+
+export interface SimStep {
+  label: string; // titre court de l'étape
+  code: string; // ligne(s) exécutée(s) à cette étape
+  vars: VarRef[];
+  heap: HeapObj[];
+  note?: string;
+}
+
+export type AlertLevel = 'error' | 'warning' | 'info' | 'success';
+
+export interface SimAlert {
+  level: AlertLevel;
+  title: string; // ex. "SettingWithCopyWarning"
+  message: string; // markdown léger
+  /** index de l'étape où l'alerte se déclenche (affichée à partir de cette étape). Défaut : toujours. */
+  atStep?: number;
+}
+
+export interface SimResult {
+  /** code complet correspondant aux paramètres choisis */
+  code: string;
+  steps: SimStep[];
+  /** sortie console (print) simulée */
+  output?: string[];
+  alerts?: SimAlert[];
+  /** conclusion en une phrase (markdown léger) */
+  verdict?: string;
+}
+
+// ---------------------------------------------------------------- Paramètres du simulateur
+export interface ParamOption {
+  value: string;
+  label: string; // affiché sur le bouton (peut contenir du code)
+  help?: string;
+}
+
+export type ParamDef =
+  | { id: string; label: string; type: 'choice'; options: ParamOption[]; default: string; help?: string }
+  | { id: string; label: string; type: 'toggle'; default: boolean; onLabel?: string; offLabel?: string; help?: string };
+
+export type ParamValues = Record<string, string | boolean>;
+
+export interface Simulator {
+  params: ParamDef[];
+  /** Fonction PURE : mêmes paramètres → même résultat. Ne doit jamais lever d'exception. */
+  simulate: (p: ParamValues) => SimResult;
+}
+
+// ---------------------------------------------------------------- Fiche
+export interface Fiche {
+  id: string; // unique, kebab-case — sert d'URL (#/fiche/<id>)
+  title: string;
+  theme: string; // id d'un Theme
+  tags: string[];
+  /** mots-clés de recherche supplémentaires : noms de fonctions, messages d'erreur... */
+  keywords?: string[];
+  summary: string; // une phrase
+  /** Le concept, en markdown léger (paragraphes, listes "- ", `code`, **gras**) */
+  concept: string;
+  /** syntaxe de référence (code Python) */
+  syntax: string;
+  useCase?: string;
+  /** les pièges classiques, une entrée par piège */
+  pitfalls?: string[];
+  /** à retenir : 2–5 puces maximum */
+  takeaways?: string[];
+  simulator?: Simulator;
+  related?: string[]; // ids d'autres fiches
+  source?: string; // ex. "Fiche PDF — Pandas 1, p.3"
+  /** version minimale du contrat de données — réservé aux migrations futures */
+  schema?: 1;
+}
+
+/** Aide au typage pour les fichiers de contenu. */
+export const defineFiche = (f: Fiche): Fiche => f;
