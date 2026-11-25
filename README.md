@@ -33,6 +33,7 @@ python scripts/lab/generate.py out-p2.json   # avec pandas 2.x installé
 python scripts/lab/merge.py out-p3.json out-p2.json   # → src/content/_data/labo-pandas.json
 ```
 - Nouvelle famille : l'ajouter dans `FAMILIES`, puis créer `src/content/pandas/labo-<id>.fiche.ts` (3 lignes).
+- Labo NumPy : `python scripts/lab/generate.py src/content/_data/labo-numpy.json scripts/lab/lab_numpy.py`
 
 ## Simulateurs tracés (Python exécuté ligne par ligne)
 Les fiches Python Core utilisent un traceur qui exécute le **vrai Python** ligne par ligne et enregistre la mémoire

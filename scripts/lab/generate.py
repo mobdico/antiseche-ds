@@ -1,17 +1,23 @@
 """
 Exécute toutes les combinaisons du labo avec le pandas installé et écrit les résultats en JSON.
 
-Usage (une fois par version de pandas) :
-    python scripts/lab/generate.py out-p3.json      # avec pandas 3.x
-    python scripts/lab/generate.py out-p2.json      # avec pandas 2.x
-    python scripts/lab/merge.py out-p3.json out-p2.json
+Usage :
+    python scripts/lab/generate.py out-p3.json [spec.py]   # spec par défaut : lab_pandas.py
+    python scripts/lab/merge.py out-p3.json out-p2.json [dest]   (pandas : 2 versions)
+    python scripts/lab/generate.py src/content/_data/labo-numpy.json scripts/lab/lab_numpy.py
 """
 import itertools, json, math, sys, warnings
 import numpy as np
 import pandas as pd
 
-sys.path.insert(0, __import__("os").path.dirname(__file__))
-from lab_pandas import DATASET_CODE, FAMILIES, OMIT
+import importlib.util, os
+_spec_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(__file__), "lab_pandas.py")
+_spec = importlib.util.spec_from_file_location("labspec", _spec_path)
+_mod = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_mod)
+DATASET_CODE, FAMILIES, OMIT = _mod.DATASET_CODE, _mod.FAMILIES, _mod.OMIT
+THEME = getattr(_mod, "THEME", "pandas")
+LIB = getattr(_mod, "LIB", "pandas")
 
 
 def clean(v):
@@ -37,7 +43,14 @@ def ser(r):
         return {"kind": "Series", "name": None if r.name is None else str(r.name), "index": [clean(i) for i in r.index],
                 "values": [clean(x) for x in r], "dtype": str(r.dtype), "indexName": r.index.name}
     if isinstance(r, np.ndarray):
-        return {"kind": "ndarray", "values": [clean(x) for x in r.tolist()], "dtype": str(r.dtype)}
+        if r.size == 0:
+            vals = []
+        else:
+            flat = r.reshape(-1, r.shape[-1]) if r.ndim >= 2 else r
+            vals = [[clean(x) for x in row] for row in flat.tolist()] if r.ndim >= 2 else [clean(x) for x in r.tolist()]
+        return {"kind": "ndarray", "values": vals, "shape": list(r.shape), "dtype": str(r.dtype), "view": bool(r.base is not None)}
+    if isinstance(r, (tuple, list)) and not isinstance(r, str):
+        return {"kind": "tuple", "pyType": type(r).__name__, "items": [ser(x) for x in r]}
     if isinstance(r, pd.api.extensions.ExtensionArray):
         return {"kind": "ndarray", "type": f"{type(r).__module__.split('.')[0]}.arrays.{type(r).__name__}", "values": [clean(x) for x in r], "dtype": str(r.dtype)}
     t = type(r)
@@ -50,7 +63,7 @@ def run(expr, args):
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         try:
-            r = eval(expr.format(args=args), ns)
+            r = eval(expr.replace("{args}", args).replace(", )", ")"), ns)
             out = {"result": ser(r), "printed": str(r)}
         except Exception as e:
             out = {"error": {"type": type(e).__name__, "message": str(e).split("\n")[0]}}
@@ -68,11 +81,17 @@ def main(path):
         for m in fam["methods"]:
             grids = [[o["code"] for o in p["options"]] for p in m["params"]]
             for combo in itertools.product(*grids):
-                args = ", ".join(f"{p['id']}={v}" for p, v in zip(m["params"], combo) if v != OMIT)
-                results["|".join([m["id"], *combo])] = run(m["expr"], args)
-    out = {"pandas": pd.__version__, "numpy": np.__version__, "dataset": {"code": DATASET_CODE, "frame": ser(ns["df"])}, "families": FAMILIES, "results": results}
+                expr = m["expr"]
+                for p, v in zip(m["params"], combo):
+                    if "{" + p["id"] + "}" in expr:  # paramètre placé directement dans l'expression
+                        expr = expr.replace("{" + p["id"] + "}", v)
+                args = ", ".join(f"{p['id']}={v}" for p, v in zip(m["params"], combo) if v != OMIT and "{" + p["id"] + "}" not in m["expr"])
+                results["|".join([m["id"], *combo])] = run(expr, args)
+    data_vars = [{"name": k, "value": ser(v)} for k, v in ns.items() if not k.startswith("__") and k not in ("pd", "np") and not callable(v)]
+    out = {"pandas": pd.__version__, "numpy": np.__version__, "lib": LIB, "theme": THEME,
+           "dataset": {"code": DATASET_CODE, "frame": ser(ns["df"]) if "df" in ns else None, "vars": data_vars}, "families": FAMILIES, "results": results}
     json.dump(out, open(path, "w"), ensure_ascii=False)
-    print(pd.__version__, len(results), "combinaisons")
+    print(LIB, (np.__version__ if LIB == "numpy" else pd.__version__), len(results), "combinaisons")
 
 
 if __name__ == "__main__":

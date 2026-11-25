@@ -13,9 +13,11 @@
 export interface Theme {
   id: string;
   label: string;
-  icon: string; // un emoji ou un caractère court
+  icon: string; // monogramme court (2 lettres) affiché dans une pastille
   description: string;
   order: number;
+  /** teinte de la pastille du thème (0–360) */
+  hue?: number;
 }
 
 // ---------------------------------------------------------------- Modèle mémoire
