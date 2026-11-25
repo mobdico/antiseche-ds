@@ -51,4 +51,10 @@ Les fiches Python Core utilisent un traceur qui exécute le **vrai Python** lign
 Ajouter une fiche = créer un fichier `*.fiche.ts` (voir `src/engine/types.ts`), sans toucher au moteur.
 Site en ligne (privé) : https://claude.ai/artifact/Bk3DTRvFDkamoVydk1RtLn — mise à jour : `npm run build:artifact` puis republier `dist-artifact/antiseche.html`.
 
+Site public : https://mobdico.github.io/antiseche/ (dépôt public `mobdico/antiseche`, site compilé uniquement) :
+```bash
+npm run build:pages                       # → dist-pages/
+cp -r dist-pages/. ../antiseche/ && cd ../antiseche && git add -A && git commit -m "Mise à jour" && git push
+```
+
 Les comportements simulés sont vérifiés avec le vrai pandas (2.2 et 3.1) ; les différences de version sont signalées.
