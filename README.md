@@ -41,6 +41,12 @@ Les fiches Python Core utilisent un traceur qui exécute le **vrai Python** lign
 - Régénérer : `python scripts/trace/trace.py scripts/trace/scenarios_python_core.py src/content/_data/trace-python-core.json`
 - Utiliser dans une fiche : `simulators: traceSims(["id-du-scenario"])`
 
+## Graphiques (vrais rendus matplotlib / seaborn)
+- Scénarios : `scripts/viz/scenarios_viz.py` (code avec emplacements `«param»`)
+- Générer : `python scripts/viz/generate.py` (matplotlib + seaborn installés) → `public/viz/*.png` + `src/content/_data/viz.json`
+- Utiliser dans une fiche : `simulators: vizSims(["id-du-scenario"])`
+- Publication : `npm run build:artifact` copie les images dans `dist-artifact/viz/` ; les publier avec la page.
+
 Ajouter une fiche = créer un fichier `*.fiche.ts` (voir `src/engine/types.ts`), sans toucher au moteur.
 Site en ligne (privé) : https://claude.ai/artifact/Bk3DTRvFDkamoVydk1RtLn — mise à jour : `npm run build:artifact` puis republier `dist-artifact/antiseche.html`.
 
