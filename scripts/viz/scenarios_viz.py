@@ -30,7 +30,7 @@ def S(id, title, code, params, doc):
 
 SCENARIOS = [
     # ---------------------------------------------------------------- Courbes et séries temporelles
-    S("courbes", "Graphique en courbes", 'plt.figure(figsize=(7, 3.5))\nplt.plot(df["date"], df["locations"]«label»)\n«decor»\nplt.show()',
+    S("courbes", "Graphique en courbes", 'import matplotlib.dates as mdates\nplt.figure(figsize=(7, 3.5))\nplt.plot(df["date"], df["locations"]«label»)\nplt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%d %b"))  # dates courtes, lisibles\n«decor»\nplt.show()',
       [P("label", [("", "sans label"), (', label="locations"', "avec un label (pour la légende)")], "", "label"),
        P("decor", [("", "aucun habillage"), ('plt.title("Locations de vélos par jour")\nplt.xlabel("Date")\nplt.ylabel("Locations")', "titre + labels d’axes"),
                    ('plt.plot(df["date"], df["temp"] * 20, label="temp × 20")\nplt.legend()', "2e courbe + légende"), ("plt.xticks(rotation=45)", "graduations inclinées")], "", "habillage")],
@@ -47,18 +47,18 @@ SCENARIOS = [
                  ("-x + rng.normal(0, 0.5, 200)", "forte négative"), ("x ** 2 + rng.normal(0, 0.3, 200)", "relation forte mais NON linéaire")], "x + rng.normal(0, 0.3, 200)", "relation")],
       "r mesure une relation **linéaire** : une parabole parfaite peut donner r ≈ 0."),
     # ---------------------------------------------------------------- Barres, histogrammes, distributions
-    S("barres", "Diagramme en barres", 'moy = df.groupby("meteo")["locations"].mean()\nplt.figure(figsize=(5.5, 3.5))\n«plot»\nplt.show()',
+    S("barres", "Diagramme en barres", 'moy = df.groupby("meteo")["locations"].mean()\nplt.figure(figsize=(5.5, 3.5))\n«plot»\nplt.title("Locations moyennes selon la météo")\nplt.show()',
       [P("plot", [("plt.bar(moy.index, moy)", "barres verticales"), ("plt.barh(moy.index, moy)", "barres horizontales"),
                   ("plt.bar(moy.index, moy)\nplt.xticks(rotation=45)", "verticales, graduations inclinées"), ('plt.bar(moy.index, moy)\nplt.xticks(ticks=[0, 1, 2], labels=["Nuageux", "Pluvieux", "Ensoleillé"])', "graduations renommées")],
          "plt.bar(moy.index, moy)", "tracé")],
       "`plt.bar(x, height)` / `plt.barh(y, width)` ; `plt.xticks(ticks=, labels=, rotation=)` personnalise les graduations."),
-    S("histogramme", "Histogramme : bins et forme", "donnees = «d»\nplt.figure(figsize=(5.5, 3.5))\nplt.hist(donnees, bins=«b»)\nprint(pd.Series(donnees).value_counts(bins=5).sort_index())\nplt.show()",
+    S("histogramme", "Histogramme : bins et forme", "donnees = «d»\nplt.figure(figsize=(5.5, 3.5))\nplt.hist(donnees, bins=«b»)\nplt.xlabel(\"valeur\")\nplt.ylabel(\"effectif\")\nprint(pd.Series(donnees).value_counts(bins=5).sort_index())\nplt.show()",
       [P("d", [("rng.normal(50, 10, 500)", "distribution normale"), ("rng.exponential(10, 500)", "asymétrique (traîne à droite)"), ('df["locations"]', "les locations de vélos")], "rng.normal(50, 10, 500)", "données"),
        P("b", [("5", "5 intervalles"), ("10", "10 intervalles (défaut)"), ("40", "40 intervalles")], "10", "bins")],
       "Un histogramme regroupe les valeurs en **intervalles** (bins) ; trop peu cache la forme, trop en ajoute du bruit."),
     # ---------------------------------------------------------------- pandas et grilles
     S("pandas-plot", "Tracer directement avec pandas", '«plot»\nplt.show()',
-      [P("plot", [('df["locations"].plot.hist(figsize=(5.5, 3.5))', "Series.plot.hist()"), ('df["meteo"].value_counts().plot.bar(figsize=(5.5, 3.5))', "Series.plot.bar()"),
+      [P("plot", [('df["locations"].plot.hist(figsize=(5.5, 3.5))', "Series.plot.hist()"), ('df["meteo"].value_counts().plot.bar(figsize=(5.5, 3.5), rot=0)', "Series.plot.bar() (rot=0 : étiquettes horizontales)"),
                   ('df["meteo"].value_counts().plot.barh(figsize=(5.5, 3.5))', "Series.plot.barh()"), ('df.plot.line(x="date", y="locations", figsize=(6, 3.5))', "DataFrame.plot.line()"),
                   ('df.plot.scatter(x="temp", y="locations", figsize=(5, 4))', "DataFrame.plot.scatter()")], 'df["locations"].plot.hist(figsize=(5.5, 3.5))', "méthode")],
       "`serie.plot.hist()`, `.bar()`, `.barh()`, `.line()`, `df.plot.scatter(x=, y=)` : matplotlib sans `plt.hist()` ni `plt.bar()`."),
@@ -73,7 +73,7 @@ SCENARIOS = [
        P("size", [("", "taille fixe"), (', size="vent", sizes=(10, 150)', "taille = vent")], "", "size"),
        P("style", [("", "même forme"), (', style="meteo"', "forme = météo")], "", "style")],
       "Seaborn encode une variable de plus par **couleur** (`hue`), **taille** (`size`, `sizes`) et **forme** (`style`)."),
-    S("relplot", "sns.relplot : séparer en facettes", 'sns.set_theme()\nsns.relplot(data=df, x="temp", y="locations", hue="meteo"«col», height=3)\nplt.show()',
+    S("relplot", "sns.relplot : séparer en facettes", 'sns.set_theme()\nsns.relplot(data=df, x="temp", y="locations", hue="meteo"«col», height=3.6, aspect=1.1)\nplt.show()',
       [P("col", [("", "un seul graphique"), (', col="saison"', "une colonne par saison"), (', col="meteo"', "une colonne par météo")], ', col="saison"', "col")],
       "`sns.relplot(..., col=\"colonne\")` crée une **grille** de graphiques en une ligne."),
     # ---------------------------------------------------------------- Storytelling : audience et data-ink
@@ -84,12 +84,15 @@ SCENARIOS = [
        P("text", [("", "pas de valeurs"), ('for i, v in enumerate(moy):\n    ax.text(v + 5, i, round(v), va="center", size=9)\nax.set_xticks([])', "valeurs écrites sur les barres, axe x retiré")], "", "étiquettes")],
       "Effacer l’encre **non-donnée** (bordures, graduations) et l’encre redondante : le message ressort."),
     # ---------------------------------------------------------------- Raconter un changement
-    S("subplots-story", "Grille de graphiques et barre de progression", 'fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(6, 6), sharex=True)\ncols = ["temp", "humidite", "vent", "locations"]\nfor ax, col in zip(axes, cols):\n    ax.plot(df["date"], df[col], color="«c»")\n    ax.set_yticks([])\n«cible»\nplt.show()',
-      [P("c", [("#999999", "toutes en gris"), ("#1f77b4", "toutes en bleu")], "#999999", "couleur de base"),
-       P("cible", [("", "aucune mise en avant"), ('axes[3].plot(df["date"], df["locations"], color="#d62728")\naxes[3].text(df["date"][0], df["locations"].max(), "Locations", color="#d62728")', "axes[3] mis en avant + texte"),
-                   ('axes[0].axhline(y=df["temp"].mean(), xmin=0.5, xmax=0.8, linewidth=6, color="#d62728")', "barre de progression avec axhline")], "", "mise en avant")],
-      "`plt.subplots(nrows, ncols)` renvoie un tableau d’Axes : une boucle traite tous les graphiques, `axes[3]` en cible un seul."),
-    # ---------------------------------------------------------------- Gestalt et attributs préattentifs
+    S("subplots-story", "Grille de graphiques : raconter un changement",
+      'import matplotlib.dates as mdates\nfig, axes = plt.subplots(nrows=4, ncols=1, figsize=(7, 6.5), sharex=True)\ncols = ["temp", "humidite", "vent", "locations"]\nnoms = ["Température (°C)", "Humidité (%)", "Vent (km/h)", "Locations de vélos"]\nfor ax, col, nom in zip(axes, cols, noms):\n    ax.plot(df["date"], df[col], color="«c»", linewidth=1.6)\n    ax.text(0, 1.04, nom, transform=ax.transAxes, fontsize=10, fontweight="bold", color="#333333")\n    for cote in ["top", "right"]:\n        ax.spines[cote].set_visible(False)\n    ax.yaxis.set_major_locator(plt.MaxNLocator(3))\naxes[-1].xaxis.set_major_formatter(mdates.DateFormatter("%d %b"))\n«cible»\nplt.tight_layout()\nplt.show()',
+      [P("c", [("#9a9a9a", "toutes en gris : rien ne ressort encore"), ("#1f77b4", "toutes en bleu")], "#9a9a9a", "couleur de base"),
+       P("cible", [("", "aucune mise en avant"),
+                   ('jour = df["locations"].idxmax()\naxes[3].plot(df["date"], df["locations"], color="#d62728", linewidth=2.2)\naxes[3].annotate(f"record : {df[\'locations\'][jour]} locations", xy=(df["date"][jour], df["locations"][jour]), xytext=(-150, -8), textcoords="offset points", color="#d62728", fontsize=9, fontweight="bold", arrowprops=dict(arrowstyle="->", color="#d62728"))',
+                    "axes[3] en rouge + annotation du record"),
+                   ('axes[0].axhline(y=df["temp"].max() + 1, xmin=0.55, xmax=0.85, linewidth=6, color="#d62728")\naxes[0].text(0.86, 1.04, "◄ période la plus chaude", transform=axes[0].transAxes, color="#d62728", fontsize=9, fontweight="bold", ha="left")',
+                    "barre axhline (xmin / xmax) légendée")], "", "mise en avant")],
+      "`plt.subplots(nrows, ncols)` renvoie un tableau d’Axes : une boucle `for ax in axes` habille tous les graphiques, `axes[3]` en cible un seul. Tout en gris, l’essentiel en couleur."),
     S("style", "Styles matplotlib", 'style.use(«st»)\nmoy = df.groupby("meteo")["locations"].mean()\nfig, ax = plt.subplots(figsize=(5.5, 3.2))\nax.barh(moy.index, moy, color=«col»)\n«grid»\nplt.show()',
       [P("st", [('"default"', "style par défaut"), ('"fivethirtyeight"', "FiveThirtyEight"), ('"ggplot"', "ggplot"), ('"seaborn-v0_8"', "seaborn")], '"fivethirtyeight"', "style"),
        P("col", [("None", "couleur du style"), ('(moy > moy.mean()).map({True: "#33A1C9", False: "#ffae42"})', "couleur selon une condition")], "None", "color"),

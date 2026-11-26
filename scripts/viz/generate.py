@@ -45,7 +45,7 @@ for s in sc.SCENARIOS:
         figs = [plt.figure(n) for n in plt.get_fignums()]
         if figs:
             name = hashlib.sha1(key.encode()).hexdigest()[:12] + ".png"
-            figs[-1].savefig(os.path.join(OUT_IMG, name), dpi=80, bbox_inches="tight")
+            figs[-1].savefig(os.path.join(OUT_IMG, name), dpi=100, bbox_inches="tight")
             entry["img"] = f"viz/{name}"
         entry["stdout"] = out.getvalue()
         ws = sorted({f"{type(x.message).__name__}: {str(x.message).splitlines()[0]}" for x in w})
