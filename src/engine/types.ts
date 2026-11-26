@@ -18,6 +18,21 @@ export interface Theme {
   order: number;
   /** teinte de la pastille du thème (0–360) */
   hue?: number;
+  /** vue d'ensemble affichée en tête de la page du thème (markdown léger) */
+  intro?: ThemeIntro;
+}
+
+export interface ThemeIntro {
+  /** l'idée à retenir si on ne retient qu'une chose */
+  enUnePhrase: string;
+  /** le problème que l'outil résout, et son histoire */
+  pourquoi: string;
+  /** les principes qui expliquent son fonctionnement */
+  philosophie: string[];
+  /** à quel moment du travail on s'en sert */
+  auTravail: string[];
+  /** questions à se poser en l'utilisant */
+  reflexes: string[];
 }
 
 // ---------------------------------------------------------------- Modèle mémoire

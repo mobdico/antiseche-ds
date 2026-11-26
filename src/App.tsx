@@ -4,6 +4,7 @@ import { buildIndex, search } from './engine/search';
 import type { Fiche, Theme } from './engine/types';
 import { FicheView } from './components/FicheView';
 import { ThemeBadge } from './components/ThemeBadge';
+import { ThemeIntroView } from './components/ThemeIntroView';
 import { Code } from './lib/highlight';
 import { inline } from './lib/markdown';
 import { useStoredList } from './lib/storage';
@@ -311,6 +312,7 @@ export default function App() {
                   <button role="tab" aria-selected={revision} className={revision ? 'on' : ''} onClick={() => setRevision(true)}>Révision</button>
                 </div>
               </header>
+              <ThemeIntroView theme={currentTheme} expanded={revision} />
               {!revision ? (
                 <>
                   <div className="card-grid">{themeFiches(currentTheme.id).filter((f) => !isLab(f)).map((f) => <FicheCard key={f.id} f={f} theme={currentTheme} showTheme={false} fav={favorites.items.includes(f.id)} />)}</div>
@@ -325,7 +327,7 @@ export default function App() {
                 </>
               ) : (
                 <div className="revision">
-                  <p className="muted">Toute la syntaxe et l’essentiel du thème sur une seule page.</p>
+                  <h2 className="rev-heading">Toutes les fiches, l’essentiel</h2>
                   {themeFiches(currentTheme.id).filter((f) => !isLab(f)).map((f) => (
                     <article key={f.id} className="rev-item">
                       <h2><a href={`#/fiche/${f.id}`}>{f.title}</a></h2>
