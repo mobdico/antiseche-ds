@@ -3,16 +3,12 @@ import type { Fiche, Theme } from '../engine/types';
 import { Markdown, inline } from '../lib/markdown';
 import { Code } from '../lib/highlight';
 import { SimulatorView } from './Simulator';
-import { ThemeBadge } from './ThemeBadge';
-import { tagById } from '../content/tags';
 import type { Module } from '../content/parcours';
 
 interface Props {
   fiche: Fiche;
   theme?: Theme;
   resolve: (id: string) => Fiche | undefined;
-  /** fiches partageant un tag (pour l'aperçu sur place) */
-  withTag: (tag: string) => Fiche[];
   isFavorite: boolean;
   onToggleFavorite: () => void;
   prev?: Fiche;
@@ -32,72 +28,38 @@ function CopyButton({ text }: { text: string }) {
   return <button className="btn-ghost sm" onClick={copy}>{done ? 'Copié' : 'Copier'}</button>;
 }
 
-const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
-const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+/** Majuscule initiale, sauf si le titre commence par du code (sns.relplot, df.loc…). */
+const cap = (x: string) => (/^[a-zà-ÿ]+(\s|$)/i.test(x) ? x.charAt(0).toUpperCase() + x.slice(1) : x);
 
-export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggleFavorite, prev, next, place, isRevised, onToggleRevised }: Props) {
+export function FicheView({ fiche, theme, resolve, isFavorite, onToggleFavorite, prev, next, place, isRevised, onToggleRevised }: Props) {
   const sims = [fiche.simulator, ...(fiche.simulators ?? [])].filter(Boolean) as NonNullable<Fiche['simulator']>[];
   const [tab, setTab] = useState(0);
-  const [openTag, setOpenTag] = useState<string | null>(null);
-  useEffect(() => { setTab(0); setOpenTag(null); }, [fiche.id]);
-  const tagged = openTag ? withTag(openTag).filter((f) => f.id !== fiche.id) : [];
-  const sections = [
-    { id: 'essentiel', label: 'L’essentiel' },
-    ...(sims.length ? [{ id: 'simulateurs', label: `Simulateurs · ${sims.length}` }] : []),
-    { id: 'comprendre', label: 'Comprendre' },
-    ...(fiche.pitfalls?.length ? [{ id: 'pieges', label: 'Pièges' }] : []),
-  ];
+  useEffect(() => setTab(0), [fiche.id]);
 
   return (
     <article className="fiche" style={{ ['--h' as string]: String(theme?.hue ?? 220) }}>
-      {place && (
-        <div className="parcours-bar">
-          <a href="#/parcours" className="pb-step">Parcours · étape <strong>{place.index + 1}</strong>/{place.total}</a>
-          <span className="pb-module">{place.module.title}</span>
-          <span className="progress pb-progress"><span style={{ width: `${((place.index + 1) / place.total) * 100}%` }} /></span>
-        </div>
-      )}
       <header className="fiche-head">
-        <p className="eyebrow crumb"><a href="#/">Accueil</a> / <a href={`#/theme/${fiche.theme}`}>{theme?.label ?? fiche.theme}</a></p>
+        <p className="crumb">
+          <a href="#/">Accueil</a> / <a href={`#/theme/${fiche.theme}`}>{theme?.label ?? fiche.theme}</a>
+          {place && <> <span className="crumb-sep">·</span> <a href="#/parcours" className="crumb-step">Parcours : étape {place.index + 1}/{place.total}</a></>}
+        </p>
         <div className="fh-row">
-          <ThemeBadge theme={theme} size="lg" />
           <div className="fh-text">
             <h1>{fiche.title}</h1>
             <p className="summary">{inline(fiche.summary)}</p>
           </div>
-          {place && onToggleRevised && (
-            <button className={`rev-btn ${isRevised ? 'on' : ''}`} onClick={onToggleRevised} aria-pressed={isRevised} title="Marquer cette fiche comme révisée">
-              {isRevised ? '✓ Révisée' : 'Marquer révisée'}
+          <div className="fh-actions">
+            {place && onToggleRevised && (
+              <button className={`rev-btn ${isRevised ? 'on' : ''}`} onClick={onToggleRevised} aria-pressed={isRevised}>
+                {isRevised ? '✓ Révisée' : 'Marquer révisée'}
+              </button>
+            )}
+            <button className={`fav-btn ${isFavorite ? 'on' : ''}`} onClick={onToggleFavorite} aria-pressed={isFavorite} title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}>
+              {isFavorite ? '★' : '☆'} Favori
             </button>
-          )}
-          <button className={`fav-btn ${isFavorite ? 'on' : ''}`} onClick={onToggleFavorite} aria-pressed={isFavorite} title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}>
-            {isFavorite ? '★' : '☆'}<span>{isFavorite ? 'Favori' : 'Favori'}</span>
-          </button>
-        </div>
-        {fiche.tags.length > 0 && (
-          <p className="notions">
-            <span className="notions-label">Notions</span>
-            {fiche.tags.map((t) => (
-              <button key={t} className={`notion-link ${openTag === t ? 'on' : ''}`} aria-expanded={openTag === t}
-                onClick={() => setOpenTag((x) => (x === t ? null : t))}>{tagById.get(t)?.label ?? t}</button>
-            ))}
-          </p>
-        )}
-        {openTag && (
-          <div className="tag-pop" role="region" aria-label={`Notion ${tagById.get(openTag)?.label ?? openTag}`}>
-            <div className="tag-pop-head">
-              <span><strong>{tagById.get(openTag)?.label}</strong> — {tagById.get(openTag)?.description}</span>
-              <button className="link" onClick={() => setOpenTag(null)}>fermer</button>
-            </div>
-            {tagged.length > 0 && <div className="tag-pop-list">{tagged.map((f) => <a key={f.id} href={`#/fiche/${f.id}`} className="chip">{f.title}</a>)}</div>}
-            <a className="tag-pop-all" href={`#/notion/${openTag}`}>Voir la notion complète →</a>
           </div>
-        )}
+        </div>
       </header>
-
-      <nav className="page-nav" aria-label="Sur cette fiche">
-        {sections.map((s) => <button key={s.id} onClick={() => scrollTo(s.id)}>{s.label}</button>)}
-      </nav>
 
       <section id="essentiel" className={`essentiel ${fiche.takeaways?.length ? '' : 'single'}`}>
         <div className="panel syntax-panel">
@@ -153,7 +115,7 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
           {next ? <a href={`#/fiche/${next.id}`} className="pn next" onClick={() => { if (place && !isRevised && onToggleRevised) onToggleRevised(); }}>
             <span>{place ? (isRevised ? 'Étape suivante →' : 'Marquer révisée et continuer →') : 'Suivante →'}</span><strong>{next.title}</strong></a> : <span />}
         </div>
-        {fiche.source && <p className="source">Source : {fiche.source}</p>}
+        {fiche.source && <p className="source">Source : {fiche.source.replace(/\s*\((sources|scripts)\/[^)]*\)\s*$/, '')}</p>}
       </footer>
     </article>
   );

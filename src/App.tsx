@@ -7,16 +7,14 @@ import { ThemeBadge } from './components/ThemeBadge';
 import { Code } from './lib/highlight';
 import { inline } from './lib/markdown';
 import { useStoredList } from './lib/storage';
-import { tagDefs, tagById } from './content/tags';
 import { modules, parcours, placeInParcours } from './content/parcours';
 
-type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'notion'; id: string } | { view: 'parcours' };
+type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'parcours' };
 
 function parseHash(): Route {
   const [, kind, id] = window.location.hash.split('/');
   if (kind === 'fiche' && id) return { view: 'fiche', id: decodeURIComponent(id) };
   if (kind === 'theme' && id) return { view: 'theme', id: decodeURIComponent(id) };
-  if (kind === 'notion' && id) return { view: 'notion', id: decodeURIComponent(id) };
   if (kind === 'parcours') return { view: 'parcours' };
   return { view: 'home' };
 }
@@ -51,15 +49,15 @@ const SUGGESTIONS = ['KeyError', 'axis', 'vue ou copie', 'groupby', 'dropna', 'm
 
 const go = (id: string) => { window.location.hash = `#/fiche/${id}`; };
 
-function FicheCard({ f, theme, fav }: { f: Fiche; theme?: Theme; fav?: boolean }) {
+function FicheCard({ f, theme, fav, showTheme = true }: { f: Fiche; theme?: Theme; fav?: boolean; showTheme?: boolean }) {
   return (
     <a href={`#/fiche/${f.id}`} className={`fiche-card ${isLab(f) ? 'is-lab' : ''}`}>
-      <span className="fc-top">
-        <ThemeBadge theme={theme} size="sm" />
-        <span className="fc-theme">{theme?.label}</span>
-        {isLab(f) && <span className="pill pill-lab">Labo</span>}
-        {fav && <span className="fc-fav" aria-label="favori">★</span>}
-      </span>
+      {(showTheme || fav) && (
+        <span className="fc-top">
+          {showTheme && <><ThemeBadge theme={theme} size="sm" /><span className="fc-theme">{theme?.label}</span></>}
+          {fav && <span className="fc-fav" aria-label="favori">★</span>}
+        </span>
+      )}
       <strong className="fc-title">{f.title}</strong>
       <span className="fc-summary">{inline(f.summary)}</span>
       <span className="fc-meta">{simCount(f) > 0 ? `${simCount(f)} simulateur${simCount(f) > 1 ? 's' : ''}` : 'fiche'}</span>
@@ -90,11 +88,11 @@ export default function App() {
   const currentTheme = route.view === 'theme' ? themeOf(route.id) : current ? themeOf(current.theme) : undefined;
   useEffect(() => { if (current) recents.push(current.id); }, [current?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { setMenuOpen(false); setQuery(''); }, [route]);
-  useEffect(() => { if (currentTheme) setOpenThemes((xs) => (xs.includes(currentTheme.id) ? xs : [...xs, currentTheme.id])); }, [currentTheme?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // seul le thème en cours est déplié (les autres restent dépliables à la main)
+  useEffect(() => { setOpenThemes(currentTheme ? [currentTheme.id] : []); }, [currentTheme?.id]);
 
   const hits = useMemo(() => (query.trim() ? search(index, query) : []), [index, query]);
   useEffect(() => setActive(0), [query]);
-  const withTag = (t: string) => fiches.filter((f) => f.tags.includes(t));
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -115,11 +113,11 @@ export default function App() {
   };
   const ask = (q: string) => { setQuery(q); searchRef.current?.focus(); };
 
-  const themeFiches = (id: string) => fiches.filter((f) => f.theme === id).sort((a, b) => Number(isLab(a)) - Number(isLab(b)) || a.title.localeCompare(b.title, 'fr'));
+  const rank = (f: Fiche) => (isLab(f) ? 1000 : parcours.indexOf(f.id));
+  const themeFiches = (id: string) => fiches.filter((f) => f.theme === id).sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title, 'fr'));
   const ordered = currentTheme ? themeFiches(currentTheme.id) : [];
   const pos = current ? ordered.findIndex((f) => f.id === current.id) : -1;
   const place = current ? placeInParcours(current.id) : null;
-  const totalSims = fiches.reduce((n, f) => n + simCount(f), 0);
 
   return (
     <div className="app">
@@ -142,7 +140,6 @@ export default function App() {
                 <a key={f.id} href={`#/fiche/${f.id}`} role="option" aria-selected={i === active} className={i === active ? 'on' : ''} onMouseEnter={() => setActive(i)}>
                   <ThemeBadge theme={themeOf(f.theme)} size="sm" />
                   <span className="sp-text"><strong>{f.title}</strong><span>{inline(f.summary)}</span></span>
-                  {isLab(f) && <span className="pill pill-lab">Labo</span>}
                 </a>
               ))}
               {!hits.length && <div className="sp-empty">Aucune fiche pour « {query} ». Essaie un nom de fonction (<code>dropna</code>) ou un mot du message d’erreur.</div>}
@@ -195,14 +192,6 @@ export default function App() {
               </div>
             );
           })}
-          <details className="nav-notions" open={route.view === 'notion'}>
-            <summary className="nav-label">Notions transversales <span className="chev">›</span></summary>
-            {tagDefs.map((t) => (
-              <a key={t.id} href={`#/notion/${t.id}`} className={`nav-notion ${route.view === 'notion' && route.id === t.id ? 'on' : ''}`}>
-                <span>{t.label}</span><span className="count">{withTag(t.id).length}</span>
-              </a>
-            ))}
-          </details>
         </nav>
 
         <main className="main" id="contenu">
@@ -217,22 +206,15 @@ export default function App() {
               prev={place ? (place.prev ? byId.get(place.prev) : undefined) : pos > 0 ? ordered[pos - 1] : undefined}
               next={place ? (place.next ? byId.get(place.next) : undefined) : pos >= 0 && pos < ordered.length - 1 ? ordered[pos + 1] : undefined}
               place={place ?? undefined} isRevised={revised.items.includes(current.id)} onToggleRevised={() => revised.toggle(current.id)}
-              withTag={(t) => fiches.filter((f) => f.tags.includes(t))} />
+              />
           ) : <div className="empty">Fiche introuvable. <a href="#/">Retour à l’accueil</a></div>)}
 
           {route.view === 'home' && (
             <div className="home">
               <section className="hero">
-                <p className="eyebrow">Python · NumPy · pandas · visualisation</p>
                 <h1>Retrouve une notion en quelques secondes,<br />puis vois-la fonctionner.</h1>
-                <p className="hero-sub">{fiches.length - fiches.filter(isLab).length} fiches, {fiches.filter(isLab).length} labos, {totalSims} simulateurs — résultats exécutés par le vrai Python.</p>
-                <div className="hero-search">
-                  <button className="hero-input" onClick={() => searchRef.current?.focus()}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
-                    Rechercher… <kbd>/</kbd>
-                  </button>
-                  <div className="suggest">{SUGGESTIONS.map((s) => <button key={s} className="chip" onClick={() => ask(s)}>{s}</button>)}</div>
-                </div>
+                <p className="hero-sub">Tape <kbd>/</kbd> pour chercher une fonction, une notion ou un message d’erreur. Par exemple :</p>
+                <div className="suggest">{SUGGESTIONS.map((s) => <button key={s} className="chip" onClick={() => ask(s)}>{s}</button>)}</div>
               </section>
 
 
@@ -249,24 +231,12 @@ export default function App() {
                 </div>
               </a>
 
-              {(recents.items.length > 0 || favorites.items.length > 0) && (
-                <section className="resume">
-                  {recents.items.length > 0 && (
-                    <div>
-                      <h2 className="h-small">Reprendre</h2>
-                      <div className="mini-list">{recents.items.map((id) => byId.get(id)).filter(Boolean).slice(0, 5).map((f) => (
-                        <a key={f!.id} href={`#/fiche/${f!.id}`}><ThemeBadge theme={themeOf(f!.theme)} size="sm" /><span>{f!.title}</span></a>
-                      ))}</div>
-                    </div>
-                  )}
-                  {favorites.items.length > 0 && (
-                    <div>
-                      <h2 className="h-small">Favoris</h2>
-                      <div className="mini-list">{favorites.items.map((id) => byId.get(id)).filter(Boolean).slice(0, 5).map((f) => (
-                        <a key={f!.id} href={`#/fiche/${f!.id}`}><span className="star">★</span><span>{f!.title}</span></a>
-                      ))}</div>
-                    </div>
-                  )}
+              {recents.items.length > 0 && (
+                <section>
+                  <h2 className="h-small">Consultées récemment</h2>
+                  <div className="recent-row">{recents.items.map((id) => byId.get(id)).filter((f) => f && f.id !== nextToRevise).slice(0, 4).map((f) => (
+                    <a key={f!.id} href={`#/fiche/${f!.id}`} className="chip"><ThemeBadge theme={themeOf(f!.theme)} size="sm" />{f!.title}</a>
+                  ))}</div>
                 </section>
               )}
 
@@ -289,27 +259,17 @@ export default function App() {
               </section>
 
               <section>
-                <div className="section-head"><h2>Réviser une notion à travers tous les thèmes</h2><p className="muted">Une carte = une même idée, retrouvée dans Python, NumPy, pandas et la visualisation.</p></div>
-                <div className="notion-grid">
-                  {tagDefs.map((t) => (
-                    <a key={t.id} href={`#/notion/${t.id}`} className="notion-card">
-                      <span className="nc-top"><strong>{t.label}</strong><span className="count">{withTag(t.id).length} fiches</span></span>
-                      <span className="nc-desc">{t.description}</span>
-                    </a>
-                  ))}
-                </div>
-              </section>
-
-              <section>
                 <div className="section-head"><h2>Labos</h2><p className="muted">Change un paramètre, vois exactement ce qui change.</p></div>
-                <div className="card-grid">{fiches.filter(isLab).map((f) => <FicheCard key={f.id} f={f} theme={themeOf(f.theme)} fav={favorites.items.includes(f.id)} />)}</div>
+                <div className="lab-list">{fiches.filter(isLab).map((f) => (
+                  <a key={f.id} href={`#/fiche/${f.id}`} className="lab-row"><ThemeBadge theme={themeOf(f.theme)} size="sm" /><span>{labShort(f)}</span><span className="lab-lib">{themeOf(f.theme)?.label}</span></a>
+                ))}</div>
               </section>
             </div>
           )}
 
           {route.view === 'parcours' && (
             <div className="parcours-page">
-              <p className="eyebrow"><a href="#/">Accueil</a> / Parcours</p>
+              <p className="crumb"><a href="#/">Accueil</a> / Parcours</p>
               <h1>Parcours de révision</h1>
               <p className="hero-sub">Les {parcours.length} fiches dans l’ordre de ton cursus. Marque chaque fiche « Révisée » pour suivre ta progression.</p>
               <div className="pp-progress"><span className="progress"><span style={{ width: `${(nbRevised / parcours.length) * 100}%` }} /></span><span>{nbRevised} / {parcours.length} révisées</span>
@@ -337,31 +297,12 @@ export default function App() {
             </div>
           )}
 
-          {route.view === 'notion' && (() => {
-            const t = tagById.get(route.id);
-            if (!t) return <div className="empty">Notion introuvable. <a href="#/">Retour à l’accueil</a></div>;
-            const list = withTag(t.id);
-            return (
-              <div className="notion-page">
-                <p className="eyebrow"><a href="#/">Accueil</a> / Notion</p>
-                <h1>{t.label}</h1>
-                <p className="hero-sub">{t.description}</p>
-                {themes.filter((th) => list.some((f) => f.theme === th.id)).map((th) => (
-                  <section key={th.id} className="notion-group">
-                    <h2 className="ng-title"><ThemeBadge theme={th} size="sm" />{th.label}</h2>
-                    <div className="card-grid">{list.filter((f) => f.theme === th.id).map((f) => <FicheCard key={f.id} f={f} theme={th} fav={favorites.items.includes(f.id)} />)}</div>
-                  </section>
-                ))}
-              </div>
-            );
-          })()}
-
           {route.view === 'theme' && currentTheme && (
             <div className="theme-page" style={{ ['--h' as string]: String(currentTheme.hue ?? 220) }}>
               <header className="theme-head">
                 <ThemeBadge theme={currentTheme} size="lg" />
                 <div>
-                  <p className="eyebrow"><a href="#/">Accueil</a> / Thème</p>
+                  <p className="crumb"><a href="#/">Accueil</a> / Thème</p>
                   <h1>{currentTheme.label}</h1>
                   <p className="muted">{currentTheme.description}</p>
                 </div>
@@ -371,7 +312,17 @@ export default function App() {
                 </div>
               </header>
               {!revision ? (
-                <div className="card-grid">{themeFiches(currentTheme.id).map((f) => <FicheCard key={f.id} f={f} theme={currentTheme} fav={favorites.items.includes(f.id)} />)}</div>
+                <>
+                  <div className="card-grid">{themeFiches(currentTheme.id).filter((f) => !isLab(f)).map((f) => <FicheCard key={f.id} f={f} theme={currentTheme} showTheme={false} fav={favorites.items.includes(f.id)} />)}</div>
+                  {themeFiches(currentTheme.id).some(isLab) && (
+                    <section className="theme-labs">
+                      <h2 className="h-small">Labos — change un paramètre, vois ce qui change</h2>
+                      <div className="lab-list">{themeFiches(currentTheme.id).filter(isLab).map((f) => (
+                        <a key={f.id} href={`#/fiche/${f.id}`} className="lab-row"><span>{labShort(f)}</span></a>
+                      ))}</div>
+                    </section>
+                  )}
+                </>
               ) : (
                 <div className="revision">
                   <p className="muted">Toute la syntaxe et l’essentiel du thème sur une seule page.</p>

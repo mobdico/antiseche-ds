@@ -31,11 +31,10 @@ export function vizSim(id: string): Simulator {
       for (const w of run.warnings ?? []) alerts.push({ level: 'warning', title: w.split(':')[0], message: w.slice(w.indexOf(':') + 1).trim() });
       return {
         code: run.code,
-        steps: [{ label: 'Graphique', code: 'plt.show()', vars: [], heap: [], image: run.img ? { src: run.img, alt: sc.title } : undefined,
-          note: 'Image produite par ce code exact. Change un réglage pour voir le graphique se transformer.' }],
+        steps: [{ label: 'Graphique', code: '', vars: [], heap: [], image: run.img ? { src: run.img, alt: sc.title } : undefined }],
         output: run.stdout ? run.stdout.replace(/\n$/, '').split('\n') : undefined,
         alerts,
-        verdict: `${sc.doc} *(tracé avec matplotlib ${VIZ.versions.matplotlib} / seaborn ${VIZ.versions.seaborn})*`,
+        verdict: sc.doc,
       };
     },
   };

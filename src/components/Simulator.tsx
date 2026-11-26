@@ -60,7 +60,7 @@ export function SimulatorView({ sim }: { sim: Sim }) {
   return (
     <section className="sim" tabIndex={-1} onKeyDown={onKey} aria-label={sim.title ?? 'Simulateur'}>
       <div className="sim-head">
-        <h2>{(() => { const t = sim.title?.replace(/^Simulateur — /, '') ?? 'Simulateur'; return t.charAt(0).toUpperCase() + t.slice(1); })()}</h2>
+        <h2>{(() => { const t = sim.title?.replace(/^Simulateur — /, '') ?? 'Simulateur'; return /^[a-zà-ÿ]+(\s|$)/i.test(t) ? t.charAt(0).toUpperCase() + t.slice(1) : t; })()}</h2>
         <button className="btn-ghost sm" onClick={() => setParams(defaultParams(sim))} disabled={isDefault}>Réinitialiser</button>
       </div>
 
@@ -98,10 +98,10 @@ export function SimulatorView({ sim }: { sim: Sim }) {
         <div className="sim-code">
           <div className="panel-title">Code</div>
           <Code code={result.code} activeLine={step.line} />
-          {!!result.output?.length && (
+          {!!(step.output ?? result.output)?.length && (
             <>
-              <div className="panel-title">Sortie</div>
-              <pre className="console">{result.output.join('\n')}</pre>
+              <div className="panel-title">Sortie{step.output && result.steps.length > 1 ? ' à cette étape' : ''}</div>
+              <pre className="console">{(step.output ?? result.output)!.join('\n')}</pre>
             </>
           )}
         </div>
@@ -117,9 +117,7 @@ export function SimulatorView({ sim }: { sim: Sim }) {
                 <button className="icon-btn sm" aria-label="Étape précédente" onClick={() => goStep(stepIdx - 1)} disabled={stepIdx === 0}>‹</button>
                 <button className="icon-btn sm" aria-label="Étape suivante" onClick={() => goStep(stepIdx + 1)} disabled={stepIdx === last}>›</button>
                 <span className="stepper-count">Étape <strong>{stepIdx + 1}</strong> / {last + 1}</span>
-                <span className="stepper-hint">← → au clavier</span>
               </div>
-              <div className="progress"><span style={{ width: `${((stepIdx + 1) / (last + 1)) * 100}%` }} /></div>
               <div className="steps" ref={stripRef}>
                 {result.steps.map((s, i) => (
                   <button key={i} className={`step ${i === stepIdx ? 'on' : ''} ${i < stepIdx ? 'past' : ''}`} onClick={() => goStep(i)}>
@@ -129,7 +127,7 @@ export function SimulatorView({ sim }: { sim: Sim }) {
               </div>
             </div>
           )}
-          {step.code && <div className="step-code"><Code code={step.code} className="inline" /></div>}
+          {step.code && !step.line && <div className="step-code"><Code code={step.code} className="inline" /></div>}
           {step.image && <figure className="sim-figure"><img src={step.image.src} alt={step.image.alt} loading="lazy" /></figure>}
           {(step.vars.length > 0 || !step.image) && <MemoryDiagram step={step} colorOf={colorOf} />}
           {step.note && <p className="step-note">{inline(step.note)}</p>}

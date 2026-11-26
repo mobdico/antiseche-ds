@@ -22,7 +22,7 @@ function simulate(sc: TScenario, p: Record<string, string | boolean>): SimResult
   const lines = run.code.split('\n');
   const steps: SimStep[] = run.steps.map((s) => ({
     label: s.label, code: s.code, vars: s.vars, heap: s.heap, line: s.line,
-    note: s.stdout ? `Sortie à cette étape : \`${s.stdout.trimEnd().split('\n').slice(-2).join(' ⏎ ')}\`` : undefined,
+    output: s.stdout ? s.stdout.replace(/\n$/, '').split('\n') : [],
   }));
   const alerts: SimAlert[] = [];
   if (!steps.length) {
@@ -39,7 +39,8 @@ function simulate(sc: TScenario, p: Record<string, string | boolean>): SimResult
   }
   if (run.truncated) alerts.push({ level: 'info', title: 'Trace tronquée', message: 'Seules les 60 premières étapes sont affichées.' });
   const output = run.error ? [...run.stdout.split('\n').filter((l, i, a) => l || i < a.length - 1), ...(run.error.traceback ?? ['Traceback (most recent call last):', '  ...', `${run.error.type}: ${run.error.message}`])] : run.stdout.replace(/\n$/, '').split('\n');
-  return { code: run.code, steps, output, alerts, verdict: `${sc.doc} *(exécuté avec Python ${TRACE.python})*` };
+  if (run.error && steps.length) steps[steps.length - 1] = { ...steps[steps.length - 1], output };
+  return { code: run.code, steps, output, alerts, verdict: sc.doc };
 }
 
 /** Simulateur tracé à partir d'un scénario de scripts/trace/scenarios_python_core.py. */

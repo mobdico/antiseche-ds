@@ -86,6 +86,8 @@ export interface SimStep {
   vars: VarRef[];
   heap: HeapObj[];
   note?: string;
+  /** sortie console à cette étape (sinon : la sortie finale du résultat) */
+  output?: string[];
   /** image produite à cette étape (graphique) : chemin relatif, ex. 'viz/abc.png' */
   image?: { src: string; alt: string };
   /** numéro de ligne (1 = première) du code complet à surligner pendant cette étape */

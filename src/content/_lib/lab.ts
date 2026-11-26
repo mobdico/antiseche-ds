@@ -130,7 +130,6 @@ function simulate(lab: LabData, fam: LabFamily, p: Record<string, string | boole
   const call = callOf(m, combo);
   const twoVersions = !!lab.versions;
   const version = twoVersions && p.version === 'p2' ? 'p2' : 'p3';
-  const vname = lab.versions ? `pandas ${lab.versions[version]}` : `NumPy ${lab.numpy}`;
   const imports = lab.lib === 'numpy' ? 'import numpy as np' : 'import numpy as np\nimport pandas as pd';
   const code = `${imports}\n\n${lab.dataset.code}\n\nres = ${call}\nprint(res)`;
   const step0 = datasetStep(lab);
@@ -175,7 +174,6 @@ function simulate(lab: LabData, fam: LabFamily, p: Record<string, string | boole
     code,
     steps: [step0, { label: m.label, code: `res = ${call}`, vars, heap, note: note!, inspect: 'res' }],
     output, alerts,
-    verdict: `${m.doc} *(résultat exécuté avec ${vname})*`,
   };
 }
 
@@ -204,7 +202,6 @@ export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
     summary: fam.summary,
     concept: `Chaque combinaison de paramètres ci-dessous a été **exécutée par le vrai ${libName}** (${versionLabel}) : résultats, affichages, erreurs et avertissements sont réels.\n\n${fam.methods.map((m) => `- **\`${m.label}\`** : ${m.doc}`).join('\n')}`,
     syntax: fam.methods.map(sig).join('\n'),
-    useCase: 'Choisis une méthode, puis change **un seul paramètre à la fois** : les valeurs qui bougent par rapport au réglage par défaut sont surlignées.',
     simulator: { title: 'Laboratoire — joue avec les paramètres', params, simulate: (p) => simulate(lab, fam, p) },
     source: `Labo généré avec ${libName} ${versionLabel} (scripts/lab/)`,
     ...extra,
