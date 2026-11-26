@@ -40,7 +40,7 @@ def ser(r):
                 "rows": [[clean(x) for x in row] for row in r.itertuples(index=False)], "dtypes": [str(d) for d in r.dtypes],
                 "indexName": r.index.name}
     if isinstance(r, pd.Series):
-        return {"kind": "Series", "name": None if r.name is None else str(r.name), "index": [clean(i) for i in r.index],
+        return {"kind": "Series", "name": None if r.name is None else clean(r.name), "index": [clean(i) for i in r.index],
                 "values": [clean(x) for x in r], "dtype": str(r.dtype), "indexName": r.index.name}
     if isinstance(r, np.ndarray):
         if r.size == 0:

@@ -33,6 +33,33 @@ def agg(id, extra=None, doc=""):
 
 FAMILIES = [
     {
+        "id": "formes",
+        "title": "Que renvoie une opération ? Series, DataFrame, index, name",
+        "summary": "Pour chaque opération courante : Series ou DataFrame, ce qu’il y a dans l’index, et s’il y a un `.name` ou des `.columns`.",
+        "methods": [
+            {"id": "forme", "label": "opération", "expr": "{op}", "shapeNote": True,
+             "doc": "Le résultat réel de pandas, avec sa forme : type, index, name, columns.",
+             "params": [P("op", [
+                 ('df["ville"]', "une colonne → Series, `.name` = nom de la colonne"),
+                 ('df[["ville"]]', "une liste de colonnes → DataFrame à une colonne"),
+                 ('df.loc[0]', "une ligne → Series, index = noms des colonnes"),
+                 ('df["ville"].value_counts()', "index = valeurs distinctes ; `.name` = 'count'"),
+                 ('df["ville"].value_counts().reset_index()', "reset_index() : l’index redevient une colonne"),
+                 ("df.isnull()", "DataFrame de booléens, même forme que df"),
+                 ("df.isnull().sum()", "Series : index = noms des colonnes, `.name` vide"),
+                 ("df.mean(numeric_only=True)", "une valeur par colonne → Series"),
+                 ('df["score"].describe()', "Series : index = count, mean, std…"),
+                 ("df.describe()", "DataFrame : index = count, mean… ; colonnes = colonnes numériques"),
+                 ('df.groupby("ville")["score"].mean()', "la clé du groupby devient l’INDEX ; `.name` = 'score'"),
+                 ('df.groupby("ville")[["score"]].mean()', "doubles crochets → DataFrame indexé par ville"),
+                 ('df.groupby("ville")["score"].agg(["mean", "max"])', "plusieurs fonctions → une colonne par fonction"),
+                 ('df.groupby("ville", as_index=False)["score"].mean()', "as_index=False : ville reste une colonne"),
+                 ('df.groupby("ville")["score"].mean().reset_index()', "même résultat avec reset_index()"),
+                 ('df["score"] + pd.Series([100, 100], index=[0, 5])', "calcul entre Series : alignement sur les étiquettes, NaN ailleurs"),
+             ], 'df["ville"]', "opération")]},
+        ],
+    },
+    {
         "id": "agregations",
         "title": "Labo — agrégations : sum, mean, any, all…",
         "summary": "Faire varier `axis`, `skipna`, `numeric_only`, `min_count`… sur un DataFrame qui mélange texte, nombres, booléens et NaN.",

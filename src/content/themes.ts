@@ -61,8 +61,9 @@ export const themes: Theme[] = [
       enUnePhrase: 'pandas est un **tableur programmable** : des tableaux avec des noms de lignes et de colonnes, et des centaines de méthodes pour les interroger sans boucle.',
       pourquoi: 'Créé en 2008 par Wes McKinney, analyste dans un fonds d’investissement (AQR Capital), qui voulait analyser des données financières en Python aussi facilement qu’avec R ou Excel. Rendu open source en 2009, le nom vient de *panel data* (données de panel, en économétrie) et de *Python data analysis*. Il apporte ce que NumPy n’a pas : des **colonnes de types différents**, des **étiquettes**, la gestion des **valeurs manquantes** et les opérations de base de données (groupby, jointures).',
       philosophie: [
-        '**Les étiquettes avant les positions** : on sélectionne par nom (`.loc`), et pandas **aligne** automatiquement sur l’index.',
-        '**Une colonne = une Series** au type homogène ; un DataFrame = des Series qui partagent un index.',
+        '**Tout passe par les étiquettes** (index des lignes, noms des colonnes) : on sélectionne par nom (`.loc`, `df["col"]`), les calculs entre Series s’**alignent** sur l’index, les jointures et les groupby travaillent sur des clés. Seul `.iloc` utilise les positions.',
+        '**Chaque opération fabrique un index** : `value_counts()` met les valeurs dans l’index, `isnull().sum()` les noms de colonnes, `groupby` les clés. Savoir ce qu’il y a dans l’index, c’est savoir ce qu’on peut faire ensuite.',
+        '**Une colonne = une Series** (un `.name`, pas de `.columns`) ; un DataFrame = des Series qui partagent un index (des `.columns`, pas de `.name`).',
         '**Vectoriser, enchaîner** : `df[cond].groupby(col)["x"].mean()` en une ligne, sans boucle.',
         '**Les méthodes renvoient un nouvel objet** : on réaffecte (`df = df.dropna()`) plutôt que de modifier en place.',
       ],

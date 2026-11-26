@@ -14,11 +14,11 @@ import { list } from '../../engine/sim-helpers';
 const OMIT = '__omit__';
 
 interface LabParam { id: string; label: string; default: string; options: { code: string; help: string }[] }
-interface LabMethod { id: string; label: string; expr: string; doc: string; params: LabParam[] }
+interface LabMethod { id: string; label: string; expr: string; doc: string; params: LabParam[]; shapeNote?: boolean }
 interface LabFamily { id: string; title: string; summary: string; methods: LabMethod[] }
 type Res =
   | { kind: 'DataFrame'; columns: string[]; index: (string | number)[]; rows: Prim[][]; dtypes: string[]; indexName: string | null }
-  | { kind: 'Series'; name: string | null; index: (string | number | null)[]; values: Prim[]; dtype: string; indexName: string | null }
+  | { kind: 'Series'; name: string | number | null; index: (string | number | null)[]; values: Prim[]; dtype: string; indexName: string | null }
   | { kind: 'ndarray'; values: Prim[] | Prim[][]; shape?: number[]; dtype: string; type?: string; view?: boolean }
   | { kind: 'tuple'; pyType: string; items: Res[] }
   | { kind: 'scalar'; type: string; value: Prim };
@@ -45,7 +45,7 @@ function toFrame(r: Extract<Res, { kind: 'DataFrame' }>): Frame {
 function toObjs(id: string, r: Res, extra: Partial<HeapObj> = {}): HeapObj[] {
   switch (r.kind) {
     case 'DataFrame': return [frameObj(id, toFrame(r), extra)];
-    case 'Series': return [seriesObj(id, { name: r.name, index: r.index.map((x) => (x === null ? 'NaN' : x)), values: r.values, dtype: r.dtype as Dtype, indexName: r.indexName ?? undefined }, extra)];
+    case 'Series': return [seriesObj(id, { name: r.name === null ? null : String(r.name), index: r.index.map((x) => (x === null ? 'NaN' : x)), values: r.values, dtype: r.dtype as Dtype, indexName: r.indexName ?? undefined }, { ...extra, ...(typeof r.name === 'number' ? { attrs: [{ name: '.name', value: String(r.name) }] } : {}) })];
     case 'ndarray': {
       const shape = r.shape ?? [r.values.length];
       const common: Partial<HeapObj> = {
@@ -93,6 +93,23 @@ function diffCells(r: Res, ref: Res): string[] | null {
 
 const shapeOf = (r: Res): string =>
   r.kind === 'DataFrame' ? `(${r.rows.length}, ${r.columns.length})` : r.kind === 'scalar' ? 'un scalaire' : r.kind === 'tuple' ? `un tuple de ${r.items.length}` : r.kind === 'ndarray' ? shapeStr(r.shape ?? [r.values.length]) : `(${r.values.length},)`;
+
+const preview = (xs: Prim[], n = 6) => (xs.length > n ? [...xs.slice(0, n).map(String), '…'] : xs.map(String)).map((x) => `\`${x}\``).join(', ');
+const pyName = (x: string | number | null) => (x === null ? '`None` (vide)' : typeof x === 'number' ? `\`${x}\`` : `\`'${x}'\``);
+
+/** Phrase qui décrit la forme d'un résultat : type, index, name, columns. */
+function shapeSentence(r: Res): string {
+  if (r.kind === 'Series') {
+    const idx = r.index.every((v, i) => v === i) ? `0 à ${r.index.length - 1}` : preview(r.index as Prim[]);
+    return `**Series** de ${r.values.length} valeur(s). **Index** : ${idx}${r.indexName ? ` — l’index s’appelle \`${r.indexName}\`` : ''}. **\`.name\`** : ${pyName(r.name)}. Pas de \`.columns\` (c’est une Series).`;
+  }
+  if (r.kind === 'DataFrame') {
+    const idx = r.index.every((v, i) => v === i) ? `0 à ${r.index.length - 1} (index par défaut)` : preview(r.index as Prim[]);
+    return `**DataFrame** de ${r.rows.length} ligne(s) × ${r.columns.length} colonne(s). **Index** : ${idx}${r.indexName ? ` — l’index s’appelle \`${r.indexName}\`` : ''}. **\`.columns\`** : ${preview(r.columns)}. Pas de \`.name\` (c’est un DataFrame).`;
+  }
+  if (r.kind === 'scalar') return `Une **valeur unique** (${r.type}).`;
+  return `Un objet de type ${r.kind}.`;
+}
 
 /** Expression Python affichée pour une combinaison (mêmes règles que le générateur). */
 function callOf(m: LabMethod, combo: string[]): string {
@@ -152,7 +169,8 @@ function simulate(lab: LabData, fam: LabFamily, p: Record<string, string | boole
     const refRes = ((version === 'p2' && ref.p2) || ref.p3)?.result;
     const isDefault = m.params.every((q, i) => combo[i] === q.default);
     let changed: string[] = [];
-    if (!m.params.length) note = 'Cette méthode n’a pas de paramètre à faire varier ici.';
+    if (m.shapeNote) note = shapeSentence(r);
+    else if (!m.params.length) note = 'Cette méthode n’a pas de paramètre à faire varier ici.';
     else if (!isDefault && refRes) {
       const d = diffCells(r, refRes);
       if (d === null) note = `Par rapport aux paramètres par défaut, la **forme change** : ${shapeOf(refRes)} → ${shapeOf(r)}.`;
@@ -185,9 +203,10 @@ export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
   const versionLabel = lab.versions ? `${lab.versions.p3} et ${lab.versions.p2}` : lab.numpy;
   const libName = lab.lib === 'numpy' ? 'NumPy' : 'pandas';
   const params: ParamDef[] = [
-    { id: 'method', label: 'Méthode', type: 'choice', default: fam.methods[0].id, options: fam.methods.map((m) => ({ value: m.id, label: `\`${m.label}\``, help: m.doc })) },
+    // un seul choix possible : pas de sélecteur de méthode
+    ...(fam.methods.length > 1 ? [{ id: 'method', label: 'Méthode', type: 'choice' as const, default: fam.methods[0].id, options: fam.methods.map((m) => ({ value: m.id, label: `\`${m.label}\``, help: m.doc })) }] : []),
     ...fam.methods.flatMap((m) => m.params.map((q): ParamDef => ({
-      id: pid(m, q), label: q.label, type: 'choice', default: q.default, showIf: { method: m.id },
+      id: pid(m, q), label: q.label, type: 'choice', default: q.default, ...(fam.methods.length > 1 ? { showIf: { method: m.id } } : {}),
       options: q.options.map((o) => ({ value: o.code, label: label(o.code) + (o.code === q.default ? ' ·défaut' : ''), help: o.help })),
     }))),
     ...(lab.versions ? [{ id: 'version', label: 'Version de pandas', type: 'choice' as const, default: 'p3', options: [{ value: 'p3', label: `pandas ${lab.versions.p3}` }, { value: 'p2', label: `pandas ${lab.versions.p2}` }] }] : []),

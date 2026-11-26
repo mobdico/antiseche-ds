@@ -95,6 +95,9 @@ export function inspectObj(o: HeapObj): { type: string; attrs: Attr[] } {
     if (!f.label.startsWith('.')) continue;
     attrs.push({ name: f.label, value: 'ref' in f.slot ? `@ref:${f.slot.ref}` : q(f.slot.v === null ? 'None' : f.slot.v).replace(/^'None'$/, 'None') });
   }
+  // ce qui N'existe PAS sur ce type : source fréquente d'AttributeError
+  if (o.pyType === 'Series') attrs.push({ name: '.columns', value: 'n’existe pas (c’est une Series : AttributeError)' });
+  if (o.pyType === 'DataFrame') attrs.push({ name: '.name', value: 'n’existe pas (c’est un DataFrame : AttributeError)' });
   for (const a of o.attrs ?? []) {
     const i = attrs.findIndex((x) => x.name === a.name);
     if (i >= 0) attrs[i] = a; else attrs.push(a);

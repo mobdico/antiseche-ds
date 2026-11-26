@@ -20,7 +20,7 @@ export const modules: Module[] = [
   { id: 'manipuler', course: 'Python pour la Data Science', title: 'Manipuler et analyser des données en Python',
     fiches: ['python-bases-analyse', 'python-dates'] },
   { id: 'numpy-pandas', course: 'Analyse et visualisation de données', title: 'Introduction à NumPy et pandas',
-    fiches: ['numpy-introduction', 'numpy-indexation-booleenne', 'pandas-introduction', 'pandas-statistiques-filtrage', 'pandas-selection-avancee', 'nettoyage-pandas'] },
+    fiches: ['numpy-introduction', 'numpy-indexation-booleenne', 'pandas-introduction', 'pandas-formes', 'pandas-statistiques-filtrage', 'pandas-selection-avancee', 'nettoyage-pandas'] },
   { id: 'visualisation', course: 'Analyse et visualisation de données', title: 'Introduction à la visualisation de données',
     fiches: ['visu-courbes', 'visu-nuages', 'visu-barres-histogrammes', 'visu-pandas-grilles', 'visu-seaborn'] },
   { id: 'storytelling', course: 'Analyse et visualisation de données', title: 'Storytelling et design de l’information',
