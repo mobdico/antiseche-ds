@@ -24,6 +24,6 @@ ax.text(x, y, s)                          # ajouter du texte`,
   simulators: vizSims(['data-ink']),
   pitfalls: ['Retirer l’axe des x **et** ne pas écrire les valeurs : le lecteur ne peut plus rien lire.', 'Des barres trop épaisses sont de l’encre redondante.'],
   takeaways: ['Figure = toile, Axes = graphique.', 'Effacer bordures et graduations inutiles.', 'Écrire les valeurs plutôt qu’un axe.'],
-  related: ['story-gestalt', 'story-style'],
+  related: ['story-style'],
   source: 'DataXp — Storytelling et design de l’information, chapitre 1 (sources/storytelling/dataxp-concevoir-pour-son-audience.pdf)',
 });

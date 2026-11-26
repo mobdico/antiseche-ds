@@ -30,6 +30,6 @@ donnees[0][-1]           # double indexation`,
     'Un slicing crée une **nouvelle** liste ; un index simple renvoie l’élément lui-même.',
   ],
   takeaways: ['Index de 0 à `len − 1` ; −1 = dernier.', '`[m:n]` : m inclus, n exclu.', '`donnees[ligne][colonne]`.'],
-  related: ['python-boucles-for', 'python-variables', 'nettoyage-python-natif'],
+  related: ['python-boucles-for', 'python-variables'],
   source: 'DataXp — Introduction à la programmation Python, chapitre 4 (sources/python-core/dataxp-les-listes-python.pdf)',
 });

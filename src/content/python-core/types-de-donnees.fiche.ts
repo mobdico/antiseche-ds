@@ -12,20 +12,15 @@ export default defineFiche({
 - Python distingue les **entiers** (\`int\`) des **décimaux** (\`float\`). Le type détermine comment la valeur est stockée et quelles opérations sont possibles.
 - \`int()\`, \`float()\` et \`round()\` convertissent un nombre : \`int()\` **tronque** la partie décimale, \`round()\` **arrondit** au plus proche.
 - Une **chaîne** (\`str\`) est une séquence de caractères entre guillemets simples ou doubles.
-- Le **backslash** \`\\\` permet d’échapper un guillemet ou une apostrophe dans une chaîne.
 - \`+\` concatène des chaînes, mais ne peut pas mélanger directement chaînes et nombres : il faut d’abord convertir avec \`str()\`.
-- Les **triples guillemets** (\`'''\` ou \`"""\`) créent des chaînes sur plusieurs lignes, avec tous types de guillemets sans échappement.
 `,
   syntax: `int (42), float (3.14)      # entiers et flottants
 type(valeur)                # vérifier un type
 int(), float(), round()     # convertir un nombre
 nom = "texte"               # ou 'texte'
-\\'  \\"                      # échapper un guillemet
 "a" + " " + "b"             # concaténer
-str(3.5)                    # convertir en chaîne
-'''ligne 1
-ligne 2'''                  # chaîne multi-lignes`,
-  simulators: traceSims(['conversions', 'concatenation', 'chaines']),
+str(3.5)                    # convertir en chaîne`,
+  simulators: traceSims(['conversions', 'concatenation']),
   pitfalls: [
     '`int(-3.7)` vaut **−3** (troncature vers 0), `round(-3.7)` vaut −4.',
     '`int("3.7")` → `ValueError` : passer par `float()` d’abord.',
@@ -34,6 +29,6 @@ ligne 2'''                  # chaîne multi-lignes`,
     '`"5" + "5"` vaut `"55"`, pas 10.',
   ],
   takeaways: ['`type(x)` pour vérifier.', '`int()` tronque, `round()` arrondit.', 'Texte + nombre : `str()` ou f-string.'],
-  related: ['python-variables', 'nettoyage-python-natif'],
+  related: ['python-variables'],
   source: 'DataXp — Introduction à la programmation Python, chapitre 3 (sources/python-core/dataxp-les-types-de-donnees.pdf)',
 });

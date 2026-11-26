@@ -23,6 +23,6 @@ serie.map({True: "#33A1C9", False: "#ffae42"})   # couleurs conditionnelles`,
   simulators: vizSims(['style']),
   pitfalls: ['`style.use()` après le tracé n’a aucun effet sur le graphique déjà créé.', 'Le style reste actif pour **tous** les graphiques suivants : revenir à `"default"`.', 'Les noms de styles seaborn sont préfixés : `"seaborn-v0_8"` depuis matplotlib 3.6.'],
   takeaways: ['style.use avant de tracer.', 'color= accepte une couleur par barre.', 'Moins de grille, plus de message.'],
-  related: ['story-audience', 'story-gestalt'],
+  related: ['story-audience'],
   source: 'DataXp — Storytelling et design de l’information, chapitre 4 (sources/storytelling/dataxp-styles-matplotlib-fivethirtyeight.pdf)',
 });

@@ -22,7 +22,7 @@ d["nouvelle_clé"] = valeur             # ajouter
 d = {}                                 # dictionnaire vide
 # clés valides : int, str, float, bool (pas list ni dict)
 d.get("clé", défaut)                   # lire sans KeyError (en plus)`,
-  simulators: traceSims(['dico', 'cles']),
+  simulators: traceSims(['dico', 'in-dico', 'cles']),
   pitfalls: [
     'Clé absente → `KeyError` ; `d.get(clé, défaut)` évite l’erreur.',
     '`{1: "un", True: "vrai"}` ne contient qu’**une** clé : `{1: "vrai"}`.',
@@ -30,6 +30,6 @@ d.get("clé", défaut)                   # lire sans KeyError (en plus)`,
     'Pas d’accès par position : `d[0]` cherche la **clé** 0.',
   ],
   takeaways: ['Accès par clé, pas par position.', 'Clés uniques et hashables.', 'Ajouter ou modifier : `d[clé] = valeur`.'],
-  related: ['python-tables-frequences', 'nettoyage-pandas'],
+  related: ['nettoyage-pandas'],
   source: 'DataXp — Opérateurs et structures de données en Python, chapitre 4 (sources/python-core/dataxp-les-dictionnaires-python.pdf)',
 });

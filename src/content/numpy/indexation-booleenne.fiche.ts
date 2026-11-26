@@ -1,30 +1,9 @@
 import { defineFiche, type HeapObj, type SimAlert, type SimResult, type SimStep } from '../../engine/types';
-import { list, r } from '../../engine/sim-helpers';
+import { r } from '../../engine/sim-helpers';
 import { NOTES, NOTES_CODE, arr1, arr2, cloneMat, str1, str2, type Mat } from '../_lib/numpy-sim';
 
 const A = (m: Mat = NOTES, extra: Partial<HeapObj> = {}) => arr2('a', m, 'int64', extra);
 const step0: SimStep = { label: 'a', code: 'a = np.array([[...], ...])', vars: [{ name: 'a', ref: 'a' }], heap: [A()], note: '4 élèves × 3 matières (maths, physique, info).' };
-
-// ------------------------------------------------------------------ 1. genfromtxt et skip_header
-const CSV = ['maths,physique,info', '12,15,9', '8,11,14', '17,13,10'];
-
-function simGenfromtxt(skip: boolean): SimResult {
-  const rows: Mat = skip ? [[12, 15, 9], [8, 11, 14], [17, 13, 10]] : [[null, null, null], [12, 15, 9], [8, 11, 14], [17, 13, 10]];
-  const line = `a = np.genfromtxt("notes.csv", delimiter=","${skip ? ', skip_header=1' : ''})`;
-  return {
-    code: `# notes.csv\n${CSV.map((l) => '# ' + l).join('\n')}\n\n${line}\nprint(a)`,
-    steps: [
-      { label: 'Fichier', code: '# contenu de notes.csv', vars: [{ name: 'lignes', ref: 'csv' }], heap: [list('csv', CSV, { pyType: 'fichier texte', changed: [0] })],
-        note: 'La première ligne contient des **noms**, pas des nombres.' },
-      { label: 'genfromtxt', code: line, vars: [{ name: 'a', ref: 'a' }], heap: [arr2('a', rows, 'float64', { changed: skip ? [] : ['0:0', '0:1', '0:2'] })],
-        note: skip ? '`skip_header=1` saute la ligne d’en-tête : il ne reste que des nombres.' : '« maths » ne peut pas être converti en nombre → **nan**. Une ligne entière de nan apparaît.' },
-    ],
-    output: str2(rows, 'float64'),
-    alerts: skip ? [{ level: 'success', atStep: 1, title: 'Aucun nan', message: 'Le tableau ne contient que des données : shape (3, 3).' }]
-      : [{ level: 'warning', atStep: 1, title: 'Ligne de nan', message: 'Signe classique d’un en-tête non ignoré. Conséquence : `a.mean()` vaudra **nan**. Ajoute `skip_header=1`.' }],
-    verdict: 'genfromtxt lit des **float64** par défaut ; texte non convertible → nan.',
-  };
-}
 
 // ------------------------------------------------------------------ 2. masques : filtrer et assigner
 const MASK = NOTES.map((row) => (row[0] as number) > 10); // maths > 10 → élèves 0 et 2
@@ -124,20 +103,16 @@ export default defineFiche({
   id: 'numpy-indexation-booleenne',
   title: 'L’indexation booléenne avec NumPy',
   theme: 'numpy',
-  tags: ['selection', 'references', 'manquantes'],
+  tags: ['selection', 'references'],
   keywords: ['masque', 'indexation booléenne', 'nan', 'vue', 'copie', 'genfromtxt', 'np.genfromtxt', 'delimiter', 'skip_header', 'nan', 'masque', 'mask', 'tableau[masque]', 'tableau[masque] = valeur', '>', '<', '==', '!=', 'vue', 'copie', '.copy()', '.base', 'view'],
-  summary: 'Charger un CSV avec `genfromtxt`, filtrer et modifier un ndarray avec un **masque booléen**, et savoir quand on obtient une **vue** ou une **copie**.',
+  summary: 'Filtrer et modifier un ndarray avec un **masque booléen**, et savoir quand on obtient une **vue** ou une **copie**.',
   concept: `
-- Les valeurs **nan** (*Not a Number*) indiquent qu’une donnée ne peut pas être représentée dans le type numérique du tableau, souvent à cause d’une **ligne d’en-tête non ignorée** lors du chargement.
-- L’argument **\`skip_header\`** de \`np.genfromtxt()\` permet d’ignorer un nombre donné de lignes au début du fichier, ce qui évite de créer des valeurs nan.
 - Un **masque booléen** est un tableau de True et False créé avec un opérateur de comparaison (\`>\`, \`<\`, \`==\`, \`!=\`), utilisé pour **filtrer** ou **assigner** des valeurs dans un ndarray.
 - L’indexation booléenne fonctionne aussi bien en 1D qu’en 2D, en combinant le masque avec une sélection de colonnes (\`tableau[masque, 5:9]\`).
 - Sélectionner une colonne d’un ndarray 2D avec \`tableau[:, index_colonne]\` renvoie une **vue**, pas une copie : modifier cette sélection modifie aussi le tableau d’origine.
 `,
   useCase: 'Isoler les trajets de plus de 10 km, corriger les valeurs aberrantes, extraire les lignes d’une catégorie, sans boucle.',
-  syntax: `np.genfromtxt(nom_fichier, delimiter=",")   # charger un CSV
-skip_header=1                                # ignorer l'en-tête
-tableau > valeur                             # créer un masque
+  syntax: `tableau > valeur                             # créer un masque
 tableau[masque]                              # filtrer
 tableau[masque] = nouvelle_valeur            # assigner`,
   simulator: {
@@ -156,14 +131,8 @@ tableau[masque] = nouvelle_valeur            # assigner`,
       ] }],
       simulate: (p) => simVue(String(p.sel)),
     },
-    {
-      title: 'Simulateur — charger un CSV avec genfromtxt',
-      params: [{ id: 'skip', label: 'skip_header', type: 'toggle', default: false, onLabel: '`skip_header=1`', offLabel: 'sans' }],
-      simulate: (p) => simGenfromtxt(!!p.skip),
-    },
   ],
   pitfalls: [
-    'Oublier `skip_header=1` → une ligne de nan, et `a.mean()` vaut nan.',
     '`a[:, 0]` et `a[1:3]` sont des **vues** : les modifier modifie le tableau d’origine.',
     '`a[masque]` est une **copie** : modifier le résultat ne change pas `a` (pour modifier : `a[masque] = …`).',
     'Un masque 2D (`a[a > 14]`) donne un résultat **1D**.',

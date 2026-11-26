@@ -25,6 +25,6 @@ ax.axhline(y=valeur, xmin=0.5, xmax=0.8, linewidth=6)  # barre`,
   simulators: vizSims(['subplots-story']),
   pitfalls: ['`xmin` / `xmax` de `axhline` sont des **fractions de largeur** (0 à 1), pas des valeurs de l’axe x.', '`zip(axes, colonnes)` coupe silencieusement si les longueurs diffèrent.'],
   takeaways: ['Tout en gris, l’essentiel en couleur.', 'Boucle pour le commun, index pour l’exception.', 'Annoter le changement.'],
-  related: ['story-gestalt', 'visu-courbes', 'labo-python'],
+  related: ['visu-courbes', 'labo-python'],
   source: 'DataXp — Storytelling et design de l’information, chapitre 2 (sources/storytelling/dataxp-raconter-un-changement-dans-le-temps.pdf)',
 });

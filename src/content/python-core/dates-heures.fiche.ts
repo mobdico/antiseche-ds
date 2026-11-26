@@ -30,6 +30,6 @@ dt.timedelta(days=0, hours=0, minutes=0)        # créer une durée`,
     'Une durée négative s’affiche `-1 day, 0:00:00`.',
   ],
   takeaways: ['strptime : p = parse (texte → date).', 'strftime : f = format (date → texte).', 'date − date = timedelta.'],
-  related: ['python-poo', 'python-types'],
+  related: ['python-types'],
   source: 'DataXp — Manipuler et analyser des données en Python, chapitre 4 (sources/python-core/dataxp-dates-et-heures-en-python.pdf)',
 });
