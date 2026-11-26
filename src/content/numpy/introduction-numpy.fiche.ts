@@ -131,7 +131,7 @@ export default defineFiche({
   id: 'numpy-introduction',
   title: 'Introduction à NumPy : ndarray, axes et vectorisation',
   theme: 'numpy',
-  tags: ['debuter', 'axis', 'references', 'agregation'],
+  tags: ['axis', 'references', 'agregation'],
   keywords: ['ndarray', 'shape', 'axis', 'vectorisation', 'broadcasting', 'vue', 'np.array', 'shape', 'ndim', 'dtype', 'sum', 'mean', 'max', 'axis=0', 'axis=1', 'np.mean', 'méthode', 'fonction', 'broadcast',
     'operands could not be broadcast together with shapes', 'ValueError', 'vue', 'copie', 'copy', 'base', 'fancy indexing', 'tranche', 'slicing'],
   summary: 'Le **ndarray**, sélectionner lignes et colonnes, agréger le long d’un **axe**, et calculer sans boucle (vectorisation, broadcasting).',

@@ -5,7 +5,7 @@ export default defineFiche({
   id: 'python-types',
   title: 'Les types de données : int, float, str, conversions',
   theme: 'python-core',
-  tags: ['debuter', 'types', 'texte'],
+  tags: ['types', 'texte'],
   keywords: ['types', 'int', 'float', 'str', 'conversion', 'chaînes', 'type', 'int()', 'float()', 'round()', 'str()', 'bool()', 'concaténation', '+', 'f-string', 'échapper', '\\', 'triple guillemets', 'TypeError', 'can only concatenate str', 'ValueError', 'invalid literal for int()'],
   summary: 'Distinguer `int`, `float`, `str` et `bool`, convertir de l’un à l’autre, et construire des chaînes.',
   concept: `

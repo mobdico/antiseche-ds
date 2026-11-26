@@ -5,6 +5,7 @@ import { Code } from '../lib/highlight';
 import { SimulatorView } from './Simulator';
 import { ThemeBadge } from './ThemeBadge';
 import { tagById } from '../content/tags';
+import type { Module } from '../content/parcours';
 
 interface Props {
   fiche: Fiche;
@@ -16,6 +17,10 @@ interface Props {
   onToggleFavorite: () => void;
   prev?: Fiche;
   next?: Fiche;
+  /** position dans le parcours de révision (fiches de cours uniquement) */
+  place?: { index: number; total: number; module: Module };
+  isRevised?: boolean;
+  onToggleRevised?: () => void;
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -30,7 +35,7 @@ function CopyButton({ text }: { text: string }) {
 const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
 const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggleFavorite, prev, next }: Props) {
+export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggleFavorite, prev, next, place, isRevised, onToggleRevised }: Props) {
   const sims = [fiche.simulator, ...(fiche.simulators ?? [])].filter(Boolean) as NonNullable<Fiche['simulator']>[];
   const [tab, setTab] = useState(0);
   const [openTag, setOpenTag] = useState<string | null>(null);
@@ -45,6 +50,13 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
 
   return (
     <article className="fiche" style={{ ['--h' as string]: String(theme?.hue ?? 220) }}>
+      {place && (
+        <div className="parcours-bar">
+          <a href="#/parcours" className="pb-step">Parcours · étape <strong>{place.index + 1}</strong>/{place.total}</a>
+          <span className="pb-module">{place.module.title}</span>
+          <span className="progress pb-progress"><span style={{ width: `${((place.index + 1) / place.total) * 100}%` }} /></span>
+        </div>
+      )}
       <header className="fiche-head">
         <p className="eyebrow crumb"><a href="#/">Accueil</a> / <a href={`#/theme/${fiche.theme}`}>{theme?.label ?? fiche.theme}</a></p>
         <div className="fh-row">
@@ -53,6 +65,11 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
             <h1>{fiche.title}</h1>
             <p className="summary">{inline(fiche.summary)}</p>
           </div>
+          {place && onToggleRevised && (
+            <button className={`rev-btn ${isRevised ? 'on' : ''}`} onClick={onToggleRevised} aria-pressed={isRevised} title="Marquer cette fiche comme révisée">
+              {isRevised ? '✓ Révisée' : 'Marquer révisée'}
+            </button>
+          )}
           <button className={`fav-btn ${isFavorite ? 'on' : ''}`} onClick={onToggleFavorite} aria-pressed={isFavorite} title={isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}>
             {isFavorite ? '★' : '☆'}<span>{isFavorite ? 'Favori' : 'Favori'}</span>
           </button>
@@ -132,8 +149,9 @@ export function FicheView({ fiche, theme, resolve, withTag, isFavorite, onToggle
           </div>
         )}
         <div className="prev-next">
-          {prev ? <a href={`#/fiche/${prev.id}`} className="pn prev"><span>← Précédente</span><strong>{prev.title}</strong></a> : <span />}
-          {next ? <a href={`#/fiche/${next.id}`} className="pn next"><span>Suivante →</span><strong>{next.title}</strong></a> : <span />}
+          {prev ? <a href={`#/fiche/${prev.id}`} className="pn prev"><span>← {place ? 'Étape précédente' : 'Précédente'}</span><strong>{prev.title}</strong></a> : <span />}
+          {next ? <a href={`#/fiche/${next.id}`} className="pn next" onClick={() => { if (place && !isRevised && onToggleRevised) onToggleRevised(); }}>
+            <span>{place ? (isRevised ? 'Étape suivante →' : 'Marquer révisée et continuer →') : 'Suivante →'}</span><strong>{next.title}</strong></a> : <span />}
         </div>
         {fiche.source && <p className="source">Source : {fiche.source}</p>}
       </footer>

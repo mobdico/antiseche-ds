@@ -5,7 +5,7 @@ export default defineFiche({
   id: 'python-variables',
   title: 'Les variables : affectation, nommage, références',
   theme: 'python-core',
-  tags: ['debuter', 'references', 'erreurs'],
+  tags: ['references', 'erreurs'],
   keywords: ['variables', 'affectation', 'références', 'mutabilité', 'NameError', '=', '+=', '-=', '*=', '/=', '**=', 'snake_case', 'NameError', 'name is not defined', 'nommage', 'mot réservé', 'référence', 'id', 'immuable', 'mutable'],
   summary: 'Créer et mettre à jour des variables, les nommer correctement, et comprendre qu’une variable est un **nom qui pointe vers un objet**.',
   concept: `

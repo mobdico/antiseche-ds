@@ -64,3 +64,12 @@ for (const f of registry.fiches) {
     });
   });
 }
+
+describe('parcours', () => {
+  it('contient chaque fiche de cours exactement une fois, et aucun labo', async () => {
+    const { parcours } = await import('../src/content/parcours');
+    const cours = registry.fiches.filter((f) => !f.id.startsWith('labo-')).map((f) => f.id).sort();
+    expect([...parcours].sort()).toEqual(cours);
+    expect(new Set(parcours).size).toBe(parcours.length);
+  });
+});

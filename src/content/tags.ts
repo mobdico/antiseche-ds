@@ -10,7 +10,6 @@ export interface TagDef {
 }
 
 export const tagDefs: TagDef[] = [
-  { id: 'debuter', label: 'Pour commencer', description: 'Les toutes premières notions, à lire en premier.' },
   { id: 'references', label: 'Références et copies', description: 'Quand deux noms désignent le même objet, quand une opération crée une copie ou une vue.' },
   { id: 'manquantes', label: 'Valeurs manquantes', description: 'NaN, None : les détecter, les ignorer, les supprimer ou les remplacer.' },
   { id: 'axis', label: 'Le paramètre axis', description: 'axis=0 ou axis=1 : par colonne ou par ligne, dans NumPy comme dans pandas.' },

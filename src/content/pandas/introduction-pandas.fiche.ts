@@ -73,7 +73,7 @@ export default defineFiche({
   id: 'pandas-introduction',
   title: 'Introduction à pandas : DataFrame, Series et .loc',
   theme: 'pandas',
-  tags: ['debuter', 'selection', 'types', 'versions'],
+  tags: ['selection', 'types', 'versions'],
   keywords: ['dataframe', 'series', 'loc', 'sélection', 'bases', 'read_csv', 'shape', 'head', 'tail', 'dtypes', 'info', 'value_counts', 'KeyError', 'object', 'étiquette', 'label', 'tranche', 'slice'],
   summary: 'Charger, inspecter un DataFrame et sélectionner par **étiquette** avec `df["col"]` et `.loc[]`.',
   concept: `

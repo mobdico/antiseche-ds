@@ -5,7 +5,7 @@ export default defineFiche({
   id: 'python-listes',
   title: 'Les listes : indexation, slicing, listes de listes',
   theme: 'python-core',
-  tags: ['debuter', 'selection', 'references'],
+  tags: ['selection', 'references'],
   keywords: ['listes', 'indexation', 'slicing', 'liste de listes', 'list', '[]', 'len', 'index', 'indexation négative', '[-1]', 'slicing', '[m:n]', '[::-1]', 'IndexError', 'list index out of range', 'double indexation'],
   summary: 'Créer une liste, lire un élément par son **index** (positif ou négatif), extraire une tranche, manipuler une liste de listes.',
   concept: `

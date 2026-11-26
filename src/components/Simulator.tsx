@@ -44,7 +44,12 @@ export function SimulatorView({ sim }: { sim: Sim }) {
   const set = (id: string, val: string | boolean) => setParams((p) => ({ ...p, [id]: val }));
   const goStep = (i: number) => { setPlaying(false); setStepIdx(Math.max(0, Math.min(last, i))); };
   const stripRef = useRef<HTMLDivElement>(null);
-  useEffect(() => { stripRef.current?.querySelector('.step.on')?.scrollIntoView({ block: 'nearest', inline: 'center' }); }, [stepIdx]);
+  // centrer l'étape active dans SA barre (sans faire défiler la page)
+  useEffect(() => {
+    const strip = stripRef.current;
+    const on = strip?.querySelector<HTMLElement>('.step.on');
+    if (strip && on) strip.scrollLeft = on.offsetLeft - strip.offsetLeft - (strip.clientWidth - on.offsetWidth) / 2;
+  }, [stepIdx]);
   const onKey = (e: React.KeyboardEvent) => {
     if ((e.target as HTMLElement).tagName === 'INPUT') return;
     if (e.key === 'ArrowRight') { e.preventDefault(); goStep(stepIdx + 1); }

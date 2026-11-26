@@ -8,14 +8,16 @@ import { Code } from './lib/highlight';
 import { inline } from './lib/markdown';
 import { useStoredList } from './lib/storage';
 import { tagDefs, tagById } from './content/tags';
+import { modules, parcours, placeInParcours } from './content/parcours';
 
-type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'notion'; id: string };
+type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'notion'; id: string } | { view: 'parcours' };
 
 function parseHash(): Route {
   const [, kind, id] = window.location.hash.split('/');
   if (kind === 'fiche' && id) return { view: 'fiche', id: decodeURIComponent(id) };
   if (kind === 'theme' && id) return { view: 'theme', id: decodeURIComponent(id) };
   if (kind === 'notion' && id) return { view: 'notion', id: decodeURIComponent(id) };
+  if (kind === 'parcours') return { view: 'parcours' };
   return { view: 'home' };
 }
 
@@ -78,6 +80,10 @@ export default function App() {
   const [openThemes, setOpenThemes] = useState<string[]>([]);
   const favorites = useStoredList('favoris');
   const recents = useStoredList('recents', 8);
+  const revised = useStoredList('revisees', 200);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const nbRevised = parcours.filter((id) => revised.items.includes(id)).length;
+  const nextToRevise = parcours.find((id) => !revised.items.includes(id));
   const searchRef = useRef<HTMLInputElement>(null);
 
   const current = route.view === 'fiche' ? byId.get(route.id) : undefined;
@@ -112,6 +118,7 @@ export default function App() {
   const themeFiches = (id: string) => fiches.filter((f) => f.theme === id).sort((a, b) => Number(isLab(a)) - Number(isLab(b)) || a.title.localeCompare(b.title, 'fr'));
   const ordered = currentTheme ? themeFiches(currentTheme.id) : [];
   const pos = current ? ordered.findIndex((f) => f.id === current.id) : -1;
+  const place = current ? placeInParcours(current.id) : null;
   const totalSims = fiches.reduce((n, f) => n + simCount(f), 0);
 
   return (
@@ -154,6 +161,9 @@ export default function App() {
         {menuOpen && <div className="scrim" onClick={() => setMenuOpen(false)} />}
         <nav className={`sidebar ${menuOpen ? 'open' : ''}`} aria-label="Thèmes et fiches">
           <a href="#/" className={`nav-home ${route.view === 'home' ? 'on' : ''}`}>Accueil</a>
+          <a href="#/parcours" className={`nav-home nav-parcours ${route.view === 'parcours' ? 'on' : ''}`}>
+            <span>Parcours</span><span className="count">{nbRevised}/{parcours.length}</span>
+          </a>
           {favorites.items.length > 0 && (
             <div className="nav-group">
               <div className="nav-label">Favoris</div>
@@ -204,7 +214,9 @@ export default function App() {
           {route.view === 'fiche' && (current ? (
             <FicheView fiche={current} theme={themeOf(current.theme)} resolve={(id) => byId.get(id)}
               isFavorite={favorites.items.includes(current.id)} onToggleFavorite={() => favorites.toggle(current.id)}
-              prev={pos > 0 ? ordered[pos - 1] : undefined} next={pos >= 0 && pos < ordered.length - 1 ? ordered[pos + 1] : undefined}
+              prev={place ? (place.prev ? byId.get(place.prev) : undefined) : pos > 0 ? ordered[pos - 1] : undefined}
+              next={place ? (place.next ? byId.get(place.next) : undefined) : pos >= 0 && pos < ordered.length - 1 ? ordered[pos + 1] : undefined}
+              place={place ?? undefined} isRevised={revised.items.includes(current.id)} onToggleRevised={() => revised.toggle(current.id)}
               withTag={(t) => fiches.filter((f) => f.tags.includes(t))} />
           ) : <div className="empty">Fiche introuvable. <a href="#/">Retour à l’accueil</a></div>)}
 
@@ -223,6 +235,19 @@ export default function App() {
                 </div>
               </section>
 
+
+              <a href={nextToRevise ? `#/fiche/${nextToRevise}` : '#/parcours'} className="parcours-card">
+                <div className="pc-text">
+                  <span className="eyebrow">Parcours de révision</span>
+                  <strong>{nbRevised === 0 ? 'Réviser tout le programme, dans l’ordre du cours' : nextToRevise ? 'Reprendre le parcours' : 'Parcours terminé — bravo !'}</strong>
+                  <span className="muted">{nextToRevise ? <>Prochaine fiche : <b>{byId.get(nextToRevise)?.title}</b></> : 'Toutes les fiches sont marquées comme révisées.'}</span>
+                </div>
+                <div className="pc-progress">
+                  <span className="pc-num">{nbRevised}<small>/{parcours.length}</small></span>
+                  <span className="progress"><span style={{ width: `${(nbRevised / parcours.length) * 100}%` }} /></span>
+                  <span className="pc-cta">{nextToRevise ? (nbRevised ? 'Continuer →' : 'Commencer →') : 'Voir le parcours →'}</span>
+                </div>
+              </a>
 
               {(recents.items.length > 0 || favorites.items.length > 0) && (
                 <section className="resume">
@@ -264,11 +289,12 @@ export default function App() {
               </section>
 
               <section>
-                <div className="section-head"><h2>Parcourir par notion</h2><p className="muted">Une même idée, à travers Python, NumPy et pandas.</p></div>
+                <div className="section-head"><h2>Réviser une notion à travers tous les thèmes</h2><p className="muted">Une carte = une même idée, retrouvée dans Python, NumPy, pandas et la visualisation.</p></div>
                 <div className="notion-grid">
                   {tagDefs.map((t) => (
                     <a key={t.id} href={`#/notion/${t.id}`} className="notion-card">
-                      <strong>{t.label}</strong><span className="count">{withTag(t.id).length} fiches</span>
+                      <span className="nc-top"><strong>{t.label}</strong><span className="count">{withTag(t.id).length} fiches</span></span>
+                      <span className="nc-desc">{t.description}</span>
                     </a>
                   ))}
                 </div>
@@ -278,6 +304,36 @@ export default function App() {
                 <div className="section-head"><h2>Labos</h2><p className="muted">Change un paramètre, vois exactement ce qui change.</p></div>
                 <div className="card-grid">{fiches.filter(isLab).map((f) => <FicheCard key={f.id} f={f} theme={themeOf(f.theme)} fav={favorites.items.includes(f.id)} />)}</div>
               </section>
+            </div>
+          )}
+
+          {route.view === 'parcours' && (
+            <div className="parcours-page">
+              <p className="eyebrow"><a href="#/">Accueil</a> / Parcours</p>
+              <h1>Parcours de révision</h1>
+              <p className="hero-sub">Les {parcours.length} fiches dans l’ordre de ton cursus. Marque chaque fiche « Révisée » pour suivre ta progression.</p>
+              <div className="pp-progress"><span className="progress"><span style={{ width: `${(nbRevised / parcours.length) * 100}%` }} /></span><span>{nbRevised} / {parcours.length} révisées</span>
+                {nbRevised > 0 && (confirmReset
+                  ? <span className="pp-confirm">Tout décocher ? <button className="link" onClick={() => { parcours.forEach((id) => { if (revised.items.includes(id)) revised.toggle(id); }); setConfirmReset(false); }}>oui</button> · <button className="link" onClick={() => setConfirmReset(false)}>non</button></span>
+                  : <button className="link" onClick={() => setConfirmReset(true)}>tout réinitialiser</button>)}</div>
+              {(() => { let n = 0; let course = ''; return modules.map((m) => {
+                const showCourse = m.course !== course; course = m.course;
+                const done = m.fiches.filter((id) => revised.items.includes(id)).length;
+                return (
+                  <section key={m.id} className="pp-module">
+                    {showCourse && <p className="pp-course">{m.course}</p>}
+                    <h2 className="pp-title"><span>{m.title}</span><span className="count">{done}/{m.fiches.length}</span></h2>
+                    <ol className="pp-list">
+                      {m.fiches.map((id) => { n += 1; const f = byId.get(id); const ok = revised.items.includes(id); return f ? (
+                        <li key={id} className={ok ? 'done' : ''}>
+                          <button className={`pp-check ${ok ? 'on' : ''}`} aria-pressed={ok} aria-label={ok ? 'Marquer comme non révisée' : 'Marquer comme révisée'} onClick={() => revised.toggle(id)}>{ok ? '✓' : ''}</button>
+                          <span className="pp-n">{n}</span>
+                          <a href={`#/fiche/${id}`}>{f.title}</a>
+                          <ThemeBadge theme={themeOf(f.theme)} size="sm" />
+                        </li>) : null; })}
+                    </ol>
+                  </section>
+                ); }); })()}
             </div>
           )}
 

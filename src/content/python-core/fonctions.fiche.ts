@@ -5,7 +5,7 @@ export default defineFiche({
   id: 'python-fonctions',
   title: 'Créer et appeler une fonction',
   theme: 'python-core',
-  tags: ['fonctions', 'debuter'],
+  tags: ['fonctions'],
   keywords: ['fonctions', 'def', 'return', 'paramètre', 'argument', 'def', 'return', 'None', 'paramètre', 'argument', 'len', 'sum', 'min', 'max', 'fonction intégrée', "'return' outside function"],
   summary: 'Définir une fonction avec `def`, lui passer des **arguments**, récupérer son résultat avec `return`.',
   concept: `
