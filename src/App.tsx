@@ -312,7 +312,6 @@ export default function App() {
                   <button role="tab" aria-selected={revision} className={revision ? 'on' : ''} onClick={() => setRevision(true)}>Révision</button>
                 </div>
               </header>
-              <ThemeIntroView theme={currentTheme} expanded={revision} />
               {!revision ? (
                 <>
                   <div className="card-grid">{themeFiches(currentTheme.id).filter((f) => !isLab(f)).map((f) => <FicheCard key={f.id} f={f} theme={currentTheme} showTheme={false} fav={favorites.items.includes(f.id)} />)}</div>
@@ -327,6 +326,7 @@ export default function App() {
                 </>
               ) : (
                 <div className="revision">
+                  <ThemeIntroView theme={currentTheme} />
                   <h2 className="rev-heading">Toutes les fiches, l’essentiel</h2>
                   {themeFiches(currentTheme.id).filter((f) => !isLab(f)).map((f) => (
                     <article key={f.id} className="rev-item">
