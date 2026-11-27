@@ -260,6 +260,20 @@
     "type": "IndexError",
     "message": "too many indices for array: array is 1-dimensional, but 2 were indexed"
    }
+  },
+  "ax-title-call": {
+   "code": "fig, ax = plt.subplots()\nax.title(\"Ventes\")",
+   "p3": {
+    "type": "TypeError",
+    "message": "'Text' object is not callable"
+   }
+  },
+  "axes-array": {
+   "code": "fig, axes = plt.subplots(1, 2)\naxes.plot([1, 2, 3])",
+   "p3": {
+    "type": "AttributeError",
+    "message": "'numpy.ndarray' object has no attribute 'plot'"
+   }
   }
  }
 }

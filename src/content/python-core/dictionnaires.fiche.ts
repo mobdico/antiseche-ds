@@ -30,6 +30,37 @@ d.get("clé", défaut)                   # lire sans KeyError (en plus)`,
     'Pas d’accès par position : `d[0]` cherche la **clé** 0.',
   ],
   takeaways: ['Accès par clé, pas par position.', 'Clés uniques et hashables.', 'Ajouter ou modifier : `d[clé] = valeur`.'],
+  mentalModel: {
+    title: 'La règle',
+    code: `d["Paris"]             # lire : KeyError si la clé manque
+d.get("Paris", 0)      # lire avec une valeur par défaut
+d["Lyon"] = 3          # ajouter OU remplacer
+"Lyon" in d            # tester une CLÉ (pas une valeur)
+for cle, valeur in d.items(): ...`,
+  },
+  comparisons: [{
+    title: 'Lire une clé : [ ], get ou in ?',
+    headers: ['Écriture', 'Clé présente', 'Clé absente'],
+    rows: [
+      ['`d[cle]`', 'la valeur', '`KeyError`'],
+      ['`d.get(cle)`', 'la valeur', '`None`'],
+      ['`d.get(cle, 0)`', 'la valeur', '`0`'],
+      ['`cle in d`', '`True`', '`False` (cherche dans les **clés** ; `in d.values()` pour les valeurs)'],
+      ['`d.setdefault(cle, [])`', 'la valeur', 'crée la clé avec `[]` et la renvoie'],
+    ],
+    conclusion: 'Compter ou regrouper sans tester : `d[k] = d.get(k, 0) + 1`.',
+  }, {
+    title: 'Parcourir un dictionnaire',
+    headers: ['Boucle', 'Donne'],
+    rows: [
+      ['`for k in d`', 'les **clés**'],
+      ['`for v in d.values()`', 'les valeurs'],
+      ['`for k, v in d.items()`', 'les paires (clé, valeur)'],
+      ['`sorted(d)`', 'les clés triées (une liste)'],
+      ['`sorted(d.items(), key=lambda kv: kv[1], reverse=True)`', 'les paires triées par valeur décroissante'],
+    ],
+    conclusion: 'Une clé doit être **non modifiable** : `str`, nombre ou tuple. Une liste comme clé → `TypeError: unhashable type: \'list\'`.',
+  }],
   related: ['nettoyage-pandas'],
   source: 'DataXp — Opérateurs et structures de données en Python, chapitre 4 (sources/python-core/dataxp-les-dictionnaires-python.pdf)',
 });

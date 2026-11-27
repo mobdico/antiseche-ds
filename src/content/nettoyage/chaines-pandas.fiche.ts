@@ -156,6 +156,41 @@ serie.str.extractall(motif)                 # toutes les correspondances`,
     '`contains(motif, na=False)` pour filtrer.',
     '`extract` = 1ʳᵉ correspondance ; `extractall` = toutes.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `s.replace("Paris", "PAR")          # remplace des valeurs ENTIÈRES (la cellule vaut "Paris")
+s.str.replace("Est", "E")          # remplace un MORCEAU de texte dans chaque cellule
+s.str.contains("aris", na=False)   # masque booléen, sans NaN
+s.str.extract(r"(\\d+)")            # le morceau capturé entre ( ) → DataFrame
+s.str.strip().str.lower()          # les méthodes .str s’enchaînent`,
+    note: '`.str` applique une méthode de chaîne à **chaque cellule** d’une colonne, et laisse passer les valeurs manquantes.',
+  },
+  comparisons: [{
+    title: 'replace ou str.replace ?',
+    headers: ['', '`s.replace(a, b)`', '`s.str.replace(a, b)`'],
+    rows: [
+      ['Remplace', 'une **valeur entière** de cellule', 'un **morceau** de texte dans la cellule'],
+      ['`"Lyon-Est"` avec `("Est", "E")`', 'inchangé', '`"Lyon-E"`'],
+      ['Plusieurs remplacements', 'un dict : `{"Paris": "P", "Nice": "N"}`', 'enchaîner les appels, ou une regex'],
+      ['Regex', 'avec `regex=True`', '`regex=False` par défaut (pandas ≥ 2) ; `regex=True` pour activer'],
+      ['Marche aussi sur', 'nombres, DataFrame entier', 'colonnes de texte seulement'],
+    ],
+    conclusion: 'Recoder des catégories → `replace` (ou `map`). Nettoyer l’intérieur du texte → `str.replace`.',
+  }, {
+    title: 'Les méthodes .str : ce qu’elles renvoient',
+    headers: ['Méthode', 'Renvoie', 'Exemple'],
+    rows: [
+      ['`str.lower()`, `strip()`, `replace()`', 'Series de texte', '`" Paris "` → `"paris"`'],
+      ['`str.contains(motif)`', 'Series de booléens (un masque)', '`case=False`, `na=False`, `regex=False`'],
+      ['`str.len()`', 'Series de nombres (float s’il y a un NaN)', '`"Paris"` → `5.0`'],
+      ['`str.split("-")`', 'Series de **listes**', '`"Lyon-Est"` → `["Lyon", "Est"]`'],
+      ['`str.split("-", expand=True)`', '**DataFrame**, une colonne par morceau', 'shape `(n, nb max de morceaux)`'],
+      ['`str.extract(r"(\\d+)")`', '**DataFrame** (une colonne par groupe)', '`expand=False` → Series s’il n’y a qu’un groupe'],
+      ['`str.findall(r"\\d+")`', 'Series de listes : **toutes** les occurrences', '`"a1b22"` → `["1", "22"]`'],
+      ['`str[0]`', 'le premier caractère', '`"Paris"` → `"P"`'],
+    ],
+    conclusion: 'Dans un motif, `.` veut dire « n’importe quel caractère » quand la regex est active : `str.contains(".")` est vrai partout. Pour un vrai point : `regex=False`.',
+  }],
   related: ['nettoyage-pandas', 'pandas-transformer', 'pandas-combiner'],
   source: 'DataXp — Nettoyage et Analyse de Données avec Python, chapitre 4 (sources/nettoyage/dataxp-manipulation-chaines-pandas.pdf)',
 });

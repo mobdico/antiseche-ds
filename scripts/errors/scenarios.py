@@ -4,6 +4,9 @@ Le texte explicatif (cause, correction) est dans src/content/errors.ts, sous la 
 SETUP = '''
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 df = pd.DataFrame({"nom": ["Ana", "Bob", "Chloé"], "ville": ["Paris", "Lyon", None],
                    "age": [25, 32, 41], "prix": ["12,5", "8", "10"]})
 '''
@@ -45,4 +48,7 @@ CASES = {
     "broadcast": 'np.ones((4, 3)) + np.ones(4)',
     "reshape-size": 'np.arange(12).reshape(5, 2)',
     "too-many-indices": 'np.arange(5)[0, 1]',
+    # ------------------------------------------------ matplotlib
+    "ax-title-call": 'fig, ax = plt.subplots()\nax.title("Ventes")',
+    "axes-array": 'fig, axes = plt.subplots(1, 2)\naxes.plot([1, 2, 3])',
 }

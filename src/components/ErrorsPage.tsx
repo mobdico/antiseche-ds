@@ -5,7 +5,7 @@ import { errorEntries, errorVersions, type ErrorCategory, type ErrorEntry } from
 import { Code } from '../lib/highlight';
 import { Markdown } from '../lib/markdown';
 
-const CATS: [ErrorCategory | 'all', string][] = [['all', 'Toutes'], ['python', 'Python'], ['pandas', 'pandas'], ['numpy', 'NumPy']];
+const CATS: [ErrorCategory | 'all', string][] = [['all', 'Toutes'], ['python', 'Python'], ['pandas', 'pandas'], ['numpy', 'NumPy'], ['visu', 'Graphiques']];
 const line = (e: { type: string; message: string } | null | undefined) => (e ? `${e.type}: ${e.message}` : 'aucune erreur');
 
 function ErrorCard({ e, resolve, focused }: { e: ErrorEntry; resolve: (id: string) => Fiche | undefined; focused: boolean }) {

@@ -6,7 +6,7 @@
 import data from './_data/errors.json';
 import { normalize } from '../engine/search';
 
-export type ErrorCategory = 'python' | 'pandas' | 'numpy';
+export type ErrorCategory = 'python' | 'pandas' | 'numpy' | 'visu';
 
 export interface ErrorExplain {
   category: ErrorCategory;
@@ -272,6 +272,25 @@ np.arange(12).reshape(-1, 2)     # -1 : « calcule cette dimension »  → (6, 2
 a[1]               # un seul indice
 a.reshape(1, -1)[0, 1]   # ou passer en 2D si c’est voulu`,
     fiches: ['numpy-introduction'],
+  },
+
+  // ------------------------------------------------------------------ matplotlib
+  'ax-title-call': {
+    category: 'visu', title: 'Mélanger le style plt et le style ax pour le titre',
+    cause: 'Sur un axe, le titre se règle avec `ax.set_title(…)`. `ax.title` existe aussi, mais c’est **l’objet texte** du titre : l’appeler comme une fonction échoue. Même logique pour `ax.xlabel` (qui n’existe pas : `ax.set_xlabel`).',
+    fix: `ax.set_title("Ventes")
+ax.set_xlabel("mois"); ax.set_ylabel("CA (k€)")
+# ou, sans fig/ax : plt.title("Ventes")`,
+    fiches: ['visu-courbes'], keywords: ['set_title', 'set_xlabel', 'plt', 'ax'],
+  },
+  'axes-array': {
+    category: 'visu', title: 'Tracer sur « axes » quand subplots en a créé plusieurs',
+    cause: 'Avec plusieurs graphiques, `plt.subplots(1, 2)` renvoie un **tableau NumPy d’axes**, pas un axe. Il faut choisir la case.',
+    fix: `fig, axes = plt.subplots(1, 2)
+axes[0].plot([1, 2, 3])          # 1re case
+axes[1].bar(["a", "b"], [3, 5])  # 2e case
+# grille 2 × 2 : axes[ligne, colonne]`,
+    fiches: ['visu-pandas-grilles', 'visu-courbes'], keywords: ['subplots', 'axes'],
   },
 };
 

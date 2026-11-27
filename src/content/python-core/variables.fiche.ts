@@ -30,6 +30,37 @@ prix *= 4              # raccourci de multiplication`,
     '`Prix` et `prix` sont deux variables différentes.',
   ],
   takeaways: ['Variable = nom → objet.', 'NameError = nom jamais défini (à l’exécution).'],
+  mentalModel: {
+    title: 'La règle',
+    code: `a == b      # même VALEUR ?
+a is b      # même OBJET (même id) ?
+x is None   # la seule comparaison où l’on écrit « is »
+b = a       # b pointe vers le même objet que a : rien n’est copié`,
+    note: 'Une variable est une **étiquette** posée sur un objet. L’affectation déplace l’étiquette ; elle ne copie jamais l’objet.',
+  },
+  comparisons: [{
+    title: '== ou is ?',
+    headers: ['Expression', 'Résultat', 'Pourquoi'],
+    rows: [
+      ['`[1, 2] == [1, 2]`', '`True`', 'mêmes valeurs'],
+      ['`[1, 2] is [1, 2]`', '`False`', 'deux listes distinctes en mémoire'],
+      ['`1 == 1.0` / `True == 1`', '`True` / `True`', 'valeurs égales, types différents'],
+      ['`x is None`', '`True` si x vaut None', '`None` est unique : c’est l’usage recommandé de `is`'],
+      ['`np.nan == np.nan`', '`False`', 'NaN n’est égal à rien : utiliser `pd.isna(x)`'],
+      ['`int("257") is int("257")`', '`False`', 'Python ne réutilise les entiers que de −5 à 256 : ne jamais comparer des nombres avec `is`'],
+    ],
+    conclusion: 'Comparer des valeurs → `==`. Tester `None` → `is None`. Rien d’autre avec `is`.',
+  }, {
+    title: 'Modifiable ou non : ce que fait +=',
+    headers: ['', 'Immuables : `int`, `float`, `str`, `tuple`', 'Modifiables : `list`, `dict`, `set`, DataFrame'],
+    rows: [
+      ['Peut-on changer l’objet ?', 'non : on en crée un nouveau', 'oui, sur place'],
+      ['`x += 1` / `s += "c"`', 'nouvel objet, l’étiquette est déplacée (`id` change)', '—'],
+      ['`liste += [2]`', '—', 'la **même** liste est agrandie (`id` identique)'],
+      ['Si un autre nom pointe dessus', 'il garde l’ancienne valeur', 'il **voit** la modification'],
+    ],
+    conclusion: 'Le partage d’un objet ne pose problème que s’il est **modifiable** : c’est là qu’il faut `.copy()`.',
+  }],
   related: ['python-types', 'python-listes'],
   source: 'DataXp — Introduction à la programmation Python, chapitre 2 (sources/python-core/dataxp-les-variables.pdf)',
 });
