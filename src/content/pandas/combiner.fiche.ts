@@ -146,6 +146,51 @@ suffixes=("_a", "_b")                       # suffixes des colonnes en double`,
     'inner = intersection, left = tout à gauche, right = tout à droite, outer = union.',
     'Vérifier `len(res)` après chaque jointure.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `pd.concat([a, b])                 # EMPILER : b sous a (colonnes alignées par NOM)
+pd.concat([a, b], axis=1)         # COLLER : b à droite de a (lignes alignées par INDEX)
+pd.merge(a, b, on="id")           # JOINDRE : associer les lignes qui ont la même CLÉ
+pd.merge(a, b, on="id", how="left")   # garder toutes les lignes de a`,
+    note: '`concat` aligne sur des **étiquettes** (noms de colonnes ou index) ; `merge` aligne sur les **valeurs** d’une colonne clé.',
+  },
+  comparisons: [{
+    title: 'concat ou merge ?',
+    headers: ['', '`pd.concat`', '`pd.merge`'],
+    rows: [
+      ['Question posée', '« mettre ces tables bout à bout »', '« relier ces tables par une clé »'],
+      ['Aligne sur', 'les noms de colonnes (axis=0) ou l’index (axis=1)', 'les **valeurs** de la colonne `on`'],
+      ['Nombre de tables', 'une liste, autant qu’on veut', 'deux à la fois'],
+      ['Colonne absente d’une table', 'remplie de **NaN**', '—'],
+      ['Index du résultat', 'conservé tel quel → **doublons** (0, 1, 2, 0, 1, 2) sauf `ignore_index=True`', 'renuméroté 0, 1, 2…'],
+      ['Clé en double', '—', 'chaque correspondance crée une ligne : le résultat peut **grossir**'],
+      ['Colonne de même nom hors clé', 'fusionnée dans la même colonne', 'dédoublée en `_x` et `_y` (`suffixes=`)'],
+    ],
+    conclusion: 'Mêmes colonnes, nouvelles lignes → `concat`. Nouvelles colonnes venues d’une autre table → `merge`.',
+  }, {
+    title: 'Les quatre jointures (a.id = 1, 2, 3 ; b.id = 2, 3, 4)',
+    headers: ['`how=`', 'Lignes gardées', 'id obtenus', 'NaN dans'],
+    rows: [
+      ['`"inner"` (défaut)', 'clés présentes **des deux côtés**', '2, 3', 'nulle part'],
+      ['`"left"`', 'toutes celles de **a**', '1, 2, 3', 'colonnes de b (id 1)'],
+      ['`"right"`', 'toutes celles de **b**', '2, 3, 4', 'colonnes de a (id 4)'],
+      ['`"outer"`', 'l’**union**', '1, 2, 3, 4', 'des deux côtés'],
+    ],
+    conclusion: 'Ajouter `indicator=True` crée une colonne `_merge` (`left_only`, `both`, `right_only`) : le moyen le plus rapide de voir ce qui n’a pas trouvé de correspondance.',
+  }],
+  deepDives: [{
+    title: 'Vérifier une jointure avant de lui faire confiance',
+    body: `Une jointure ne prévient jamais quand elle perd ou multiplie des lignes. Trois contrôles suffisent :
+
+- comparer \`len()\` avant et après : une jointure \`left\` qui **grossit** signale une clé en double à droite ;
+- \`indicator=True\`, puis \`value_counts()\` sur \`_merge\` : combien de lignes n’ont pas trouvé de partenaire ;
+- \`validate="one_to_one"\` ou \`"many_to_one"\` : pandas lève une erreur si la clé n’est pas unique là où elle devrait l’être.
+
+Une colonne entière qui reçoit un NaN passe en \`float64\` : un identifiant \`4\` devient \`4.0\`.`,
+    code: `m = pd.merge(ventes, magasins, on="id", how="left", indicator=True)
+m["_merge"].value_counts()          # left_only = ventes sans magasin connu
+pd.merge(ventes, magasins, on="id", validate="many_to_one")   # erreur si un magasin apparaît deux fois`,
+  }],
   related: ['pandas-agregation', 'pandas-transformer'],
   source: 'DataXp — Nettoyage et Analyse de Données avec Python, chapitre 2 (sources/pandas/dataxp-combiner-donnees.pdf)',
 });

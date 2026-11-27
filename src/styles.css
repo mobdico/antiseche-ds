@@ -513,6 +513,8 @@ details.nav-notions[open] .chev { transform: rotate(90deg); }
 .mental-panel { border-top: 3px solid var(--brand); }
 .mental-panel .code { font-size: .9rem; }
 .mental-note { margin: 10px 0 0; font-size: .9rem; color: var(--muted); }
+.cmp-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 1rem; margin: 0; }
+.cmp-title .label { margin: 0; }
 .cmp-scroll { overflow-x: auto; margin-top: 10px; }
 .cmp { border-collapse: collapse; width: 100%; font-size: .9rem; }
 .cmp th, .cmp td { border-bottom: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
@@ -520,6 +522,18 @@ details.nav-notions[open] .chev { transform: rotate(90deg); }
 .cmp thead th:not(:first-child) { color: var(--text); text-transform: none; letter-spacing: 0; font-size: .9rem; font-weight: 700; }
 .cmp tbody th { font-weight: 600; color: var(--muted); width: 22%; min-width: 140px; }
 .cmp tbody tr:last-child th, .cmp tbody tr:last-child td { border-bottom: 0; }
+.cmp code { overflow-wrap: break-word; word-break: normal; }
+.cmp thead code { white-space: nowrap; }
+@media (max-width: 720px) {
+  .cmp thead { display: none; }
+  .cmp, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; width: 100%; }
+  .cmp tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+  .cmp tbody th { width: auto; min-width: 0; background: var(--surface-2); color: var(--text); }
+  .cmp td { border-bottom: 1px solid var(--border); }
+  .cmp tr td:last-child { border-bottom: 0; }
+  .cmp td[data-label]:not([data-label=""])::before { content: attr(data-label); display: block; font-size: .74rem; font-weight: 700; color: var(--muted); margin-bottom: 2px; }
+  .cmp code { overflow-wrap: anywhere; }
+}
 .cmp-conclusion { margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); font-size: .92rem; }
 .deep-panel summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 10px; }
 .deep-panel summary::-webkit-details-marker { display: none; }

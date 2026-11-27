@@ -30,6 +30,8 @@ function CopyButton({ text }: { text: string }) {
 
 /** Majuscule initiale, sauf si le titre commence par du code (sns.relplot, df.loc…). */
 const cap = (x: string) => (/^[a-zà-ÿ]+(\s|$)/i.test(x) ? x.charAt(0).toUpperCase() + x.slice(1) : x);
+/** texte brut d’un en-tête (étiquette des cellules sur mobile) */
+const plain = (s: string) => s.replace(/[`*]/g, '');
 
 export function FicheView({ fiche, theme, resolve, isFavorite, onToggleFavorite, prev, next, place, isRevised, onToggleRevised }: Props) {
   const sims = [fiche.simulator, ...(fiche.simulators ?? [])].filter(Boolean) as NonNullable<Fiche['simulator']>[];
@@ -85,11 +87,11 @@ export function FicheView({ fiche, theme, resolve, isFavorite, onToggleFavorite,
           )}
           {fiche.comparisons?.map((c, k) => (
             <div key={k} className="panel compare-panel">
-              <h2 className="label">Comparer · {c.title}</h2>
+              <h2 className="cmp-title"><span className="label">Comparer</span> {inline(c.title)}</h2>
               <div className="cmp-scroll">
                 <table className="cmp">
                   <thead><tr>{c.headers.map((h, i) => <th key={i}>{inline(h)}</th>)}</tr></thead>
-                  <tbody>{c.rows.map((r, i) => <tr key={i}>{r.map((cell, j) => (j === 0 ? <th key={j} scope="row">{inline(cell)}</th> : <td key={j}>{inline(cell)}</td>))}</tr>)}</tbody>
+                  <tbody>{c.rows.map((r, i) => <tr key={i}>{r.map((cell, j) => (j === 0 ? <th key={j} scope="row">{inline(cell)}</th> : <td key={j} data-label={plain(c.headers[j])}>{inline(cell)}</td>))}</tr>)}</tbody>
                 </table>
               </div>
               {c.conclusion && <p className="cmp-conclusion">→ {inline(c.conclusion)}</p>}

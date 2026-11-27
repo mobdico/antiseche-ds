@@ -209,6 +209,59 @@ df["nouvelle_colonne"] = ...              # créer une colonne`,
     'Filtrer : `df[condition]` ; corriger : `df.loc[condition, "col"] = valeur`.',
     '`masque.sum()` = nombre de lignes qui vérifient la condition.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `masque = df["age"] > 30                 # une Series de True/False, même index que df
+df[masque]                              # garde les lignes où c’est True
+df[(df.age > 30) & (df.ville == "Lyon")]   # ET  → &   (parenthèses obligatoires)
+df[(df.age > 30) | (df.ville == "Lyon")]   # OU  → |
+df[~masque]                             # NON → ~`,
+    note: '`and`, `or`, `not` interrogent **un seul** booléen ; une Series en contient plusieurs, d’où l’erreur « truth value … is ambiguous ».',
+  },
+  comparisons: [{
+    title: 'and / & : pourquoi l’un plante et l’autre marche',
+    headers: ['', '`and` `or` `not`', '`&` `|` `~`'],
+    rows: [
+      ['Travaille sur', 'un seul booléen Python', 'chaque élément d’une Series ou d’un ndarray'],
+      ['Sur une Series', '`ValueError: The truth value of a Series is ambiguous`', 'une Series de booléens'],
+      ['Parenthèses', '—', '**obligatoires** : `&` passe avant `>` et `==`'],
+      ['Sans parenthèses', '—', '`s > 0 & s < 6` est lu `s > (0 & s) < 6` → la même `ValueError`'],
+    ],
+    conclusion: 'Dans un filtre pandas : **toujours** `&`, `|`, `~`, et chaque condition entre parenthèses.',
+  }, {
+    title: 'Filtrer, garder ou remplacer : quelle méthode ?',
+    headers: ['Expression', 'Forme du résultat', 'Ce qui se passe'],
+    rows: [
+      ['`s[s > 0]`', '**moins** de lignes', 'les lignes False disparaissent'],
+      ['`s.where(s > 0)`', 'même forme', 'garde où c’est **True**, met **NaN** ailleurs'],
+      ['`s.where(s > 0, 0)`', 'même forme', 'garde où True, met **0** ailleurs'],
+      ['`s.mask(s > 0, 0)`', 'même forme', 'l’inverse : remplace où c’est **True**'],
+      ['`np.where(s > 0, "pos", "neg")`', 'même longueur, **ndarray**', 'un choix entre deux valeurs ; **l’index est perdu**'],
+      ['`s.clip(lower=0)`', 'même forme', 'borne les valeurs (négatifs → 0)'],
+      ['`s.isin([5, 8])` / `s.between(a, b)`', 'masque booléen', 'raccourcis pour « dans la liste » et « dans l’intervalle » (bornes incluses)'],
+    ],
+    conclusion: '`where` **garde** ce qui est vrai ; `mask` **remplace** ce qui est vrai. Pour créer une colonne à deux valeurs, `np.where`.',
+  }],
+  deepDives: [{
+    title: 'Un masque s’aligne sur l’index, pas sur l’ordre',
+    body: `\`df[masque]\` ne lit pas le masque « dans l’ordre » : pandas associe chaque True/False à l’**étiquette** de même nom dans \`df\`. C’est pour cela qu’un masque calculé sur \`df\` lui-même fonctionne toujours, même après un tri.
+
+Une colonne contenant un \`NaN\` passe en \`float64\` : \`pd.Series([1, None])\` donne \`[1.0, nan]\`. Et \`NaN == NaN\` vaut **False** : pour tester une valeur manquante, utiliser \`.isna()\`, jamais \`== np.nan\`.`,
+    code: `s = pd.Series([5, -2, 8, -1])
+s.where(s > 0).tolist()      # [5.0, nan, 8.0, nan]  ← passe en float à cause du NaN
+s.mask(s > 0, 0).tolist()    # [0, -2, 0, -1]
+(s == np.nan).tolist()       # [False, False, False, False]  ← toujours False`,
+  }, {
+    title: 'Modifier un sous-ensemble : vue, copie et pandas 3',
+    body: `Pour modifier certaines lignes, une seule écriture est sûre : **\`df.loc[masque, "col"] = valeur\`**, en une seule opération.
+
+L’écriture enchaînée \`df[masque]["col"] = valeur\` ne modifie **jamais** \`df\` : \`df[masque]\` est un objet intermédiaire, et l’affectation porte sur lui. pandas 2 affiche \`SettingWithCopyWarning\` ; pandas 3 affiche \`ChainedAssignmentError\`.
+
+pandas 3 généralise le **Copy-on-Write** : tout objet obtenu à partir d’un autre (\`col = df["a"]\`, \`sous = df[masque]\`) se comporte comme une **copie**. Le modifier ne touche jamais \`df\`. En pandas 2, \`col.iloc[0] = 99\` modifiait encore \`df\` en silence.`,
+    code: `df.loc[df["a"] > 1, "b"] = 0      # ✔ modifie df (pandas 2 et 3)
+df[df["a"] > 1]["b"] = 0          # ✘ df inchangé + avertissement
+sous = df[df["a"] > 1].copy()     # ✔ travailler sur un extrait indépendant, sans avertissement`,
+  }],
   related: ['pandas-introduction', 'pandas-selection-avancee'],
   source: 'DataXp — Introduction à NumPy et Pandas, chapitre 4 (sources/pandas/dataxp-statistiques-filtrage-pandas.pdf)',
 });

@@ -187,6 +187,56 @@ ndarray.sum(axis=1)          # statistique le long d'un axe`,
     '`axis` = la dimension qui disparaît.',
     'Pas de boucle : opérations vectorisées + broadcasting.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `m.sum(axis=0)     # ÉCRASE les lignes   → un résultat par COLONNE  (shape (3,))
+m.sum(axis=1)     # ÉCRASE les colonnes → un résultat par LIGNE    (shape (2,))
+a[1:4]            # tranche      → VUE   (modifier b modifie a)
+a[[1, 2, 3]]      # liste        → COPIE
+a[a > 2]          # masque       → COPIE
+a[1:4].copy()     # copie explicite`,
+    note: 'L’axe indiqué est celui qui **disparaît** du résultat.',
+  },
+  comparisons: [{
+    title: 'axis=0 ou axis=1 ? (m = [[0, 1, 2], [3, 4, 5]])',
+    headers: ['', '`axis=0`', '`axis=1`'],
+    rows: [
+      ['Se déplace', 'vers le bas, le long des lignes', 'vers la droite, le long des colonnes'],
+      ['Un résultat par', '**colonne**', '**ligne**'],
+      ['`m.sum(axis=…)`', '`[3, 5, 7]`', '`[3, 12]`'],
+      ['En pandas', '`df.mean()` : moyenne de chaque colonne (défaut)', '`df.mean(axis=1)` ou `axis="columns"` : moyenne de chaque ligne'],
+      ['`df.drop(…, axis=…)`', 'supprime des **lignes** (étiquettes d’index)', 'supprime des **colonnes** — plus lisible : `drop(columns=…)`'],
+      ['Garder la dimension', '`keepdims=True` → shape (1, 3)', '`keepdims=True` → shape (2, 1)'],
+    ],
+    conclusion: '`axis=0` : on « écrase » les lignes. Pour les agrégats, une valeur par colonne ; pour `drop`, on retire des lignes.',
+  }, {
+    title: 'Vue ou copie ? (résultat de b[0] = 99 sur a)',
+    headers: ['Opération', 'Résultat', '`a` modifié ?'],
+    rows: [
+      ['`b = a[1:4]`', '**vue**', 'oui'],
+      ['`b = a.reshape(2, 3)` / `a.T`', '**vue**', 'oui'],
+      ['`b = m.ravel()`', 'vue si possible', 'oui sur `m`, non sur `m.T` (copie)'],
+      ['`b = a[[1, 2, 3]]`', '**copie**', 'non'],
+      ['`b = a[a > 2]`', '**copie**', 'non'],
+      ['`b = m.flatten()`', '**copie** (toujours)', 'non'],
+      ['`b = a[1:4].copy()`', '**copie**', 'non'],
+      ['liste Python `l[0:2]`', 'copie', 'non : contrairement à NumPy'],
+    ],
+    conclusion: 'Tranche et changement de forme → **vue**. Liste d’indices ou masque → **copie**. Pour en être sûr : `np.shares_memory(a, b)`.',
+  }],
+  deepDives: [{
+    title: 'Pourquoi une tranche NumPy partage la mémoire',
+    body: `Un \`ndarray\` est un **bloc de mémoire** contigu plus une description : la \`shape\`, le \`dtype\` et les **strides** (le nombre d’octets à sauter pour passer à l’élément suivant sur chaque axe).
+
+Une tranche \`a[1:4]\` ne copie rien : NumPy crée un nouvel objet qui pointe **dans le même bloc**, avec un autre point de départ. C’est instantané, même sur des millions de valeurs. Son attribut \`.base\` désigne le tableau d’origine.
+
+Une liste d’indices ou un masque peut désigner des éléments dispersés, sans pas régulier : NumPy est obligé de **copier** les valeurs choisies dans un nouveau bloc (\`.base\` vaut \`None\`).`,
+    code: `a = np.arange(6)
+b = a[1:4];       b[0] = 99;   a   # [0, 99, 2, 3, 4, 5]
+c = a[[1, 2]];    c[0] = -1;   a   # inchangé
+b.base is a, c.base is None        # (True, True)
+np.shares_memory(a, b)             # True`,
+  }],
   related: ['numpy-indexation-booleenne', 'pandas-introduction'],
   source: 'DataXp — Introduction à NumPy et Pandas, chapitre 1 (sources/numpy/dataxp-introduction-numpy.pdf)',
 });

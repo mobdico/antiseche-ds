@@ -179,6 +179,51 @@ pivot_table(..., margins=True)             # + ligne de total "All"`,
     'GroupBy = paresseux, rien n’est calculé avant l’appel d’une fonction.',
     'Résultat indexé par les **clés de groupe**, triées.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `df.groupby("ville")["age"].mean()     # Series    index = ville, .name = 'age'
+df.groupby("ville")[["age"]].mean()   # DataFrame index = ville
+df.groupby("ville", as_index=False)["age"].mean()   # ville reste une COLONNE
+df.groupby("ville").agg(moy=("age", "mean"), n=("age", "size"))   # colonnes nommées
+df.groupby("ville")["age"].transform("mean")   # même longueur que df`,
+    note: 'La clé du `groupby` **devient l’index** du résultat ; `as_index=False` ou `.reset_index()` la remet en colonne.',
+  },
+  comparisons: [{
+    title: 'Compter : value_counts, size, count, nunique',
+    headers: ['Expression', 'Renvoie', 'Compte les NaN ?', '`.name` / index'],
+    rows: [
+      ['`df["ville"].value_counts()`', 'Series **triée** par fréquence', 'non (`dropna=False` pour les voir)', '`.name = "count"`, index nommé `ville`'],
+      ['`df.groupby("ville").size()`', 'Series triée par **clé**', 'les lignes oui, la clé NaN non (`dropna=False`)', '`.name = None`, index nommé `ville`'],
+      ['`df.groupby("ville").count()`', '**DataFrame** : une colonne par colonne', 'non : valeurs **non manquantes** par colonne', 'colonnes = les autres colonnes'],
+      ['`df["ville"].count()`', 'un entier', 'non', '—'],
+      ['`len(df)` / `df["ville"].size`', 'un entier', 'oui', '—'],
+      ['`df["ville"].nunique()`', 'un entier : nombre de valeurs **distinctes**', 'non', '—'],
+      ['`value_counts(normalize=True)`', 'Series de proportions', 'non', '`.name = "proportion"`'],
+    ],
+    conclusion: '`size` compte les **lignes**, `count` compte les **valeurs présentes**. Leur écart = le nombre de NaN.',
+  }, {
+    title: 'groupby, pivot_table ou transform ?',
+    headers: ['', '`groupby(...).agg`', '`pivot_table`', '`groupby(...).transform`'],
+    rows: [
+      ['Forme du résultat', 'une ligne par groupe', 'un tableau croisé : groupes en lignes **et** en colonnes', '**même nombre de lignes** que `df`'],
+      ['Usage typique', 'moyenne par ville', 'ventes par ville × mois', 'ajouter « moyenne de sa ville » à chaque ligne'],
+      ['Case sans données', '—', 'NaN (`fill_value=0`)', '—'],
+      ['Total général', '—', '`margins=True` → ligne et colonne `All`', '—'],
+    ],
+    conclusion: 'Résumer → `agg`. Croiser deux variables → `pivot_table`. Comparer chaque ligne à son groupe → `transform`.',
+  }],
+  deepDives: [{
+    title: 'Split – apply – combine',
+    body: `\`groupby\` ne calcule rien tout seul : il renvoie un objet **GroupBy**, une promesse de découpage. Le calcul a lieu au moment où l’on appelle \`mean()\`, \`agg()\`…
+
+1. **split** : les lignes sont réparties selon les valeurs de la clé (les clés NaN sont écartées par défaut) ;
+2. **apply** : la fonction est appliquée à chaque morceau ;
+3. **combine** : les résultats sont recollés, et **les clés deviennent l’index**.
+
+Avec \`transform\`, l’étape combine renvoie chaque résultat **à la place des lignes d’origine** : on retrouve l’index de \`df\`, ce qui permet de l’affecter directement à une nouvelle colonne.`,
+    code: `df["moy_ville"] = df.groupby("ville")["age"].transform("mean")
+df["ecart"] = df["age"] - df["moy_ville"]     # chaque personne comparée à sa ville`,
+  }],
   related: ['pandas-combiner', 'pandas-statistiques-filtrage'],
   source: 'DataXp — Nettoyage et Analyse de Données avec Python, chapitre 1 (sources/pandas/dataxp-agregation-donnees.pdf)',
 });

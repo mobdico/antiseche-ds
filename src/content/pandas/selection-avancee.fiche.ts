@@ -258,6 +258,51 @@ df["nouvelle_colonne"] = valeurs        # créer une colonne`,
     '`(cond1) & (cond2)`, `(cond1) | (cond2)`, `~(cond)` — toujours avec parenthèses.',
     'Series → alignée par étiquette ; liste → par position.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `df.loc[étiquette]        # ce qui est ÉCRIT dans l’index (et dans .columns)
+df.iloc[position]        # le RANG : 0, 1, 2… comme dans une liste
+df.loc[10:30]            # étiquettes : 30 est INCLUS
+df.iloc[0:2]             # positions : 2 est EXCLU (comme en Python)
+df.loc[masque, "col"]    # filtrer ET choisir une colonne, en une fois`,
+    note: 'Après un tri ou un filtre, les étiquettes restent collées aux lignes ; les positions, elles, sont recalculées.',
+  },
+  comparisons: [{
+    title: '.loc ou .iloc ?',
+    headers: ['', '`.loc`', '`.iloc`'],
+    rows: [
+      ['Sélectionne par', 'l’**étiquette** (index, nom de colonne)', 'la **position** entière (0, 1, 2…)'],
+      ['Tranche `a:b`', 'borne de fin **incluse**', 'borne de fin **exclue**'],
+      ['Index négatif `-1`', '`KeyError` (sauf si −1 est une étiquette)', 'dernière ligne'],
+      ['Colonnes', 'par nom : `df.loc[:, "age"]`', 'par numéro : `df.iloc[:, 2]`'],
+      ['Masque booléen', 'oui : `df.loc[df.age > 30]`', 'pandas 3 : oui ; pandas 2 : `NotImplementedError` avec une Series → passer `.values`'],
+      ['Affectation', '`df.loc[masque, "col"] = v` : **la** bonne façon', 'possible, mais il faut connaître les positions'],
+      ['Après `sort_values`', 'même ligne qu’avant le tri', 'la ligne qui est **maintenant** en tête'],
+    ],
+    conclusion: 'Par défaut, raisonner en **étiquettes** (`.loc`). `.iloc` sert quand seul le rang compte : « les 3 premiers après un tri ».',
+  }, {
+    title: 'Le résultat : un scalaire, une Series ou un DataFrame ?',
+    headers: ['Expression', 'Renvoie', 'Pourquoi'],
+    rows: [
+      ['`df.loc[10, "age"]`', 'un **scalaire** (`30`)', 'une ligne et une colonne'],
+      ['`df.loc[10]`', 'une **Series**, `.name = 10`', 'une ligne : les colonnes deviennent l’index'],
+      ['`df.loc[[10]]`', 'un **DataFrame** d’une ligne', 'une **liste** d’étiquettes garde les deux dimensions'],
+      ['`df["age"]` / `df[["age"]]`', 'Series / DataFrame', 'même règle : crochets simples ou liste'],
+    ],
+    conclusion: 'Une étiquette seule **retire** une dimension ; une liste d’étiquettes la **garde**.',
+  }],
+  deepDives: [{
+    title: 'Pourquoi df.sort_values(...).loc[0] ne donne pas la première ligne',
+    body: `L’index n’est pas un numéro de ligne : c’est une **étiquette collée à la ligne**. Trier, filtrer ou mélanger déplace les lignes **avec** leur étiquette.
+
+Sur le tableau d’exemple (index 10, 20, 30, 40), après un tri par âge, \`.loc[10]\` renvoie toujours **Ana**, alors que \`.iloc[0]\` renvoie **Bob**, le plus jeune, désormais en tête.
+
+Piège voisin : sur une Series à index entier, \`s[0]\` cherche l’**étiquette** 0, et lève une \`KeyError\` si elle n’existe pas. Pour la position, écrire \`s.iloc[0]\`.`,
+    code: `trie = df.sort_values("age")
+trie.loc[10, "nom"]     # 'Ana'  ← l’étiquette 10 a suivi sa ligne
+trie.iloc[0]["nom"]     # 'Bob'  ← le premier rang après le tri
+df.reset_index(drop=True)   # renuméroter 0, 1, 2… si on veut que les deux coïncident`,
+  }],
   related: ['pandas-introduction', 'pandas-statistiques-filtrage'],
   source: 'DataXp — Introduction à NumPy et Pandas, chapitre 5 (sources/pandas/dataxp-selection-avancee-agregation-pandas.pdf)',
 });

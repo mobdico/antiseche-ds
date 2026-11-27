@@ -195,6 +195,62 @@ df.drop_duplicates(["col1", "col2"])  # supprimer les doublons`,
     '`axis=0` = lignes, `axis=1` = colonnes ; `thresh` = minimum de valeurs présentes.',
     'Imputation : même moyenne, distribution plus resserrée.',
   ],
+  mentalModel: {
+    title: 'La règle',
+    code: `df.isna().sum()            # Series : nombre de NaN PAR COLONNE
+df.isna().sum().sum()      # un nombre : total des NaN
+df.dropna()                # SUPPRIMER les lignes qui ont au moins un NaN
+df.fillna(valeur)          # REMPLACER les NaN, la forme ne change pas
+df.duplicated()            # Series de True/False : la ligne répète-t-elle une précédente ?
+df.drop_duplicates()       # SUPPRIMER ces répétitions`,
+    note: 'Ces méthodes renvoient un **nouveau** DataFrame : sans `df = …`, rien n’est modifié.',
+  },
+  comparisons: [{
+    title: 'dropna ou fillna ?',
+    headers: ['', '`dropna`', '`fillna`'],
+    rows: [
+      ['Effet', '**retire** des lignes (ou des colonnes)', '**remplace** les NaN'],
+      ['Forme du résultat', 'plus petite', 'identique'],
+      ['Réglages', '`how="all"`, `thresh=n`, `subset=[...]`, `axis=1`', 'une valeur, un dict par colonne, `df.mean()`…'],
+      ['Risque', 'perdre beaucoup de lignes : une seule colonne vide suffit', 'inventer des données et **écraser la variance**'],
+      ['Propager la valeur précédente', '—', '`df.ffill()` / `df.bfill()` (`fillna(method=…)` n’existe plus en pandas 3)'],
+      ['Quand', 'peu de lignes touchées, ou ligne inutilisable', 'colonne utile, valeur raisonnable à estimer'],
+    ],
+    conclusion: 'Toujours commencer par `df.isna().sum()` : c’est le compte des NaN par colonne qui décide.',
+  }, {
+    title: 'Les réglages de dropna (a = [1, NaN, 3], b = [NaN, NaN, 6])',
+    headers: ['Appel', 'Lignes gardées', 'Règle'],
+    rows: [
+      ['`dropna()`', '2', 'supprime dès qu’**un** NaN est présent (`how="any"`)'],
+      ['`dropna(how="all")`', '0, 2', 'supprime seulement les lignes **entièrement** vides'],
+      ['`dropna(subset=["a"])`', '0, 2', 'ne regarde que la colonne `a`'],
+      ['`dropna(thresh=2)`', '2', 'garde les lignes ayant **au moins 2** valeurs présentes'],
+      ['`dropna(axis=1)`', 'aucune colonne', 'supprime les **colonnes** contenant un NaN'],
+    ],
+  }, {
+    title: 'duplicated : quelles lignes sont marquées ?',
+    headers: ['Appel', 'Sur a = [1, 1, 2]', 'Signification'],
+    rows: [
+      ['`duplicated()`', '`[False, True, False]`', 'la 1re occurrence est gardée (`keep="first"`)'],
+      ['`duplicated(keep="last")`', '`[True, False, False]`', 'la dernière est gardée'],
+      ['`duplicated(keep=False)`', '`[True, True, False]`', '**toutes** les occurrences sont marquées : pour les inspecter'],
+      ['`drop_duplicates(subset="a")`', 'garde les lignes 0 et 2', 'doublon jugé sur la colonne `a` seulement'],
+    ],
+  }],
+  deepDives: [{
+    title: 'NaN n’est égal à rien, pas même à lui-même',
+    body: `\`NaN\` (« Not a Number ») est une valeur \`float\` spéciale : \`np.nan == np.nan\` vaut **False**. D’où trois conséquences pratiques :
+
+- \`df[df["a"] == np.nan]\` est **toujours vide** : utiliser \`df["a"].isna()\` ;
+- une colonne d’entiers qui reçoit un NaN passe en \`float64\` (\`1\` devient \`1.0\`) ;
+- les statistiques **ignorent** les NaN : \`mean()\` divise par le nombre de valeurs présentes, et la somme d’une colonne vide vaut \`0.0\`.
+
+\`count()\` donne le nombre de valeurs présentes, \`size\` le nombre de lignes : leur différence est exactement le nombre de NaN.`,
+    code: `s = pd.Series([1, np.nan, 3])
+s.mean()               # 2.0  ← (1 + 3) / 2, le NaN n’est pas compté
+s.count(), s.size      # (2, 3)
+s.isna().sum()         # 1`,
+  }],
   related: ['nettoyage-pandas', 'pandas-statistiques-filtrage'],
   source: 'DataXp — Nettoyage et Analyse de Données avec Python, chapitre 5 (sources/nettoyage/dataxp-valeurs-manquantes-doublons.pdf)',
 });
