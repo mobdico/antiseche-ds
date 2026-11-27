@@ -5,18 +5,20 @@ import type { Fiche, Theme } from './engine/types';
 import { FicheView } from './components/FicheView';
 import { ThemeBadge } from './components/ThemeBadge';
 import { ThemeIntroView } from './components/ThemeIntroView';
+import { Quiz } from './components/Quiz';
 import { Code } from './lib/highlight';
 import { inline } from './lib/markdown';
 import { useStoredList } from './lib/storage';
 import { modules, parcours, placeInParcours } from './content/parcours';
 
-type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'parcours' };
+type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'parcours' } | { view: 'devine' };
 
 function parseHash(): Route {
   const [, kind, id] = window.location.hash.split('/');
   if (kind === 'fiche' && id) return { view: 'fiche', id: decodeURIComponent(id) };
   if (kind === 'theme' && id) return { view: 'theme', id: decodeURIComponent(id) };
   if (kind === 'parcours') return { view: 'parcours' };
+  if (kind === 'devine') return { view: 'devine' };
   return { view: 'home' };
 }
 
@@ -162,6 +164,7 @@ export default function App() {
           <a href="#/parcours" className={`nav-home nav-parcours ${route.view === 'parcours' ? 'on' : ''}`}>
             <span>Parcours</span><span className="count">{nbRevised}/{parcours.length}</span>
           </a>
+          <a href="#/devine" className={`nav-home ${route.view === 'devine' ? 'on' : ''}`}>Devine le résultat</a>
           {favorites.items.length > 0 && (
             <div className="nav-group">
               <div className="nav-label">Favoris</div>
@@ -232,6 +235,11 @@ export default function App() {
                 </div>
               </a>
 
+              <a href="#/devine" className="panel home-quiz">
+                <span><span className="eyebrow">S’entraîner</span><strong>Devine le résultat</strong><span className="muted">Series ou DataFrame ? Quel index, quel <code>.name</code>, quelle shape ? Réponses tirées d’exécutions réelles.</span></span>
+                <span className="btn-primary">Jouer une série →</span>
+              </a>
+
               {recents.items.length > 0 && (
                 <section>
                   <h2 className="h-small">Consultées récemment</h2>
@@ -267,6 +275,8 @@ export default function App() {
               </section>
             </div>
           )}
+
+          {route.view === 'devine' && <Quiz />}
 
           {route.view === 'parcours' && (
             <div className="parcours-page">

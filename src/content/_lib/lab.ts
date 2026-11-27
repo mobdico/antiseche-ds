@@ -11,31 +11,31 @@ import { frameObj, seriesObj, type Dtype, type Frame } from './pandas-sim';
 import { arr1, arr2 } from './numpy-sim';
 import { list } from '../../engine/sim-helpers';
 
-const OMIT = '__omit__';
+export const OMIT = '__omit__';
 
-interface LabParam { id: string; label: string; default: string; options: { code: string; help: string }[] }
-interface LabMethod { id: string; label: string; expr: string; doc: string; params: LabParam[]; shapeNote?: boolean }
-interface LabFamily { id: string; title: string; summary: string; methods: LabMethod[] }
-type Res =
+export interface LabParam { id: string; label: string; default: string; options: { code: string; help: string }[] }
+export interface LabMethod { id: string; label: string; expr: string; doc: string; params: LabParam[]; shapeNote?: boolean }
+export interface LabFamily { id: string; title: string; summary: string; methods: LabMethod[] }
+export type Res =
   | { kind: 'DataFrame'; columns: string[]; index: (string | number)[]; rows: Prim[][]; dtypes: string[]; indexName: string | null }
   | { kind: 'Series'; name: string | number | null; index: (string | number | null)[]; values: Prim[]; dtype: string; indexName: string | null }
   | { kind: 'ndarray'; values: Prim[] | Prim[][]; shape?: number[]; dtype: string; type?: string; view?: boolean }
   | { kind: 'tuple'; pyType: string; items: Res[] }
   | { kind: 'scalar'; type: string; value: Prim };
-interface Run { result?: Res; printed?: string; error?: { type: string; message: string }; warnings?: string[] }
-type Entry = { p3: Run; p2?: Run } | Run;
-interface LabData {
+export interface Run { result?: Res; printed?: string; error?: { type: string; message: string }; warnings?: string[] }
+export type Entry = { p3: Run; p2?: Run } | Run;
+export interface LabData {
   lib?: string; theme?: string; pandas?: string; numpy?: string; versions?: { p3: string; p2: string };
   dataset: { code: string; frame?: Res | null; vars?: { name: string; value: Res }[] };
   families: LabFamily[]; results: Record<string, Entry>;
 }
 
-const LABS = [labPandas, labNumpy] as unknown as LabData[];
+export const LABS = [labPandas, labNumpy] as unknown as LabData[];
 
 const pid = (m: LabMethod, p: LabParam) => `${m.id}__${p.id}`;
 const label = (code: string) => (code === OMIT ? 'non passé' : `\`${code}\``);
-const runs = (e: Entry | undefined): { p3?: Run; p2?: Run } => (!e ? {} : 'p3' in e ? e : { p3: e as Run });
-const shapeStr = (s: number[]) => (s.length === 1 ? `(${s[0]},)` : `(${s.join(', ')})`);
+export const runs = (e: Entry | undefined): { p3?: Run; p2?: Run } => (!e ? {} : 'p3' in e ? e : { p3: e as Run });
+export const shapeStr = (s: number[]) => (s.length === 1 ? `(${s[0]},)` : `(${s.join(', ')})`);
 
 function toFrame(r: Extract<Res, { kind: 'DataFrame' }>): Frame {
   return { columns: r.columns, index: r.index, rows: r.rows, dtypes: r.dtypes as Dtype[], indexName: r.indexName ?? undefined };
@@ -98,7 +98,7 @@ const preview = (xs: Prim[], n = 6) => (xs.length > n ? [...xs.slice(0, n).map(S
 const pyName = (x: string | number | null) => (x === null ? '`None` (vide)' : typeof x === 'number' ? `\`${x}\`` : `\`'${x}'\``);
 
 /** Phrase qui décrit la forme d'un résultat : type, index, name, columns. */
-function shapeSentence(r: Res): string {
+export function shapeSentence(r: Res): string {
   if (r.kind === 'Series') {
     const idx = r.index.every((v, i) => v === i) ? `0 à ${r.index.length - 1}` : preview(r.index as Prim[]);
     return `**Series** de ${r.values.length} valeur(s). **Index** : ${idx}${r.indexName ? ` — l’index s’appelle \`${r.indexName}\`` : ''}. **\`.name\`** : ${pyName(r.name)}. Pas de \`.columns\` (c’est une Series).`;
@@ -112,7 +112,7 @@ function shapeSentence(r: Res): string {
 }
 
 /** Expression Python affichée pour une combinaison (mêmes règles que le générateur). */
-function callOf(m: LabMethod, combo: string[]): string {
+export function callOf(m: LabMethod, combo: string[]): string {
   let expr = m.expr;
   m.params.forEach((q, i) => { if (expr.includes(`{${q.id}}`)) expr = expr.replace(`{${q.id}}`, combo[i]); });
   const args = m.params.map((q, i) => (combo[i] === OMIT || m.expr.includes(`{${q.id}}`) ? '' : `${q.id}=${combo[i]}`)).filter(Boolean).join(', ');

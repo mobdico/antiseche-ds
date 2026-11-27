@@ -35,6 +35,11 @@ python scripts/lab/merge.py out-p3.json out-p2.json   # → src/content/_data/la
 - Nouvelle famille : l'ajouter dans `FAMILIES`, puis créer `src/content/pandas/labo-<id>.fiche.ts` (3 lignes).
 - Labo NumPy : `python scripts/lab/generate.py src/content/_data/labo-numpy.json scripts/lab/lab_numpy.py`
 
+## Mode « Devine le résultat »
+Page `#/devine` : des questions (type du résultat, index, `.name`, shape, exception) générées automatiquement depuis les résultats
+réels des labos (`src/content/_lib/quiz.ts`) — aucune réponse écrite à la main. Ajouter une famille au labo ajoute des cartes.
+L'historique (cartes ratées à revoir en priorité) est gardé dans le navigateur (`localStorage`, clé `quiz-history-v1`).
+
 ## Simulateurs tracés (Python exécuté ligne par ligne)
 Les fiches Python Core utilisent un traceur qui exécute le **vrai Python** ligne par ligne et enregistre la mémoire
 (variables, objets, adresses `id()`, sorties, erreurs) après chaque ligne.
