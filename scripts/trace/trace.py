@@ -47,9 +47,18 @@ class Heap:
             import inspect
             o.update(kind="box", pyType="function", fields=[], note=f"{v.__name__}{inspect.signature(v)}")
         elif isinstance(v, type):
-            o.update(kind="box", pyType="class", fields=[{"label": k, "slot": self.slot(x)} for k, x in vars(v).items()
-                                                        if not k.startswith("__") and not isinstance(x, (types.FunctionType, staticmethod, classmethod))],
-                     note=f"class {v.__name__} · méthodes : {', '.join(k for k, x in vars(v).items() if isinstance(x, types.FunctionType) and not k.startswith('__')) or '—'}")
+            items = vars(v).items()
+            meth = [k for k, x in items if isinstance(x, types.FunctionType) and not k.startswith("_abc")]
+            props = [k for k, x in items if isinstance(x, property)]
+            cms = [k for k, x in items if isinstance(x, (classmethod, staticmethod))]
+            bases = [b.__name__ for b in v.__bases__ if b is not object]
+            parts = [f"class {v.__name__}" + (f"({', '.join(bases)})" if bases else ""), f"méthodes : {', '.join(meth) or '—'}"]
+            if props: parts.append(f"propriétés : {', '.join(props)}")
+            if cms: parts.append(f"méthodes de classe : {', '.join(cms)}")
+            if getattr(v, "__abstractmethods__", None): parts.append(f"abstraites : {', '.join(sorted(v.__abstractmethods__))}")
+            o.update(kind="box", pyType="class", fields=[{"label": k, "slot": self.slot(x)} for k, x in items
+                                                        if not k.startswith("_") and not isinstance(x, (types.FunctionType, staticmethod, classmethod, property))],
+                     note=" · ".join(parts))
         elif hasattr(v, "__dict__") and not isinstance(v, types.ModuleType):
             o.update(kind="box", fields=[{"label": "." + k, "slot": self.slot(x)} for k, x in vars(v).items()], note=f"instance de {type(v).__name__}")
         else:
@@ -156,6 +165,8 @@ def run(code):
                     tb_lines.append(f'  File "<sim>", line {t.tb_lineno}, in {t.tb_frame.f_code.co_name}')
                     tb_lines.append("    " + lines[t.tb_lineno - 1].strip())
                 t = t.tb_next
+            if len(tb_lines) > 13:  # récursion : garder le début et la fin
+                tb_lines = tb_lines[:5] + [f"  [... {(len(tb_lines) - 9) // 2} appels identiques ...]"] + tb_lines[-4:]
             tb_lines.append(f"{type(e).__name__}: {e}")
             error = {"type": type(e).__name__, "message": str(e), "line": line, "traceback": tb_lines}
         finally:

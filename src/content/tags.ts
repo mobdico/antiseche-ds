@@ -27,6 +27,7 @@ export const tagDefs: TagDef[] = [
   { id: 'distributions', label: 'Distributions et corrélations', description: 'Forme des données, dispersion, quantiles, relation entre deux variables.' },
   { id: 'graphiques', label: 'Graphiques matplotlib', description: 'Tracer, habiller et organiser des graphiques.' },
   { id: 'lisibilite', label: 'Lisibilité des graphiques', description: 'Rendre un graphique clair : épurer, mettre en avant, comparer honnêtement.' },
+  { id: 'poo', label: 'Programmation objet', description: 'Classes, objets, self, héritage : comment Python range données et comportements.' },
   { id: 'versions', label: 'pandas 2 ou 3', description: 'Comportements qui diffèrent entre pandas 2.x et pandas ≥ 3.0.' },
 ];
 

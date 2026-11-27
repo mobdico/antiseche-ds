@@ -19,6 +19,8 @@ export const modules: Module[] = [
     fiches: ['python-fonctions', 'python-arguments', 'python-fonctions-natives', 'python-scopes'] },
   { id: 'manipuler', course: 'Python pour la Data Science', title: 'Manipuler et analyser des données en Python',
     fiches: ['python-bases-analyse', 'python-dates'] },
+  { id: 'poo', course: 'Python pour la Data Science', title: 'Programmation orientée objet (récap personnel)',
+    fiches: ['python-poo-classes', 'python-poo-dunder', 'python-poo-encapsulation', 'python-poo-heritage', 'python-poo-composition'] },
   { id: 'numpy-pandas', course: 'Analyse et visualisation de données', title: 'Introduction à NumPy et pandas',
     fiches: ['numpy-introduction', 'numpy-indexation-booleenne', 'pandas-introduction', 'pandas-formes', 'pandas-statistiques-filtrage', 'pandas-selection-avancee', 'nettoyage-pandas'] },
   { id: 'visualisation', course: 'Analyse et visualisation de données', title: 'Introduction à la visualisation de données',
