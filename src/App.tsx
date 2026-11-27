@@ -275,12 +275,6 @@ export default function App() {
                 </div>
               </section>
 
-              <section>
-                <div className="section-head"><h2>Labos</h2><p className="muted">Change un paramètre, vois exactement ce qui change.</p></div>
-                <div className="lab-list">{fiches.filter(isLab).map((f) => (
-                  <a key={f.id} href={`#/fiche/${f.id}`} className="lab-row"><ThemeBadge theme={themeOf(f.theme)} size="sm" /><span>{labShort(f)}</span><span className="lab-lib">{themeOf(f.theme)?.label}</span></a>
-                ))}</div>
-              </section>
             </div>
           )}
 
