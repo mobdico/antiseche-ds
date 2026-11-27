@@ -188,10 +188,24 @@ export interface Fiche {
   simulator?: Simulator;
   /** simulateurs supplémentaires, affichés après le premier */
   simulators?: Simulator[];
+  /** tableaux comparatifs de notions voisines (markdown léger dans les cellules) */
+  comparisons?: Comparison[];
+  /** la règle à retenir, sous forme de quelques lignes de code commentées */
+  mentalModel?: { title?: string; code: string; note?: string };
+  /** « sous le capot » : le mécanisme qui explique le comportement */
+  deepDives?: { title: string; body: string; code?: string }[];
   related?: string[]; // ids d'autres fiches
   source?: string; // ex. "Fiche PDF — Pandas 1, p.3"
   /** version minimale du contrat de données — réservé aux migrations futures */
   schema?: 1;
+}
+
+export interface Comparison {
+  title: string;
+  /** en-têtes : la 1re colonne nomme le critère comparé */
+  headers: string[];
+  rows: string[][];
+  conclusion?: string;
 }
 
 /** Aide au typage pour les fichiers de contenu. */

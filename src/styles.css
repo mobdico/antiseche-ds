@@ -507,3 +507,22 @@ details.nav-notions[open] .chev { transform: rotate(90deg); }
 .ti-questions li::marker { content: '? '; color: hsl(var(--h) 60% 45%); font-weight: 700; }
 .rev-heading { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 4px 0 2px; }
 @media (max-width: 1000px) { .ti-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ------------------------------------------------------------ comparer, règle mentale, sous le capot */
+.compare-zone, .deep-zone { display: flex; flex-direction: column; gap: 16px; }
+.mental-panel { border-top: 3px solid var(--brand); }
+.mental-panel .code { font-size: .9rem; }
+.mental-note { margin: 10px 0 0; font-size: .9rem; color: var(--muted); }
+.cmp-scroll { overflow-x: auto; margin-top: 10px; }
+.cmp { border-collapse: collapse; width: 100%; font-size: .9rem; }
+.cmp th, .cmp td { border-bottom: 1px solid var(--border); padding: 9px 12px; text-align: left; vertical-align: top; }
+.cmp thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--border-strong); }
+.cmp thead th:not(:first-child) { color: var(--text); text-transform: none; letter-spacing: 0; font-size: .9rem; font-weight: 700; }
+.cmp tbody th { font-weight: 600; color: var(--muted); width: 22%; min-width: 140px; }
+.cmp tbody tr:last-child th, .cmp tbody tr:last-child td { border-bottom: 0; }
+.cmp-conclusion { margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); font-size: .92rem; }
+.deep-panel summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 10px; }
+.deep-panel summary::-webkit-details-marker { display: none; }
+.deep-panel summary strong { font-size: 1rem; }
+.deep-panel[open] summary { margin-bottom: 10px; }
+.deep-panel .code { margin-top: 10px; }

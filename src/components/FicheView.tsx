@@ -74,6 +74,30 @@ export function FicheView({ fiche, theme, resolve, isFavorite, onToggleFavorite,
         )}
       </section>
 
+      {(fiche.mentalModel || !!fiche.comparisons?.length) && (
+        <section className="compare-zone">
+          {fiche.mentalModel && (
+            <div className="panel mental-panel">
+              <div className="panel-head"><h2 className="label">{fiche.mentalModel.title ?? 'Règle mentale'}</h2><CopyButton text={fiche.mentalModel.code} /></div>
+              <Code code={fiche.mentalModel.code} />
+              {fiche.mentalModel.note && <p className="mental-note">{inline(fiche.mentalModel.note)}</p>}
+            </div>
+          )}
+          {fiche.comparisons?.map((c, k) => (
+            <div key={k} className="panel compare-panel">
+              <h2 className="label">Comparer · {c.title}</h2>
+              <div className="cmp-scroll">
+                <table className="cmp">
+                  <thead><tr>{c.headers.map((h, i) => <th key={i}>{inline(h)}</th>)}</tr></thead>
+                  <tbody>{c.rows.map((r, i) => <tr key={i}>{r.map((cell, j) => (j === 0 ? <th key={j} scope="row">{inline(cell)}</th> : <td key={j}>{inline(cell)}</td>))}</tr>)}</tbody>
+                </table>
+              </div>
+              {c.conclusion && <p className="cmp-conclusion">→ {inline(c.conclusion)}</p>}
+            </div>
+          ))}
+        </section>
+      )}
+
       {sims.length > 0 && (
         <section id="simulateurs" className="sims">
           {sims.length > 1 && (
@@ -102,6 +126,18 @@ export function FicheView({ fiche, theme, resolve, isFavorite, onToggleFavorite,
           </div>
         )}
       </section>
+
+      {!!fiche.deepDives?.length && (
+        <section className="deep-zone">
+          {fiche.deepDives.map((d, k) => (
+            <details key={k} className="panel deep-panel" open={k === 0}>
+              <summary><span className="label">Sous le capot</span> <strong>{d.title}</strong></summary>
+              <div className="prose"><Markdown text={d.body} /></div>
+              {d.code && <Code code={d.code} />}
+            </details>
+          ))}
+        </section>
+      )}
 
       <footer className="fiche-foot">
         {!!fiche.related?.length && (

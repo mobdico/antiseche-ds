@@ -1,5 +1,6 @@
 import { defineFiche, type HeapObj, type SimAlert, type SimResult, type SimStep } from '../../engine/types';
 import { fmtFrame, fmtSeries, frameObj, seriesObj, type Frame, type Series } from '../_lib/pandas-sim';
+import { labSim } from '../_lib/lab';
 
 const NOTES: Frame = {
   columns: ['eleve', 'maths', 'physique'], index: [0, 1, 2],
@@ -154,7 +155,62 @@ pd.melt(df, id_vars=..., value_vars=...)   # format tidy`,
     ],
     simulate: (p) => sim(String(p.mode), String(p.axis), String(p.version)),
   },
+  simulators: [labSim('map-apply', 'Laboratoire — map ou apply ? (exécuté par pandas)')],
+  mentalModel: {
+    code: `s.map(f)  /  s.apply(f)        # Series : élément par élément
+s.map(dico)                     # Series : table de correspondance (absent → NaN)
+df.apply(f)          # axis=0   # DataFrame : f reçoit chaque COLONNE (une Series)
+df.apply(f, axis=1)             # DataFrame : f reçoit chaque LIGNE (une Series)
+df.map(f)                       # DataFrame : f reçoit chaque CELLULE
+df.replace(dico)                # DataFrame : table de correspondance`,
+    note: 'Sur une **Series**, `map` et `apply` vont élément par élément ; seule `map` accepte une table de correspondance. Sur un **DataFrame**, `apply` travaille par colonne ou par ligne, `map` par cellule.',
+  },
+  comparisons: [
+    {
+      title: 'sur une Series (une colonne)',
+      headers: ['', '`Series.map`', '`Series.apply`'],
+      rows: [
+        ['Accepte', 'une fonction, un **dict**, une **Series**', 'une fonction (callable)'],
+        ['Application', 'élément par élément', 'élément par élément'],
+        ['Avec un dict', 'table de correspondance : clé → valeur', 'lu comme « **nom → fonction** » : un dict de valeurs lève `TypeError` ou `AttributeError`'],
+        ['Valeur absente du dict', 'devient **NaN**', '—'],
+        ['Arguments en plus (`x=2`)', 'pandas ≥ 3.0 seulement', 'oui (`apply(f, x=2)`)'],
+      ],
+      conclusion: 'Les deux vont élément par élément ; la vraie différence est que **`map` accepte une table de correspondance**, `apply` non.',
+    },
+    {
+      title: 'sur un DataFrame',
+      headers: ['', '`DataFrame.apply`', '`DataFrame.map` (ex-`applymap`)'],
+      rows: [
+        ['La fonction reçoit', 'une **colonne** entière (`axis=0`, défaut) ou une **ligne** (`axis=1`), sous forme de Series', 'une **cellule** (une valeur)'],
+        ['Paramètre `axis`', 'oui', 'non'],
+        ['Résultat typique', 'une Series (une valeur par colonne ou par ligne) ou un DataFrame', 'un DataFrame de même forme'],
+        ['Avec un dict', 'lu comme « colonne → fonction » (`KeyError` si la colonne n’existe pas)', '`TypeError: the first argument must be callable`'],
+        ['Table de correspondance', 'utiliser `df.replace(dico)`', 'utiliser `df.replace(dico)`'],
+      ],
+      conclusion: 'Sur un DataFrame, **`apply` n’est pas élément par élément** : il traite une colonne ou une ligne selon `axis`. `map` traite chaque cellule, sans `axis`.',
+    },
+  ],
+  deepDives: [
+    {
+      title: 'Pourquoi df.apply(lambda x: x * 10) ressemble à df.map',
+      body: `Le résultat est identique, mais pour une autre raison : avec \`apply\`, \`x\` est une **colonne entière** (une Series), et \`x * 10\` est une opération **vectorisée** sur toute la colonne. Avec \`map\`, \`x\` est un **nombre**.
+
+La différence apparaît dès que la fonction n’existe que pour un type : \`df.apply(lambda x: x.upper())\` plante (\`'Series' object has no attribute 'upper'\`), alors que pour une colonne de texte il faut \`df["col"].str.upper()\` ou \`df.map(str.upper)\`.`,
+      code: `df[["age", "score"]].apply(lambda x: type(x).__name__)
+# age      Series
+# score    Series      ← la fonction a bien reçu une Series par colonne`,
+    },
+    {
+      title: 'Ce que map et apply attendent vraiment : un callable',
+      body: `\`map\`, \`apply\`, \`sorted(key=…)\`, \`groupby().agg(…)\` attendent tous un **callable** : un objet qu’on peut appeler avec des parenthèses. Fonctions, \`lambda\`, méthodes (\`str.upper\`), classes et instances dont la classe définit \`__call__\` le sont ; un nombre, une chaîne, une liste ou un dict ne le sont pas.
+
+C’est pourquoi \`s.map(str.upper)\` fonctionne (on passe la méthode, **sans** parenthèses) et \`s.map(str.upper())\` non. Voir la fiche « Créer et appeler une fonction ».`,
+    },
+  ],
   pitfalls: [
+    '`df.map(str.upper)` plante dès qu’une case vaut NaN (un float n’a pas `.upper()`) : utiliser `df[col].str.upper()` ou `map(f, na_action="ignore")`.',
+    '`s.apply(dico)` ne fait pas de correspondance : c’est `s.map(dico)`.',
     '`df.apply(f)` travaille **colonne par colonne** par défaut (`axis=0`) ; pour une ligne entière : `axis=1`.',
     '`Series.map(f, x=2)` → `TypeError` en pandas 2.x : utiliser `apply`.',
     '`applymap()` : obsolète en pandas 2.1+, **supprimé en 3.0** → utiliser `DataFrame.map()`.',

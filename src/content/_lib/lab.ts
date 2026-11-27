@@ -3,7 +3,7 @@
  * (scripts/lab/generate.py) ; ce module ne fait qu'afficher les résultats enregistrés.
  * Plusieurs labos sont gérés : pandas (2 versions comparées) et NumPy.
  */
-import type { Fiche, HeapObj, ParamDef, Prim, SimAlert, SimResult, SimStep } from '../../engine/types';
+import type { Fiche, HeapObj, ParamDef, Prim, SimAlert, SimResult, SimStep, Simulator } from '../../engine/types';
 import { defineFiche } from '../../engine/types';
 import labPandas from '../_data/labo-pandas.json';
 import labNumpy from '../_data/labo-numpy.json';
@@ -196,12 +196,16 @@ function simulate(lab: LabData, fam: LabFamily, p: Record<string, string | boole
 }
 
 /** Construit une fiche Labo à partir d'une famille de méthodes (cherchée dans tous les labos). */
-export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
+function findFamily(familyId: string) {
   const lab = LABS.find((l) => l.families.some((f) => f.id === familyId));
   const fam = lab?.families.find((f) => f.id === familyId);
   if (!lab || !fam) throw new Error(`famille de labo inconnue : ${familyId}`);
-  const versionLabel = lab.versions ? `${lab.versions.p3} et ${lab.versions.p2}` : lab.numpy;
-  const libName = lab.lib === 'numpy' ? 'NumPy' : 'pandas';
+  return { lab, fam };
+}
+
+/** Simulateur d'une famille de labo, utilisable dans n'importe quelle fiche. */
+export function labSim(familyId: string, title = 'Laboratoire — joue avec les paramètres'): Simulator {
+  const { lab, fam } = findFamily(familyId);
   const params: ParamDef[] = [
     // un seul choix possible : pas de sélecteur de méthode
     ...(fam.methods.length > 1 ? [{ id: 'method', label: 'Méthode', type: 'choice' as const, default: fam.methods[0].id, options: fam.methods.map((m) => ({ value: m.id, label: `\`${m.label}\``, help: m.doc })) }] : []),
@@ -211,6 +215,15 @@ export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
     }))),
     ...(lab.versions ? [{ id: 'version', label: 'Version de pandas', type: 'choice' as const, default: 'p3', options: [{ value: 'p3', label: `pandas ${lab.versions.p3}` }, { value: 'p2', label: `pandas ${lab.versions.p2}` }] }] : []),
   ];
+  return { title, params, simulate: (p) => simulate(lab, fam, p) };
+}
+
+export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
+  const lab = LABS.find((l) => l.families.some((f) => f.id === familyId));
+  const fam = lab?.families.find((f) => f.id === familyId);
+  if (!lab || !fam) throw new Error(`famille de labo inconnue : ${familyId}`);
+  const versionLabel = lab.versions ? `${lab.versions.p3} et ${lab.versions.p2}` : lab.numpy;
+  const libName = lab.lib === 'numpy' ? 'NumPy' : 'pandas';
   const sig = (m: LabMethod) => m.expr.replace('{args}', m.params.filter((q) => !m.expr.includes(`{${q.id}}`)).map((q) => (q.default === OMIT ? `${q.id}=…` : `${q.id}=${q.default}`)).join(', ')).replace(/\{(\w+)\}/g, '$1').replace(', )', ')');
   return defineFiche({
     id: `labo-${fam.id}`,
@@ -221,7 +234,7 @@ export function labFiche(familyId: string, extra: Partial<Fiche> = {}): Fiche {
     summary: fam.summary,
     concept: `Chaque combinaison de paramètres ci-dessous a été **exécutée par le vrai ${libName}** (${versionLabel}) : résultats, affichages, erreurs et avertissements sont réels.\n\n${fam.methods.map((m) => `- **\`${m.label}\`** : ${m.doc}`).join('\n')}`,
     syntax: fam.methods.map(sig).join('\n'),
-    simulator: { title: 'Laboratoire — joue avec les paramètres', params, simulate: (p) => simulate(lab, fam, p) },
+    simulator: labSim(familyId),
     source: `Labo généré avec ${libName} ${versionLabel} (scripts/lab/)`,
     ...extra,
   });
