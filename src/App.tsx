@@ -6,12 +6,14 @@ import { FicheView } from './components/FicheView';
 import { ThemeBadge } from './components/ThemeBadge';
 import { ThemeIntroView } from './components/ThemeIntroView';
 import { Quiz } from './components/Quiz';
+import { ErrorsPage } from './components/ErrorsPage';
+import { searchErrors } from './content/errors';
 import { Code } from './lib/highlight';
 import { inline } from './lib/markdown';
 import { useStoredList } from './lib/storage';
 import { modules, parcours, placeInParcours } from './content/parcours';
 
-type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'parcours' } | { view: 'devine' };
+type Route = { view: 'home' } | { view: 'theme'; id: string } | { view: 'fiche'; id: string } | { view: 'parcours' } | { view: 'devine' } | { view: 'erreurs'; id?: string };
 
 function parseHash(): Route {
   const [, kind, id] = window.location.hash.split('/');
@@ -19,6 +21,7 @@ function parseHash(): Route {
   if (kind === 'theme' && id) return { view: 'theme', id: decodeURIComponent(id) };
   if (kind === 'parcours') return { view: 'parcours' };
   if (kind === 'devine') return { view: 'devine' };
+  if (kind === 'erreurs') return { view: 'erreurs', id: id ? decodeURIComponent(id) : undefined };
   return { view: 'home' };
 }
 
@@ -50,7 +53,6 @@ const labShort = (f: Fiche) => { const t = f.title.replace(/^Labo( NumPy)? — /
 const simCount = (f: Fiche) => (f.simulator ? 1 : 0) + (f.simulators?.length ?? 0);
 const SUGGESTIONS = ['KeyError', 'axis', 'vue ou copie', 'groupby', 'dropna', 'merge', 'sorted', 'scope', 'strptime', 'hue'];
 
-const go = (id: string) => { window.location.hash = `#/fiche/${id}`; };
 
 function FicheCard({ f, theme, fav, showTheme = true }: { f: Fiche; theme?: Theme; fav?: boolean; showTheme?: boolean }) {
   return (
@@ -95,6 +97,11 @@ export default function App() {
   useEffect(() => { setOpenThemes(currentTheme ? [currentTheme.id] : []); }, [currentTheme?.id]);
 
   const hits = useMemo(() => (query.trim() ? search(index, query) : []), [index, query]);
+  // résultats de la recherche : d'abord les messages d'erreur reconnus, puis les fiches
+  const items = useMemo(() => [
+    ...searchErrors(query).slice(0, 3).map((e) => ({ key: `err-${e.id}`, href: `#/erreurs/${e.id}`, badge: <span className="err-badge">{e.p3?.type ?? e.p2?.type}</span>, title: e.title, sub: <code>{(e.p3 ?? e.p2)?.message}</code> })),
+    ...hits.slice(0, 8).map((f) => ({ key: f.id, href: `#/fiche/${f.id}`, badge: <ThemeBadge theme={themeOf(f.theme)} size="sm" />, title: f.title, sub: inline(f.summary) })),
+  ].slice(0, 9), [hits, query]);
   useEffect(() => setActive(0), [query]);
 
   useEffect(() => {
@@ -109,9 +116,9 @@ export default function App() {
   }, []);
 
   const onSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((i) => Math.min(i + 1, Math.min(hits.length, 8) - 1)); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((i) => Math.min(i + 1, items.length - 1)); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((i) => Math.max(i - 1, 0)); }
-    else if (e.key === 'Enter' && hits[active]) { go(hits[active].id); searchRef.current?.blur(); }
+    else if (e.key === 'Enter' && items[active]) { window.location.hash = items[active].href; searchRef.current?.blur(); }
     else if (e.key === 'Escape') { setQuery(''); searchRef.current?.blur(); }
   };
   const ask = (q: string) => { setQuery(q); searchRef.current?.focus(); };
@@ -139,14 +146,14 @@ export default function App() {
           <kbd className="search-kbd">/</kbd>
           {query && (
             <div className="search-pop" role="listbox">
-              {hits.slice(0, 8).map((f, i) => (
-                <a key={f.id} href={`#/fiche/${f.id}`} role="option" aria-selected={i === active} className={i === active ? 'on' : ''} onMouseEnter={() => setActive(i)}>
-                  <ThemeBadge theme={themeOf(f.theme)} size="sm" />
-                  <span className="sp-text"><strong>{f.title}</strong><span>{inline(f.summary)}</span></span>
+              {items.map((it, i) => (
+                <a key={it.key} href={it.href} role="option" aria-selected={i === active} className={i === active ? 'on' : ''} onMouseEnter={() => setActive(i)}>
+                  {it.badge}
+                  <span className="sp-text"><strong>{it.title}</strong><span>{it.sub}</span></span>
                 </a>
               ))}
-              {!hits.length && <div className="sp-empty">Aucune fiche pour « {query} ». Essaie un nom de fonction (<code>dropna</code>) ou un mot du message d’erreur.</div>}
-              {hits.length > 0 && <div className="sp-hint"><kbd>↑</kbd><kbd>↓</kbd> naviguer · <kbd>Entrée</kbd> ouvrir · <kbd>Échap</kbd> fermer</div>}
+              {!items.length && <div className="sp-empty">Aucune fiche pour « {query} ». Essaie un nom de fonction (<code>dropna</code>) ou un mot du message d’erreur.</div>}
+              {items.length > 0 && <div className="sp-hint"><kbd>↑</kbd><kbd>↓</kbd> naviguer · <kbd>Entrée</kbd> ouvrir · <kbd>Échap</kbd> fermer</div>}
             </div>
           )}
         </div>
@@ -165,6 +172,7 @@ export default function App() {
             <span>Parcours</span><span className="count">{nbRevised}/{parcours.length}</span>
           </a>
           <a href="#/devine" className={`nav-home ${route.view === 'devine' ? 'on' : ''}`}>Devine le résultat</a>
+          <a href="#/erreurs" className={`nav-home ${route.view === 'erreurs' ? 'on' : ''}`}>Messages d’erreur</a>
           {favorites.items.length > 0 && (
             <div className="nav-group">
               <div className="nav-label">Favoris</div>
@@ -277,6 +285,7 @@ export default function App() {
           )}
 
           {route.view === 'devine' && <Quiz />}
+          {route.view === 'erreurs' && <ErrorsPage focus={route.id} resolve={(id) => byId.get(id)} />}
 
           {route.view === 'parcours' && (
             <div className="parcours-page">
@@ -345,6 +354,19 @@ export default function App() {
                         <Code code={f.syntax} />
                         {!!f.takeaways?.length && <ul className="rev-take">{f.takeaways.map((t, i) => <li key={i}>{inline(t)}</li>)}</ul>}
                       </div>
+                      {f.mentalModel && (
+                        <div className="rev-rule">
+                          <span className="label">La règle</span>
+                          <Code code={f.mentalModel.code} />
+                          {f.mentalModel.note && <p>{inline(f.mentalModel.note)}</p>}
+                        </div>
+                      )}
+                      {!!f.comparisons?.some((c) => c.conclusion) && (
+                        <div className="rev-cmp">
+                          <span className="label">À ne pas confondre</span>
+                          <ul>{f.comparisons!.filter((c) => c.conclusion).map((c, i) => <li key={i}><b>{inline(c.title)}</b> — {inline(c.conclusion!)}</li>)}</ul>
+                        </div>
+                      )}
                     </article>
                   ))}
                 </div>

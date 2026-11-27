@@ -1,0 +1,265 @@
+{
+ "versions": {
+  "p3": "3.1.1",
+  "p2": "2.2.3"
+ },
+ "numpy": "2.5.5",
+ "cases": {
+  "name-error": {
+   "code": "print(total)",
+   "p3": {
+    "type": "NameError",
+    "message": "name 'total' is not defined"
+   }
+  },
+  "not-callable": {
+   "code": "sum = 0\nsum([1, 2, 3])",
+   "p3": {
+    "type": "TypeError",
+    "message": "'int' object is not callable"
+   }
+  },
+  "concat-str-int": {
+   "code": "\"Âge : \" + 25",
+   "p3": {
+    "type": "TypeError",
+    "message": "can only concatenate str (not \"int\") to str"
+   }
+  },
+  "unsupported-operand": {
+   "code": "10 + \"5\"",
+   "p3": {
+    "type": "TypeError",
+    "message": "unsupported operand type(s) for +: 'int' and 'str'"
+   }
+  },
+  "list-index": {
+   "code": "notes = [12, 15, 9]\nnotes[3]",
+   "p3": {
+    "type": "IndexError",
+    "message": "list index out of range"
+   }
+  },
+  "dict-key": {
+   "code": "d = {\"Paris\": 2}\nd[\"Lyon\"]",
+   "p3": {
+    "type": "KeyError",
+    "message": "'Lyon'"
+   }
+  },
+  "invalid-literal": {
+   "code": "int(\"12,5\")",
+   "p3": {
+    "type": "ValueError",
+    "message": "invalid literal for int() with base 10: '12,5'"
+   }
+  },
+  "nonetype-attr": {
+   "code": "notes = [3, 1, 2]\nnotes = notes.sort()\nnotes.append(4)",
+   "p3": {
+    "type": "AttributeError",
+    "message": "'NoneType' object has no attribute 'append'"
+   }
+  },
+  "indentation": {
+   "code": "exec(\"if True:\\nprint(1)\")",
+   "p3": {
+    "type": "IndentationError",
+    "message": "expected an indented block after 'if' statement on line 1"
+   }
+  },
+  "syntax-paren": {
+   "code": "exec(\"print((1, 2)\")",
+   "p3": {
+    "type": "SyntaxError",
+    "message": "'(' was never closed"
+   }
+  },
+  "unbound-local": {
+   "code": "compteur = 0\ndef ajouter():\n    compteur = compteur + 1\najouter()",
+   "p3": {
+    "type": "UnboundLocalError",
+    "message": "cannot access local variable 'compteur' where it is not associated with a value"
+   }
+  },
+  "zero-division": {
+   "code": "10 / 0",
+   "p3": {
+    "type": "ZeroDivisionError",
+    "message": "division by zero"
+   }
+  },
+  "module-not-found": {
+   "code": "import seabornn",
+   "p3": {
+    "type": "ModuleNotFoundError",
+    "message": "No module named 'seabornn'"
+   }
+  },
+  "file-not-found": {
+   "code": "pd.read_csv(\"ventes_2024.csv\")",
+   "p3": {
+    "type": "FileNotFoundError",
+    "message": "[Errno 2] No such file or directory: 'ventes_2024.csv'"
+   }
+  },
+  "key-column": {
+   "code": "df[\"Ville\"]",
+   "p3": {
+    "type": "KeyError",
+    "message": "'Ville'"
+   }
+  },
+  "key-loc-label": {
+   "code": "df.sort_values(\"age\", ascending=False).loc[3]",
+   "p3": {
+    "type": "KeyError",
+    "message": "3"
+   }
+  },
+  "truth-ambiguous": {
+   "code": "df[df[\"age\"] > 30 and df[\"ville\"] == \"Paris\"]",
+   "p3": {
+    "type": "ValueError",
+    "message": "The truth value of a Series is ambiguous. Use a.empty, a.item(), a.any() or a.all()."
+   },
+   "p2": {
+    "type": "ValueError",
+    "message": "The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all()."
+   }
+  },
+  "chained-assignment": {
+   "code": "import warnings\nwarnings.simplefilter(\"error\")\ndf[df[\"age\"] > 30][\"age\"] = 0",
+   "p3": {
+    "type": "ChainedAssignmentError",
+    "message": "A value is being set on a copy of a DataFrame or Series through chained assignment."
+   },
+   "p2": {
+    "type": "SettingWithCopyWarning",
+    "message": "A value is trying to be set on a copy of a slice from a DataFrame."
+   }
+  },
+  "series-no-columns": {
+   "code": "df[\"ville\"].value_counts().columns",
+   "p3": {
+    "type": "AttributeError",
+    "message": "'Series' object has no attribute 'columns'"
+   }
+  },
+  "frame-no-name": {
+   "code": "df.isnull().sum().to_frame().name",
+   "p3": {
+    "type": "AttributeError",
+    "message": "'DataFrame' object has no attribute 'name'"
+   }
+  },
+  "frame-no-str": {
+   "code": "df.str.upper()",
+   "p3": {
+    "type": "AttributeError",
+    "message": "'DataFrame' object has no attribute 'str'"
+   }
+  },
+  "str-accessor": {
+   "code": "df[\"age\"].str.upper()",
+   "p3": {
+    "type": "AttributeError",
+    "message": "Can only use .str accessor with string values, not integer"
+   },
+   "p2": {
+    "type": "AttributeError",
+    "message": "Can only use .str accessor with string values!"
+   }
+  },
+  "convert-float": {
+   "code": "df[\"prix\"].astype(float)",
+   "p3": {
+    "type": "ValueError",
+    "message": "could not convert string to float: '12,5'"
+   }
+  },
+  "nan-to-int": {
+   "code": "pd.Series([1.0, np.nan]).astype(int)",
+   "p3": {
+    "type": "IntCastingNaNError",
+    "message": "Cannot convert non-finite values (NA or inf) to integer. Replace or remove non-finite values or cast to an integer type that supports these values (e.g. 'Int64')"
+   },
+   "p2": {
+    "type": "IntCastingNaNError",
+    "message": "Cannot convert non-finite values (NA or inf) to integer"
+   }
+  },
+  "length-mismatch": {
+   "code": "df[\"note\"] = [12, 15]",
+   "p3": {
+    "type": "ValueError",
+    "message": "Length of values (2) does not match length of index (3)"
+   }
+  },
+  "merge-dtypes": {
+   "code": "a = pd.DataFrame({\"id\": [1, 2]})\nb = pd.DataFrame({\"id\": [\"1\", \"2\"]})\npd.merge(a, b, on=\"id\")",
+   "p3": {
+    "type": "ValueError",
+    "message": "You are trying to merge on int64 and str columns for key 'id'. If you wish to proceed you should use pd.concat"
+   },
+   "p2": {
+    "type": "ValueError",
+    "message": "You are trying to merge on int64 and object columns for key 'id'. If you wish to proceed you should use pd.concat"
+   }
+  },
+  "compare-str-float": {
+   "code": "sorted([\"Paris\", np.nan, \"Lyon\"])",
+   "p3": {
+    "type": "TypeError",
+    "message": "'<' not supported between instances of 'float' and 'str'"
+   }
+  },
+  "groupby-key-index": {
+   "code": "res = df.groupby(\"ville\")[\"age\"].mean()\nres[\"ville\"]",
+   "p3": {
+    "type": "KeyError",
+    "message": "'ville'"
+   }
+  },
+  "to-datetime-format": {
+   "code": "pd.to_datetime(\"31/12/2024\", format=\"%Y-%m-%d\")",
+   "p3": {
+    "type": "ValueError",
+    "message": "time data \"31/12/2024\" doesn't match format \"%Y-%m-%d\". You might want to try:"
+   },
+   "p2": {
+    "type": "ValueError",
+    "message": "time data \"31/12/2024\" doesn't match format \"%Y-%m-%d\", at position 0. You might want to try:"
+   }
+  },
+  "mask-with-nan": {
+   "code": "df[df[\"ville\"].str.contains(\"P\")]",
+   "p3": null,
+   "p2": {
+    "type": "ValueError",
+    "message": "Cannot mask with non-boolean array containing NA / NaN values"
+   }
+  },
+  "broadcast": {
+   "code": "np.ones((4, 3)) + np.ones(4)",
+   "p3": {
+    "type": "ValueError",
+    "message": "operands could not be broadcast together with shapes (4,3) (4,)"
+   }
+  },
+  "reshape-size": {
+   "code": "np.arange(12).reshape(5, 2)",
+   "p3": {
+    "type": "ValueError",
+    "message": "cannot reshape array of size 12 into shape (5,2)"
+   }
+  },
+  "too-many-indices": {
+   "code": "np.arange(5)[0, 1]",
+   "p3": {
+    "type": "IndexError",
+    "message": "too many indices for array: array is 1-dimensional, but 2 were indexed"
+   }
+  }
+ }
+}

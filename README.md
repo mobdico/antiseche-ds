@@ -40,6 +40,16 @@ Page `#/devine` : des questions (type du résultat, index, `.name`, shape, excep
 réels des labos (`src/content/_lib/quiz.ts`) — aucune réponse écrite à la main. Ajouter une famille au labo ajoute des cartes.
 L'historique (cartes ratées à revoir en priorité) est gardé dans le navigateur (`localStorage`, clé `quiz-history-v1`).
 
+## Messages d'erreur
+Page `#/erreurs` : chaque cas est exécuté (pandas 3 et 2) et son message réel enregistré ; l'explication est dans `src/content/errors.ts`.
+```bash
+python scripts/errors/generate.py err-p3.json   # avec pandas 3.x
+python scripts/errors/generate.py err-p2.json   # avec pandas 2.x
+python scripts/errors/merge.py err-p3.json err-p2.json src/content/_data/errors.json
+```
+Ajouter une erreur : un cas dans `scripts/errors/scenarios.py` + son explication sous la même clé (les tests vérifient la correspondance).
+La recherche du haut reconnaît un message collé et propose l'erreur correspondante.
+
 ## Simulateurs tracés (Python exécuté ligne par ligne)
 Les fiches Python Core utilisent un traceur qui exécute le **vrai Python** ligne par ligne et enregistre la mémoire
 (variables, objets, adresses `id()`, sorties, erreurs) après chaque ligne.
